@@ -1,0 +1,32 @@
+{
+  "operations": [
+    {
+      "operation": "create",
+      "meta-data": {
+        "index": "test-index"
+      },
+      "document": {
+        "field1": "value1",
+        "field2": "value2"
+      }
+    },
+    {
+      "operation": "dance!",
+      "meta-data": {
+        "index": "test-index",
+        "id": "2",
+        "version": "5"
+      },
+      "document": {
+        "field1": "new-value"
+      }
+    },
+    {
+      "operation": "delete",
+      "meta-data": {
+        "index": "test-index",
+        "id": "4"
+      }
+    }
+  ]
+}

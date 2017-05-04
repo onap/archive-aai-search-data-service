@@ -1,0 +1,30 @@
+{
+  "document-type": "tier-support",
+  "document-id": "ts-1",
+  "fields": [
+    {
+      "name": "entityType",
+      "data-type": "string"
+    },
+    {
+      "name": "edgeTagQueryEntityFieldName",
+      "data-type": "string",
+      "index": false
+    },
+    {
+      "name": "edgeTagQueryEntityFieldValue",
+      "data-type": "string",
+      "index": false
+    },
+    {
+      "name": "searchTagIDs",
+      "data-type": "string"
+    },
+    {
+      "name": "searchTags",
+      "data-type": "string",
+      "index-analyzer": "nGram_analyzer",
+      "search-analyzer": "whitespace_analyzer"
+    }
+  ]
+}

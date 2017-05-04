@@ -1,0 +1,14 @@
+{
+  "results-start": 0,
+  "results-size": 10,
+  "queries": [
+    {
+      "must": {
+        "match": {
+          "field": "field1",
+          "value": "Bob"
+        }
+      }
+    }
+  ]
+}

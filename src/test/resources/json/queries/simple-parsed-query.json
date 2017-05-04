@@ -1,0 +1,10 @@
+{
+  "queries": [
+    {
+      "parsed-query": {
+        "field": "searchTags",
+        "query-string": "a"
+      }
+    }
+  ]
+}

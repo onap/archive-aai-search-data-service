@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Document Schema",
+  "description": "Describes the structure of a document for storage in a document store.",
+  "type": "object",
+  "javaType": "org.openecomp.sa.rest.DocumentSchema",
+  "properties": {
+    "fields": {
+      "type": "array",
+      "items": {
+        "$ref": "document-field.schema.json"
+      }
+    }
+  }
+}	

@@ -1,0 +1,49 @@
+{
+  "fields": [
+    {
+      "name": "serverName",
+      "data-type": "string",
+      "searchable": true,
+      "search-analyzer": "whitespace",
+      "sub-fields": []
+    },
+    {
+      "name": "serverComplex",
+      "data-type": "string",
+      "search-analyzer": "whitespace",
+      "sub-fields": []
+    },
+    {
+      "name": "address",
+      "data-type": "nested",
+      "sub-fields": [
+        {
+          "name": "street",
+          "data-type": "string",
+          "sub-fields": []
+        },
+        {
+          "name": "city",
+          "data-type": "string",
+          "sub-fields": []
+        },
+        {
+          "name": "phone-numbers",
+          "data-type": "nested",
+          "sub-fields": [
+            {
+              "name": "home",
+              "data-type": "string",
+              "sub-fields": []
+            },
+            {
+              "name": "cell",
+              "data-type": "string",
+              "sub-fields": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
