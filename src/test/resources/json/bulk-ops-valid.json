@@ -1,0 +1,31 @@
+[
+  {
+    "create": {
+      "metaData": {
+        "url": "/indexes/test-index/documents/"
+      },
+      "document": {
+        "field1": "value1",
+        "field2": "value2"
+      }
+    }
+  },
+  {
+    "update": {
+      "metaData": {
+        "url": "/indexes/test-index/documents/3",
+        "etag": "5"
+      },
+      "document": {
+        "field1": "new-value"
+      }
+    }
+  },
+  {
+    "delete": {
+      "metaData": {
+        "url": "/indexes/test-index/documents/7"
+      }
+    }
+  }
+]

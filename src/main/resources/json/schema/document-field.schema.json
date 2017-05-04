@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Document Field Schema",
+  "description": "Describes the structure of a document field for storage in a document store.",
+  "type": "object",
+  "javaType": "org.openecomp.sa.rest.DocumentFieldSchema",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "data-type": {
+      "type": "string"
+    },
+    "format": {
+      "type": "string"
+    },
+    "searchable": {
+      "type": "boolean"
+    },
+    "search-analyzer": {
+      "type": "string"
+    },
+    "index-analyzer": {
+      "type": "string"
+    },
+    "sub-fields": {
+      "type": "array",
+      "items": {
+        "$ref": "document-field.schema.json"
+      }
+    }
+  },
+  "required": [
+    "name",
+    "data-type"
+  ]
+}

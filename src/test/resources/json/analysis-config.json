@@ -1,0 +1,21 @@
+[
+  {
+    "name": "nGram_analyzer",
+    "description": "NGram Analyzer",
+    "tokenizer": "whitespace",
+    "filters": [
+      "lowercase",
+      "asciifolding",
+      "nGram_filter"
+    ]
+  },
+  {
+    "name": "whitespace_analyzer",
+    "description": "Whitespace Analyzer",
+    "tokenizer": "whitespace",
+    "filters": [
+      "lowercase",
+      "asciifolding"
+    ]
+  }
+]

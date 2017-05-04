@@ -1,0 +1,6 @@
+{
+  "shiroUserRoleClass": "ajsc.auth.ShiroUserRole",
+  "shiroUserRoleId": "ajsc:ajscadmin",
+  "roleId": "ajscadmin",
+  "userId": "ajsc"
+}

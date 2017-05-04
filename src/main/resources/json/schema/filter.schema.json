@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Filter",
+  "description": "Filters accept a stream of tokens from a tokenizer and apply additional rules, possibly producing additional tokens. ",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "configuration": {
+      "type": "string"
+    }
+  }
+}

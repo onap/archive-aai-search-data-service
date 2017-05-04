@@ -1,0 +1,17 @@
+{
+  "fields": [
+    {
+      "name": "serverName",
+      "data-type": "string",
+      "searchable": true,
+      "search-analyzer": "whitespace",
+      "sub-fields": []
+    },
+    {
+      "name": "serverComplex",
+      "data-type": "string",
+      "search-analyzer": "whitespace",
+      "sub-fields": []
+    }
+  ]
+}
