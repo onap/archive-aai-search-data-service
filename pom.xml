@@ -9,13 +9,15 @@
     </parent>
     <groupId>org.openecomp.aai</groupId>
     <artifactId>search-data-service</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0-SNAPSHOT</version>
 
     <properties>
         <module.ajsc.namespace.name>search-data-service</module.ajsc.namespace.name>
         <module.ajsc.namespace.version>v1</module.ajsc.namespace.version>
         <ajscRuntimeVersion>2.0.0</ajscRuntimeVersion>
         <absoluteDistFilesRoot>/appl/${project.artifactId}</absoluteDistFilesRoot>
+
+        <nexusproxy>https://nexus.onap.org</nexusproxy>
 
         <!-- For NO Versioning, REMOVE the /${project.version} from the <distFilesRoot>
             property, below. PLEASE, NOTE: If your ${project.version} is a "-SNAPSHOT"
@@ -279,6 +281,18 @@
                 </dependencies>
             </plugin>
 
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <nexusUrl>${nexusproxy}</nexusUrl>
+                    <stagingProfileId>176c31dfe190a</stagingProfileId>
+                    <serverId>ecomp-staging</serverId>
+                </configuration>
+            </plugin>
+
             <!-- This plugin is used to generate Java POJO's from json format schema
                 file. -->
             <plugin>
@@ -366,4 +380,20 @@
             </plugin>
         </plugins>
     </build>
+    <distributionManagement>
+        <repository>
+            <id>ecomp-releases</id>
+            <name>ECOMP Release Repository</name>
+            <url>${nexusproxy}/content/repositories/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>ecomp-snapshots</id>
+            <name>ECOMP Snapshot Repository</name>
+            <url>${nexusproxy}/content/repositories/snapshots/</url>
+        </snapshotRepository>
+        <site>
+            <id>ecomp-javadoc</id>
+            <url>dav:https://ecomp-nexus:8443/repository/aai/search-data-service-javadoc/${project.version}</url>
+        </site>
+    </distributionManagement>
 </project>
