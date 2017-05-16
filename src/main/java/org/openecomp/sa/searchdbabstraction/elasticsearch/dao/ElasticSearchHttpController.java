@@ -272,13 +272,13 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
     try {
       inputstream = connection.getInputStream();
     } catch (IOException e) {
-      logger.error(SearchDbMsgs.EXCEPTION_DURING_METHOD_CALL, "shutdownConnection", e.getLocalizedMessage());
+      logger.debug(SearchDbMsgs.EXCEPTION_DURING_METHOD_CALL, "shutdownConnection", e.getLocalizedMessage());
     } finally {
       if (inputstream != null) {
         try {
           inputstream.close();
         } catch (IOException e) {
-          logger.error(SearchDbMsgs.EXCEPTION_DURING_METHOD_CALL, "shutdownConnection",
+          logger.debug(SearchDbMsgs.EXCEPTION_DURING_METHOD_CALL, "shutdownConnection",
               e.getLocalizedMessage());
         }
       }
@@ -287,13 +287,13 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
     try {
       outputstream = connection.getOutputStream();
     } catch (IOException e) {
-      logger.error(SearchDbMsgs.EXCEPTION_DURING_METHOD_CALL, "shutdownConnection", e.getLocalizedMessage());
+      logger.debug(SearchDbMsgs.EXCEPTION_DURING_METHOD_CALL, "shutdownConnection", e.getLocalizedMessage());
     } finally {
       if (outputstream != null) {
         try {
           outputstream.close();
         } catch (IOException e) {
-          logger.error(SearchDbMsgs.EXCEPTION_DURING_METHOD_CALL, "shutdownConnection",
+          logger.debug(SearchDbMsgs.EXCEPTION_DURING_METHOD_CALL, "shutdownConnection",
               e.getLocalizedMessage());
         }
       }
