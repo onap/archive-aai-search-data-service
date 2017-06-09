@@ -23,4 +23,4 @@ RUN ln -s /logs $MICRO_HOME/logs
 
 EXPOSE 9509 9509
 
-CMD /opt/app/search-data-service/bin/start.sh
+CMD ["/opt/app/search-data-service/bin/start.sh"]
