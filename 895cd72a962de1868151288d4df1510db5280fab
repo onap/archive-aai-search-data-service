@@ -1,0 +1,10 @@
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review+1: Gino Fraboni <gino.fraboni@amdocs.com>
+Code-Review+1: Shwetank Dave <shwetank.dave@amdocs.com>
+Code-Review+1: Daniel Silverthorn <daniel.silverthorn@amdocs.com>
+Code-Review+2: Manisha Aggarwal <ma9181@att.com>
+Submitted-by: Manisha Aggarwal <ma9181@att.com>
+Submitted-at: Mon, 12 Jun 2017 17:23:31 +0000
+Reviewed-on: http://gerrit.onap.org/r/4929
+Project: aai/search-data-service
+Branch: refs/heads/master
