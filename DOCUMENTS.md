@@ -53,6 +53,10 @@ If no _Id_ is provided by the client, then a unique identifier will be generated
 
     index - The name of the _Index_ to persist the _Document_ in.
 
+**Request Header**
+
+    X-Create-Index  = true = Allow index to be implicitly created if it does not already exist in the document store.
+    
 **Request Payload**
 
     Document contents expressed as a JSON object. (see **Syntax**) 
@@ -93,6 +97,10 @@ _NOTE: If a document id is supplied then it is the responsibility of the client 
     index - The name of the _Index_ to persist the Document in.
     id    - The identifier to associate with this Document.
 
+**Request Header**
+
+    X-Create-Index  = true = Allow index to be implicitly created if it does not already exist in the document store.
+    
 **Request Payload**
 
     Document contents expressed as a JSON object. (see **Syntax**) 
@@ -189,6 +197,7 @@ When performing a _Document_ update, this value must be supplied in the _If-Matc
     Accept          = application/json
     X-TransactionId = Unique id set by client (for logging purposes)
     X-FromAppId     = Application identifier (for logging purposes)
+    X-Create-Index  = true = Allow index to be implicitly created if it does not already exist in the document store.
     Content-Type    = application/json   
     If-Match        = The ETag value for the document to be updated.
 

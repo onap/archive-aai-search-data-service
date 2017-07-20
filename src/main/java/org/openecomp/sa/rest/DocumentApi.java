@@ -49,7 +49,8 @@ import javax.ws.rs.core.Response.Status;
 public class DocumentApi {
   private static final String REQUEST_HEADER_RESOURCE_VERSION = "If-Match";
   private static final String RESPONSE_HEADER_RESOURCE_VERSION = "ETag";
-
+  private static final String REQUEST_HEADER_ALLOW_IMPLICIT_INDEX_CREATION = "X-CreateIndex";
+  
   protected SearchServiceApi searchService = null;
 
   private Logger logger = LoggerFactory.getInstance().getLogger(DocumentApi.class.getName());
@@ -92,7 +93,7 @@ public class DocumentApi {
       DocumentStoreDataEntityImpl document = new DocumentStoreDataEntityImpl();
       document.setContent(content);
 
-      DocumentOperationResult result = documentStore.createDocument(index, document);
+      DocumentOperationResult result = documentStore.createDocument(index, document, implicitlyCreateIndex(headers));
       String output = null;
       if (result.getResultCode() >= 200 && result.getResultCode() <= 299) {
         output = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(result.getDocument());
@@ -157,9 +158,9 @@ public class DocumentApi {
 
       DocumentOperationResult result = null;
       if (resourceVersion == null) {
-        result = documentStore.createDocument(index, document);
+        result = documentStore.createDocument(index, document, implicitlyCreateIndex(headers));
       } else {
-        result = documentStore.updateDocument(index, document);
+        result = documentStore.updateDocument(index, document, implicitlyCreateIndex(headers));
       }
 
       String output = null;
@@ -463,6 +464,31 @@ public class DocumentApi {
     }
   }
 
+  
+  /**
+   * Checks the supplied HTTP headers to see if we should allow the underlying document 
+   * store to implicitly create the index referenced in a document PUT or POST if it
+   * does not already exist in the data store.
+   * 
+   * @param headers - The HTTP headers to examine.
+   * 
+   * @return - true if the headers indicate that missing indices should be implicitly created,
+   *           false otherwise.
+   */
+  private boolean implicitlyCreateIndex(HttpHeaders headers) {
+    
+    boolean createIndexIfNotPresent = false;
+    String implicitIndexCreationHeader = 
+        headers.getRequestHeaders().getFirst(REQUEST_HEADER_ALLOW_IMPLICIT_INDEX_CREATION);
+    
+    if( (implicitIndexCreationHeader != null) && (implicitIndexCreationHeader.equals("true")) ) {
+      createIndexIfNotPresent = true;
+    }
+    
+    return createIndexIfNotPresent;
+  }
+  
+  
   private String prepareOutput(ObjectMapper mapper, SearchOperationResult result)
       throws JsonProcessingException {
     StringBuffer output = new StringBuffer();

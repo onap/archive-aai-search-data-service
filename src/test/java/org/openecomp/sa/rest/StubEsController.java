@@ -60,7 +60,8 @@ public class StubEsController implements DocumentStoreInterface {
 
 
   @Override
-  public OperationResult createIndex(String index, DocumentSchema documentSchema) {
+  public OperationResult createIndex(String         index, 
+                                     DocumentSchema documentSchema) {
 
     // Just return an OK result, with the parameters that we were passed
     // bundled in the response string. This allows unit tests to validate
@@ -91,8 +92,11 @@ public class StubEsController implements DocumentStoreInterface {
   }
 
   @Override
-  public DocumentOperationResult createDocument(String indexName,
-                                                DocumentStoreDataEntity document) throws DocumentStoreOperationException {
+  public DocumentOperationResult createDocument(String                  indexName,
+                                                DocumentStoreDataEntity document,
+                                                boolean                 allowImplicitIndexCreation) 
+    throws DocumentStoreOperationException {
+    
     DocumentOperationResult opResult = buildSampleDocumentOperationResult();
 
     if (indexName.equals(DOES_NOT_EXIST_INDEX)) {
@@ -110,8 +114,11 @@ public class StubEsController implements DocumentStoreInterface {
   }
 
   @Override
-  public DocumentOperationResult updateDocument(String indexName,
-                                                DocumentStoreDataEntity document) throws DocumentStoreOperationException {
+  public DocumentOperationResult updateDocument(String                  indexName,
+                                                DocumentStoreDataEntity document,
+                                                boolean                 allowImplicitIndexCreation) 
+    throws DocumentStoreOperationException {
+    
     DocumentOperationResult opResult = buildSampleDocumentOperationResult();
 
     if (indexName.equals(DOES_NOT_EXIST_INDEX)) {

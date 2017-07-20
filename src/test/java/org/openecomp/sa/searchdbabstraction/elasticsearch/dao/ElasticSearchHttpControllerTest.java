@@ -69,7 +69,7 @@ public class ElasticSearchHttpControllerTest {
 
   @Test
   public void testCreateDocument() throws Exception {
-    OperationResult result = elasticSearch.createDocument("test", testDocument);
+    OperationResult result = elasticSearch.createDocument("test", testDocument, false);
     System.out.println(result);
 
     DocumentStoreDataEntityImpl ds = new DocumentStoreDataEntityImpl();
@@ -83,7 +83,7 @@ public class ElasticSearchHttpControllerTest {
   public void testUpdateDocument() throws Exception {
     testDocument.setEdgeTagQueryEntityFieldValue("567890");
 
-    OperationResult result = elasticSearch.updateDocument("test", testDocument);
+    OperationResult result = elasticSearch.updateDocument("test", testDocument, false);
     System.out.println(result);
 
     result = elasticSearch.getDocument("test", testDocument);
@@ -110,7 +110,7 @@ public class ElasticSearchHttpControllerTest {
       doc.setSearchTagIDs("" + i);
       doc.setSearchTags("service-instance-id");
 
-      OperationResult result = elasticSearch.createDocument("test", doc);
+      OperationResult result = elasticSearch.createDocument("test", doc, false);
       System.out.println(result);
     }
   }
@@ -142,7 +142,7 @@ public class ElasticSearchHttpControllerTest {
     doc.setSearchTagIDs("321");
     doc.setSearchTags("service-instance-id");
 
-    OperationResult result = elasticSearch.createDocument("test", doc);
+    OperationResult result = elasticSearch.createDocument("test", doc, false);
     System.out.println(result);
   }
 

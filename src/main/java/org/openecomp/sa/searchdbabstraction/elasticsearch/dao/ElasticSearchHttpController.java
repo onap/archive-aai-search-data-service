@@ -365,8 +365,28 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
   }
 
   @Override
-  public DocumentOperationResult createDocument(String indexName, DocumentStoreDataEntity document)
+  public DocumentOperationResult createDocument(String                  indexName, 
+                                                DocumentStoreDataEntity document,
+                                                boolean                 allowImplicitIndexCreation)
       throws DocumentStoreOperationException {
+    
+    if(!allowImplicitIndexCreation) {
+      
+      // Before we do anything, make sure that the specified index actually exists in the
+      // document store - we don't want to rely on ElasticSearch to fail the document
+      // create because it could be configured to implicitly create a non-existent index,
+      // which can lead to hard-to-debug behaviour with queries down the road.
+      OperationResult indexExistsResult = checkIndexExistence(indexName);
+      if ((indexExistsResult.getResultCode() < 200) || (indexExistsResult.getResultCode() >= 300)) {
+  
+        DocumentOperationResult opResult = new DocumentOperationResult();
+        opResult.setResultCode(Status.NOT_FOUND.getStatusCode());
+        opResult.setResult("Document Index '" + indexName + "' does not exist.");
+        opResult.setFailureCause("Document Index '" + indexName + "' does not exist.");
+        return opResult;
+      }
+    }
+    
     if (document.getId() == null || document.getId().isEmpty()) {
       return createDocumentWithoutId(indexName, document);
     } else {
@@ -531,8 +551,28 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
   }
 
   @Override
-  public DocumentOperationResult updateDocument(String indexName, DocumentStoreDataEntity document)
+  public DocumentOperationResult updateDocument(String                  indexName, 
+                                                DocumentStoreDataEntity document,
+                                                boolean                 allowImplicitIndexCreation)
       throws DocumentStoreOperationException {
+    
+    if(!allowImplicitIndexCreation) {
+      
+      // Before we do anything, make sure that the specified index actually exists in the
+      // document store - we don't want to rely on ElasticSearch to fail the document
+      // create because it could be configured to implicitly create a non-existent index,
+      // which can lead to hard-to-debug behaviour with queries down the road.
+      OperationResult indexExistsResult = checkIndexExistence(indexName);
+      if ((indexExistsResult.getResultCode() < 200) || (indexExistsResult.getResultCode() >= 300)) {
+  
+        DocumentOperationResult opResult = new DocumentOperationResult();
+        opResult.setResultCode(Status.NOT_FOUND.getStatusCode());
+        opResult.setResult("Document Index '" + indexName + "' does not exist.");
+        opResult.setFailureCause("Document Index '" + indexName + "' does not exist.");
+        return opResult;
+      }
+    }
+    
     DocumentOperationResult opResult = new DocumentOperationResult();
 
     // Initialize operation result with a failure codes / fault string

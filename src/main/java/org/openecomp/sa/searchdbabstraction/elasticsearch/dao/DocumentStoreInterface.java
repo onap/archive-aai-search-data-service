@@ -39,11 +39,13 @@ public interface DocumentStoreInterface {
 
   public OperationResult deleteIndex(String indexName) throws DocumentStoreOperationException;
 
-  public DocumentOperationResult createDocument(String indexName, DocumentStoreDataEntity document)
-      throws DocumentStoreOperationException;
+  public DocumentOperationResult createDocument(String indexName, 
+                                                DocumentStoreDataEntity document, 
+                                                boolean allowImplicitIndexCreation) throws DocumentStoreOperationException;
 
-  public DocumentOperationResult updateDocument(String indexName, DocumentStoreDataEntity document)
-      throws DocumentStoreOperationException;
+  public DocumentOperationResult updateDocument(String indexName, 
+                                                DocumentStoreDataEntity document,
+                                                boolean allowImplicitIndexCreation) throws DocumentStoreOperationException;
 
   public DocumentOperationResult deleteDocument(String indexName, DocumentStoreDataEntity document)
       throws DocumentStoreOperationException;
