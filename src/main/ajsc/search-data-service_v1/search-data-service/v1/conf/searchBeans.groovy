@@ -1,4 +1,4 @@
-import org.openecomp.sa.rest.SearchServiceApi
+import org.onap.aai.sa.rest.SearchServiceApi
 
 beans {
     xmlns cxf: "http://camel.apache.org/schema/cxf"

@@ -3,7 +3,7 @@
   "title": "Document Field Schema",
   "description": "Describes the structure of a document field for storage in a document store.",
   "type": "object",
-  "javaType": "org.openecomp.sa.rest.DocumentFieldSchema",
+  "javaType": "org.onap.aai.sa.rest.DocumentFieldSchema",
   "properties": {
     "name": {
       "type": "string"

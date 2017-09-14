@@ -3,7 +3,7 @@
   "title": "Document Schema",
   "description": "Describes the structure of a document for storage in a document store.",
   "type": "object",
-  "javaType": "org.openecomp.sa.rest.DocumentSchema",
+  "javaType": "org.onap.aai.sa.rest.DocumentSchema",
   "properties": {
     "fields": {
       "type": "array",

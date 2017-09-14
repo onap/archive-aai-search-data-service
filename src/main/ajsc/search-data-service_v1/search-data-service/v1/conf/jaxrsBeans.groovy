@@ -3,9 +3,9 @@ beans {
     xmlns jaxrs: "http://cxf.apache.org/jaxrs"
     xmlns util: "http://www.springframework.org/schema/util"
 
-    echoService(org.openecomp.sa.searchdbabstraction.JaxrsEchoService)
-    userService(org.openecomp.sa.searchdbabstraction.JaxrsUserService)
-    searchService(org.openecomp.sa.searchdbabstraction.service.SearchService)
+    echoService(org.onap.aai.sa.searchdbabstraction.JaxrsEchoService)
+    userService(org.onap.aai.sa.searchdbabstraction.JaxrsUserService)
+    searchService(org.onap.aai.sa.searchdbabstraction.service.SearchService)
 
     util.list(id: 'jaxrsServices') {
         ref(bean: 'echoService')
