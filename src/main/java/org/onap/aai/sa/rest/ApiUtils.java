@@ -23,7 +23,7 @@
 package org.onap.aai.sa.rest;
 
 import org.onap.aai.sa.searchdbabstraction.util.SearchDbConstants;
-import org.openecomp.cl.mdc.MdcContext;
+import org.onap.aai.cl.mdc.MdcContext;
 import org.slf4j.MDC;
 
 import java.util.UUID;

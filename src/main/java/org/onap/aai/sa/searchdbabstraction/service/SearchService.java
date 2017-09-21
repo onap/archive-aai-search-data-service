@@ -26,8 +26,8 @@ import org.onap.aai.sa.searchdbabstraction.elasticsearch.config.ElasticSearchCon
 import org.onap.aai.sa.searchdbabstraction.elasticsearch.dao.ElasticSearchHttpController;
 import org.onap.aai.sa.searchdbabstraction.logging.SearchDbMsgs;
 import org.onap.aai.sa.searchdbabstraction.util.SearchDbConstants;
-import org.openecomp.cl.api.Logger;
-import org.openecomp.cl.eelf.LoggerFactory;
+import org.onap.aai.cl.api.Logger;
+import org.onap.aai.cl.eelf.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.util.Properties;

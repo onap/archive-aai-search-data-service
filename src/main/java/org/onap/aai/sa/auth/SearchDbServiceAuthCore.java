@@ -28,8 +28,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.onap.aai.sa.searchdbabstraction.util.SearchDbConstants;
-import org.openecomp.cl.api.Logger;
-import org.openecomp.cl.eelf.LoggerFactory;
+import org.onap.aai.cl.api.Logger;
+import org.onap.aai.cl.eelf.LoggerFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;

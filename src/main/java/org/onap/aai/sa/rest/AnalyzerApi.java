@@ -24,10 +24,10 @@ package org.onap.aai.sa.rest;
 
 import org.onap.aai.sa.searchdbabstraction.elasticsearch.dao.ElasticSearchHttpController;
 import org.onap.aai.sa.searchdbabstraction.logging.SearchDbMsgs;
-import org.openecomp.cl.api.LogFields;
-import org.openecomp.cl.api.LogLine;
-import org.openecomp.cl.api.Logger;
-import org.openecomp.cl.eelf.LoggerFactory;
+import org.onap.aai.cl.api.LogFields;
+import org.onap.aai.cl.api.LogLine;
+import org.onap.aai.cl.api.Logger;
+import org.onap.aai.cl.eelf.LoggerFactory;
 import org.onap.aai.sa.rest.AnalyzerSchema;
 
 import java.util.concurrent.atomic.AtomicBoolean;

@@ -30,10 +30,10 @@ import org.onap.aai.sa.searchdbabstraction.elasticsearch.dao.DocumentStoreInterf
 import org.onap.aai.sa.searchdbabstraction.elasticsearch.exception.DocumentStoreOperationException;
 import org.onap.aai.sa.searchdbabstraction.entity.OperationResult;
 import org.onap.aai.sa.searchdbabstraction.logging.SearchDbMsgs;
-import org.openecomp.cl.api.LogFields;
-import org.openecomp.cl.api.LogLine;
-import org.openecomp.cl.api.Logger;
-import org.openecomp.cl.eelf.LoggerFactory;
+import org.onap.aai.cl.api.LogFields;
+import org.onap.aai.cl.api.LogLine;
+import org.onap.aai.cl.api.Logger;
+import org.onap.aai.cl.eelf.LoggerFactory;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;

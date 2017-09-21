@@ -33,10 +33,10 @@ import org.onap.aai.sa.searchdbabstraction.entity.DocumentOperationResult;
 import org.onap.aai.sa.searchdbabstraction.entity.SearchOperationResult;
 import org.onap.aai.sa.searchdbabstraction.logging.SearchDbMsgs;
 import org.onap.aai.sa.searchdbabstraction.searchapi.SearchStatement;
-import org.openecomp.cl.api.LogFields;
-import org.openecomp.cl.api.LogLine;
-import org.openecomp.cl.api.Logger;
-import org.openecomp.cl.eelf.LoggerFactory;
+import org.onap.aai.cl.api.LogFields;
+import org.onap.aai.cl.api.LogLine;
+import org.onap.aai.cl.api.Logger;
+import org.onap.aai.cl.eelf.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

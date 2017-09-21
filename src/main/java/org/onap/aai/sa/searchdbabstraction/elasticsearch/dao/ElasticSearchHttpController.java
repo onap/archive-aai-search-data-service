@@ -52,12 +52,12 @@ import org.onap.aai.sa.searchdbabstraction.logging.SearchDbMsgs;
 import org.onap.aai.sa.searchdbabstraction.util.AggregationParsingUtil;
 import org.onap.aai.sa.searchdbabstraction.util.DocumentSchemaUtil;
 import org.onap.aai.sa.searchdbabstraction.util.SearchDbConstants;
-import org.openecomp.cl.api.LogFields;
-import org.openecomp.cl.api.LogLine;
-import org.openecomp.cl.api.Logger;
-import org.openecomp.cl.eelf.LoggerFactory;
-import org.openecomp.cl.mdc.MdcContext;
-import org.openecomp.cl.mdc.MdcOverride;
+import org.onap.aai.cl.api.LogFields;
+import org.onap.aai.cl.api.LogLine;
+import org.onap.aai.cl.api.Logger;
+import org.onap.aai.cl.eelf.LoggerFactory;
+import org.onap.aai.cl.mdc.MdcContext;
+import org.onap.aai.cl.mdc.MdcOverride;
 import org.onap.aai.sa.rest.DocumentSchema;
 
 import java.io.BufferedReader;
