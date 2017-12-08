@@ -92,7 +92,7 @@
         <dependency>
           <groupId>org.onap.aai.logging-service</groupId>
           <artifactId>common-logging</artifactId>
-          <version>1.1.0</version>
+          <version>${project.version}</version>
         </dependency>
 
         <!--  Jersey Test Framework. -->
