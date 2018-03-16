@@ -86,6 +86,18 @@ public class SearchServiceApi {
     return indexApi.processCreateIndex(requestBody, request, headers, index, documentStore);
   }
 
+  @PUT
+  @Path("/indexes/dynamic/{index}")
+  @Consumes({MediaType.APPLICATION_JSON})
+  public Response processCreateDynamicIndex(String requestBody,
+                                     @Context HttpServletRequest request,
+                                     @Context HttpHeaders headers,
+                                     @PathParam("index") String index) {
+
+    // Forward the request to our index API to create the index.
+    IndexApi indexApi = new IndexApi(this);
+    return indexApi.processCreateDynamicIndex(requestBody, request, headers, index, documentStore);
+  }
 
   @DELETE
   @Path("/indexes/{index}")

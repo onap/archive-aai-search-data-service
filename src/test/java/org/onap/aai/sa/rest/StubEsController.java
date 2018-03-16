@@ -73,6 +73,14 @@ public class StubEsController implements DocumentStoreInterface {
     return opResult;
   }
 
+  @Override
+  public OperationResult createDynamicIndex(String index, String dynamicSchema) {
+    OperationResult opResult = new OperationResult();
+    opResult.setResultCode(200);
+    // Directly return the json as this flow should not edit the json in any way
+    opResult.setResult(dynamicSchema);
+    return opResult;
+  }
 
   @Override
   public OperationResult deleteIndex(String indexName) throws DocumentStoreOperationException {

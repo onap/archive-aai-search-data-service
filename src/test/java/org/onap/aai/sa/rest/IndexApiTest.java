@@ -45,7 +45,7 @@ public class IndexApiTest extends JerseyTest {
 
   private final String TOP_URI = "/test/indexes/";
   private final String SIMPLE_DOC_SCHEMA_JSON = "src/test/resources/json/simpleDocument.json";
-
+  private final String DYNAMIC_INDEX_PAYLOAD = "src/test/resources/json/dynamicIndex.json";
 
   @Override
   protected Application configure() {
@@ -166,6 +166,23 @@ public class IndexApiTest extends JerseyTest {
         tokenizedResult[2].equals(EXPECTED_MAPPINGS));
   }
 
+  /**
+   * Tests the dynamic shcema creation flow that send the request
+   * JSON to the data store without any JSON validation against a schema
+   * 
+   * @throws IOException
+   */
+  @Test
+  public void createDynamicIndexTest() throws IOException {
+    String indexName = "super-ultra-dynamic-mega-index";
+    String dynamicUri = TOP_URI + "dynamic/";
+    File indexFile = new File(DYNAMIC_INDEX_PAYLOAD);
+    String indexPayload = TestUtils.readFileToString(indexFile);
+    
+    String result = target(dynamicUri + indexName).request().put(Entity.json(indexPayload), String.class);
+
+    assertEquals(indexPayload, result);
+  }
 
   /**
    * This test validates that a 'create index' request with an improperly

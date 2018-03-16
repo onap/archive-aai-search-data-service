@@ -33,6 +33,8 @@ public interface DocumentStoreInterface {
 
   public OperationResult createIndex(String index, DocumentSchema documentSchema);
 
+  public OperationResult createDynamicIndex(String index, String dynamicSchema);
+
   public OperationResult deleteIndex(String indexName) throws DocumentStoreOperationException;
 
   public DocumentOperationResult createDocument(String indexName, 

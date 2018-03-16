@@ -46,6 +46,8 @@ import javax.ws.rs.core.Response;
  */
 public class IndexApi {
 
+  private static final String HEADER_VALIDATION_SUCCESS = "SUCCESS";
+  
   protected SearchServiceApi searchService = null;
 
   /**
@@ -188,6 +190,39 @@ public class IndexApi {
     // Finally, return the response.
     return response;
   }
+  
+  /**
+   * This function accepts any JSON and will "blindly" write it to the 
+   * document store.
+   * 
+   * Note, eventually this "dynamic" flow should follow the same JSON-Schema
+   * validation procedure as the normal create index flow.
+   * 
+   * @param dynamicSchema - The JSON string that will be sent to the document store.
+   * @param index - The name of the index to be created.
+   * @param documentStore - The document store specific interface.
+   * @return The result of the document store interface's operation.
+   */
+  public Response processCreateDynamicIndex(String dynamicSchema, HttpServletRequest request,
+      HttpHeaders headers, String index, DocumentStoreInterface documentStore) {
+
+    Response response = null;
+
+    Response validationResponse = validateRequest(request, headers, index, SearchDbMsgs.INDEX_CREATE_FAILURE);
+
+    if (validationResponse.getStatus() != Response.Status.OK.getStatusCode()) {
+      response = validationResponse;
+    } else {
+      OperationResult result = documentStore.createDynamicIndex(index, dynamicSchema);
+
+      int resultCode = (result.getResultCode() == 200) ? 201 : result.getResultCode();
+      String resultString = (result.getFailureCause() == null) ? result.getResult() : result.getFailureCause();
+
+      response = Response.status(resultCode).entity(resultString).build();
+    }
+
+    return response;
+  }
 
 
   /**
@@ -227,7 +262,6 @@ public class IndexApi {
       return errorResponse(Response.Status.FORBIDDEN, "Authentication failure.", request);
     }
 
-
     try {
       // Send the request to the document store.
       response = responseFromOperationResult(documentStore.deleteIndex(index));
@@ -237,8 +271,7 @@ public class IndexApi {
           .entity(e.getMessage())
           .build();
     }
-
-
+    
     // Log the result.
     if ((response.getStatus() >= 200) && (response.getStatus() < 300)) {
       logger.info(SearchDbMsgs.DELETED_INDEX, index);
@@ -372,6 +405,26 @@ public class IndexApi {
         .entity(msg)
         .build();
   }
-
-
+  
+  /**
+   * A helper method used for validating/authenticating an incoming request.
+   * 
+   * @param request - The http request that will be validated.
+   * @param headers - The http headers that will be validated.
+   * @param index - The name of the index that the document store request is being made against.
+   * @param failureMsgEnum - The logging message to be used upon validation failure.
+   * @return A success or failure response
+   */
+  private Response validateRequest(HttpServletRequest request, HttpHeaders headers, String index, SearchDbMsgs failureMsgEnum) {
+    try {
+      if (!searchService.validateRequest(headers, request, ApiUtils.Action.POST, ApiUtils.SEARCH_AUTH_POLICY_NAME)) {
+        logger.warn(failureMsgEnum, index, "Authentication failure.");
+        return errorResponse(Response.Status.FORBIDDEN, "Authentication failure.", request);
+      }
+    } catch (Exception e) {
+      logger.warn(failureMsgEnum, index, "Unexpected authentication failure - cause: " + e.getMessage());
+      return errorResponse(Response.Status.FORBIDDEN, "Authentication failure.", request);
+    }
+    return Response.status(Response.Status.OK).entity(HEADER_VALIDATION_SUCCESS).build();
+  }
 }

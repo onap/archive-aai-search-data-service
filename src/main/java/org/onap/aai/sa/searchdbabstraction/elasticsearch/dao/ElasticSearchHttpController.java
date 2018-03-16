@@ -183,6 +183,26 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
     return result;
   }
 
+  @Override
+  public OperationResult createDynamicIndex(String index, String dynamicSchema) {
+    OperationResult result = new OperationResult();
+    result.setResultCode(500);
+    
+    try {
+      result = createTable(index, dynamicSchema);
+      
+      // ElasticSearch will return us a 200 code on success when we
+      // want to report a 201, so translate the result here.
+      result.setResultCode((result.getResultCode() == 200) ? 201 : result.getResultCode());
+      if (isSuccess(result)) {
+        result.setResult("{\"url\": \"" + ApiUtils.buildIndexUri(index) + "\"}");
+      }
+    } catch (DocumentStoreOperationException e) {
+      result.setFailureCause("Document store operation failure.  Cause: " + e.getMessage());
+    }
+    
+    return result;
+  }
 
   @Override
   public OperationResult deleteIndex(String indexName) throws DocumentStoreOperationException {
@@ -358,6 +378,47 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         indexName);
 
     return opResult;
+  }
+
+    /**
+   * Will send the passed in JSON payload to Elasticsearch using the 
+   * provided index name in an attempt to create the index.
+   * 
+   * @param indexName - The name of the index to be created
+   * @param settingsAndMappings - The actual JSON object that will define the index
+   * @return - The operation result of writing into Elasticsearch
+   * @throws DocumentStoreOperationException
+   */
+  protected OperationResult createTable(String indexName, String settingsAndMappings) throws DocumentStoreOperationException {
+    OperationResult result = new OperationResult();
+    result.setResultCode(500);
+    result.setResult(INTERNAL_SERVER_ERROR_ELASTIC_SEARCH_OPERATION_FAULT);
+    
+    // Grab the current time so we can use it to generate a metrics log.
+    MdcOverride override = getStartTime(new MdcOverride());
+    
+    String fullUrl = getFullUrl("/" + indexName + "/", false);
+    HttpURLConnection conn = initializeConnection(fullUrl);
+
+    try {
+      conn.setRequestMethod("PUT");
+    } catch (ProtocolException e) {
+      shutdownConnection(conn);
+      throw new DocumentStoreOperationException("Failed to set HTTP request method to PUT.", e);
+    }
+    
+    attachContent(conn, settingsAndMappings);
+    handleResponse(conn, result);
+    
+    // Generate a metrics log so we can track how long the operation took.
+    metricsLogger.info(SearchDbMsgs.CREATE_INDEX_TIME,
+        new LogFields()
+            .setField(LogLine.DefinedFields.RESPONSE_CODE, result.getResultCode())
+            .setField(LogLine.DefinedFields.RESPONSE_DESCRIPTION, result.getResultCode()),
+        override,
+        indexName);
+    
+    return result;
   }
 
   @Override

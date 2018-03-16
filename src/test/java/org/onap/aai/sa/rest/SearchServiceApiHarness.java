@@ -63,6 +63,18 @@ public class SearchServiceApiHarness extends SearchServiceApi {
     return super.processCreateIndex(requestBody, request, headers, index);
   }
 
+  @PUT
+  @Path("/indexes/dynamic/{index}")
+  @Consumes({MediaType.APPLICATION_JSON})
+  @Override
+  public Response processCreateDynamicIndex(String requestBody,
+                                     @Context HttpServletRequest request,
+                                     @Context HttpHeaders headers,
+                                     @PathParam("index") String index) {
+
+    return super.processCreateDynamicIndex(requestBody, request, headers, index);
+  }
+
   @DELETE
   @Path("/indexes/{index}")
   @Consumes({MediaType.APPLICATION_JSON})
