@@ -41,227 +41,198 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-
 public class SearchServiceApi {
 
-  /**
-   * The Data Access Object that we will use to interact with the
-   * document store.
-   */
-  protected DocumentStoreInterface documentStore = null;
-  protected ApiUtils apiUtils = null;
+	/**
+	 * The Data Access Object that we will use to interact with the document
+	 * store.
+	 */
+	protected DocumentStoreInterface documentStore = null;
+	protected ApiUtils apiUtils = null;
 
+	/**
+	 * Create a new instance of the end point.
+	 */
+	public SearchServiceApi() {
 
-  /**
-   * Create a new instance of the end point.
-   */
-  public SearchServiceApi() {
+		// Perform one-time initialization.
+		init();
+	}
 
-    // Perform one-time initialization.
-    init();
-  }
+	/**
+	 * Performs all one-time initialization required for the end point.
+	 */
+	public void init() {
 
+		// Instantiate our Document Store DAO.
+		documentStore = ElasticSearchHttpController.getInstance();
 
-  /**
-   * Performs all one-time initialization required for the end point.
-   */
-  public void init() {
+		apiUtils = new ApiUtils();
+	}
 
-    // Instantiate our Document Store DAO.
-    documentStore = ElasticSearchHttpController.getInstance();
+	@PUT
+	@Path("/indexes/{index}")
+	@Consumes({ MediaType.APPLICATION_JSON })
+	public Response processCreateIndex(String requestBody, @Context HttpServletRequest request,
+			@Context HttpHeaders headers, @PathParam("index") String index) {
 
-    apiUtils = new ApiUtils();
-  }
+		// Forward the request to our index API to create the index.
+		IndexApi indexApi = new IndexApi(this);
+		return indexApi.processCreateIndex(requestBody, request, headers, index, documentStore);
+	}
 
-  @PUT
-  @Path("/indexes/{index}")
-  @Consumes({MediaType.APPLICATION_JSON})
-  public Response processCreateIndex(String requestBody,
-                                     @Context HttpServletRequest request,
-                                     @Context HttpHeaders headers,
-                                     @PathParam("index") String index) {
+	@PUT
+	@Path("/indexes/dynamic/{index}")
+	@Consumes({ MediaType.APPLICATION_JSON })
+	public Response processCreateDynamicIndex(String requestBody, @Context HttpServletRequest request,
+			@Context HttpHeaders headers, @PathParam("index") String index) {
 
-    // Forward the request to our index API to create the index.
-    IndexApi indexApi = new IndexApi(this);
-    return indexApi.processCreateIndex(requestBody, request, headers, index, documentStore);
-  }
+		// Forward the request to our index API to create the index.
+		IndexApi indexApi = new IndexApi(this);
+		return indexApi.processCreateDynamicIndex(requestBody, request, headers, index, documentStore);
+	}
 
-  @PUT
-  @Path("/indexes/dynamic/{index}")
-  @Consumes({MediaType.APPLICATION_JSON})
-  public Response processCreateDynamicIndex(String requestBody,
-                                     @Context HttpServletRequest request,
-                                     @Context HttpHeaders headers,
-                                     @PathParam("index") String index) {
+	@DELETE
+	@Path("/indexes/{index}")
+	@Consumes({ MediaType.APPLICATION_JSON })
+	public Response processDeleteIndex(String requestBody, @Context HttpServletRequest request,
+			@Context HttpHeaders headers, @PathParam("index") String index) {
 
-    // Forward the request to our index API to create the index.
-    IndexApi indexApi = new IndexApi(this);
-    return indexApi.processCreateDynamicIndex(requestBody, request, headers, index, documentStore);
-  }
+		// Forward the request to our index API to delete the index.
+		IndexApi indexApi = new IndexApi(this);
+		return indexApi.processDelete(index, request, headers, documentStore);
+	}
 
-  @DELETE
-  @Path("/indexes/{index}")
-  @Consumes({MediaType.APPLICATION_JSON})
-  public Response processDeleteIndex(String requestBody,
-                                     @Context HttpServletRequest request,
-                                     @Context HttpHeaders headers,
-                                     @PathParam("index") String index) {
+	@GET
+	@Path("/indexes/{index}/documents/{id}")
+	@Consumes({ MediaType.APPLICATION_JSON })
+	public Response processGetDocument(String requestBody, @Context HttpServletRequest request,
+			@Context HttpServletResponse httpResponse, @Context HttpHeaders headers, @PathParam("index") String index,
+			@PathParam("id") String id) {
 
-    // Forward the request to our index API to delete the index.
-    IndexApi indexApi = new IndexApi(this);
-    return indexApi.processDelete(index, request, headers, documentStore);
-  }
+		// Forward the request to our document API to retrieve the document.
+		DocumentApi documentApi = new DocumentApi(this);
+		return documentApi.processGet(requestBody, request, headers, httpResponse, index, id, documentStore);
+	}
 
+	@POST
+	@Path("/indexes/{index}/documents")
+	@Consumes({ MediaType.APPLICATION_JSON })
+	public Response processCreateDocWithoutId(String requestBody, @Context HttpServletRequest request,
+			@Context HttpServletResponse httpResponse, @Context HttpHeaders headers, @PathParam("index") String index) {
 
-  @GET
-  @Path("/indexes/{index}/documents/{id}")
-  @Consumes({MediaType.APPLICATION_JSON})
-  public Response processGetDocument(String requestBody,
-                                     @Context HttpServletRequest request,
-                                     @Context HttpServletResponse httpResponse,
-                                     @Context HttpHeaders headers,
-                                     @PathParam("index") String index,
-                                     @PathParam("id") String id) {
+		// Forward the request to our document API to create the document.
+		DocumentApi documentApi = new DocumentApi(this);
+		return documentApi.processPost(requestBody, request, headers, httpResponse, index, documentStore);
+	}
 
-    // Forward the request to our document API to retrieve the document.
-    DocumentApi documentApi = new DocumentApi(this);
-    return documentApi.processGet(requestBody, request, headers, httpResponse,
-        index, id, documentStore);
-  }
+	@PUT
+	@Path("/indexes/{index}/documents/{id}")
+	@Consumes({ MediaType.APPLICATION_JSON })
+	public Response processUpsertDoc(String requestBody, @Context HttpServletRequest request,
+			@Context HttpServletResponse httpResponse, @Context HttpHeaders headers, @PathParam("index") String index,
+			@PathParam("id") String id) {
 
-  @POST
-  @Path("/indexes/{index}/documents")
-  @Consumes({MediaType.APPLICATION_JSON})
-  public Response processCreateDocWithoutId(String requestBody,
-                                            @Context HttpServletRequest request,
-                                            @Context HttpServletResponse httpResponse,
-                                            @Context HttpHeaders headers,
-                                            @PathParam("index") String index) {
+		// Forward the request to our document API to upsert the document.
+		DocumentApi documentApi = new DocumentApi(this);
+		return documentApi.processPut(requestBody, request, headers, httpResponse, index, id, documentStore);
+	}
 
-    // Forward the request to our document API to create the document.
-    DocumentApi documentApi = new DocumentApi(this);
-    return documentApi.processPost(requestBody, request, headers, httpResponse,
-        index, documentStore);
-  }
+	@DELETE
+	@Path("/indexes/{index}/documents/{id}")
+	@Consumes({ MediaType.APPLICATION_JSON })
+	public Response processDeleteDoc(String requestBody, @Context HttpServletRequest request,
+			@Context HttpServletResponse httpResponse, @Context HttpHeaders headers, @PathParam("index") String index,
+			@PathParam("id") String id) {
 
-  @PUT
-  @Path("/indexes/{index}/documents/{id}")
-  @Consumes({MediaType.APPLICATION_JSON})
-  public Response processUpsertDoc(String requestBody,
-                                   @Context HttpServletRequest request,
-                                   @Context HttpServletResponse httpResponse,
-                                   @Context HttpHeaders headers,
-                                   @PathParam("index") String index,
-                                   @PathParam("id") String id) {
+		// Forward the request to our document API to delete the document.
+		DocumentApi documentApi = new DocumentApi(this);
+		return documentApi.processDelete(requestBody, request, headers, httpResponse, index, id, documentStore);
+	}
 
-    // Forward the request to our document API to upsert the document.
-    DocumentApi documentApi = new DocumentApi(this);
-    return documentApi.processPut(requestBody, request, headers, httpResponse,
-        index, id, documentStore);
-  }
+	@GET
+	@Path("/indexes/{index}/query/{queryText}")
+	@Consumes({ MediaType.APPLICATION_JSON })
+	public Response processInlineQuery(String requestBody, @Context HttpServletRequest request,
+			@Context HttpHeaders headers, @PathParam("index") String index, @PathParam("queryText") String queryText) {
 
-  @DELETE
-  @Path("/indexes/{index}/documents/{id}")
-  @Consumes({MediaType.APPLICATION_JSON})
-  public Response processDeleteDoc(String requestBody,
-                                   @Context HttpServletRequest request,
-                                   @Context HttpServletResponse httpResponse,
-                                   @Context HttpHeaders headers,
-                                   @PathParam("index") String index,
-                                   @PathParam("id") String id) {
+		// Forward the request to our document API to delete the document.
+		DocumentApi documentApi = new DocumentApi(this);
+		return documentApi.processSearchWithGet(requestBody, request, headers, index, queryText, documentStore);
+	}
 
-    // Forward the request to our document API to delete the document.
-    DocumentApi documentApi = new DocumentApi(this);
-    return documentApi.processDelete(requestBody, request, headers, httpResponse,
-        index, id, documentStore);
-  }
+	@GET
+	@Path("/indexes/{index}/query")
+	@Consumes({ MediaType.APPLICATION_JSON })
+	public Response processQueryWithGet(String requestBody, @Context HttpServletRequest request,
+			@Context HttpHeaders headers, @PathParam("index") String index) {
 
+		// Forward the request to our document API to delete the document.
+		DocumentApi documentApi = new DocumentApi(this);
+		return documentApi.queryWithGetWithPayload(requestBody, request, headers, index, documentStore);
+	}
 
-  @GET
-  @Path("/indexes/{index}/query/{queryText}")
-  @Consumes({MediaType.APPLICATION_JSON})
-  public Response processInlineQuery(String requestBody,
-                                     @Context HttpServletRequest request,
-                                     @Context HttpHeaders headers,
-                                     @PathParam("index") String index,
-                                     @PathParam("queryText") String queryText) {
+	@POST
+	@Path("/indexes/{index}/query")
+	@Consumes({ MediaType.APPLICATION_JSON })
+	public Response processQuery(String requestBody, @Context HttpServletRequest request, @Context HttpHeaders headers,
+			@PathParam("index") String index) {
 
-    // Forward the request to our document API to delete the document.
-    DocumentApi documentApi = new DocumentApi(this);
-    return documentApi.processSearchWithGet(requestBody, request, headers,
-        index, queryText, documentStore);
-  }
+		// Forward the request to our document API to delete the document.
+		DocumentApi documentApi = new DocumentApi(this);
+		return documentApi.processSearchWithPost(requestBody, request, headers, index, documentStore);
+	}
 
+	@POST
+	@Path("/indexes/{index}/suggest")
+	@Consumes({ MediaType.APPLICATION_JSON })
+	public Response processSuggestQuery(String requestBody, @Context HttpServletRequest request,
+			@Context HttpHeaders headers, @PathParam("index") String index) {
 
-  @GET
-  @Path("/indexes/{index}/query")
-  @Consumes({MediaType.APPLICATION_JSON})
-  public Response processQueryWithGet(String requestBody,
-                                      @Context HttpServletRequest request,
-                                      @Context HttpHeaders headers,
-                                      @PathParam("index") String index) {
+		// Forward the request to our document API to query suggestions in the
+		// document.
+		DocumentApi documentApi = new DocumentApi(this);
+		return documentApi.processSuggestQueryWithPost(requestBody, request, headers, index, documentStore);
+	}
 
-    // Forward the request to our document API to delete the document.
-    DocumentApi documentApi = new DocumentApi(this);
-    return documentApi.queryWithGetWithPayload(requestBody, request, headers, index, documentStore);
-  }
+	@POST
+	@Path("/bulk")
+	@Consumes({ MediaType.APPLICATION_JSON })
+	public Response processBulkRequest(String requestBody, @Context HttpServletRequest request,
+			@Context HttpHeaders headers, @PathParam("index") String index) {
 
-  @POST
-  @Path("/indexes/{index}/query")
-  @Consumes({MediaType.APPLICATION_JSON})
-  public Response processQuery(String requestBody,
-                               @Context HttpServletRequest request,
-                               @Context HttpHeaders headers,
-                               @PathParam("index") String index) {
+		// Forward the request to our document API to delete the document.
+		BulkApi bulkApi = new BulkApi(this);
+		return bulkApi.processPost(requestBody, request, headers, documentStore, apiUtils);
+	}
 
-    // Forward the request to our document API to delete the document.
-    DocumentApi documentApi = new DocumentApi(this);
-    return documentApi.processSearchWithPost(requestBody, request, headers, index, documentStore);
-  }
+	protected boolean validateRequest(HttpHeaders headers, HttpServletRequest req, Action action,
+			String authPolicyFunctionName) throws Exception {
 
+		SearchDbServiceAuth serviceAuth = new SearchDbServiceAuth();
 
-  @POST
-  @Path("/bulk")
-  @Consumes({MediaType.APPLICATION_JSON})
-  public Response processBulkRequest(String requestBody,
-                                     @Context HttpServletRequest request,
-                                     @Context HttpHeaders headers,
-                                     @PathParam("index") String index) {
+		String cipherSuite = (String) req.getAttribute("javax.servlet.request.cipher_suite");
+		String authUser = null;
+		if (cipherSuite != null) {
+			Object x509CertAttribute = req.getAttribute("javax.servlet.request.X509Certificate");
+			if (x509CertAttribute != null) {
+				X509Certificate[] certChain = (X509Certificate[]) x509CertAttribute;
+				X509Certificate clientCert = certChain[0];
+				X500Principal subjectDn = clientCert.getSubjectX500Principal();
+				authUser = subjectDn.toString();
+			}
+		}
 
-    // Forward the request to our document API to delete the document.
-    BulkApi bulkApi = new BulkApi(this);
-    return bulkApi.processPost(requestBody, request, headers, documentStore, apiUtils);
-  }
+		if (authUser == null) {
+			return false;
+		}
 
-  protected boolean validateRequest(HttpHeaders headers,
-                                    HttpServletRequest req,
-                                    Action action,
-                                    String authPolicyFunctionName) throws Exception {
+		String status = serviceAuth.authUser(headers, authUser.toLowerCase(),
+				action.toString() + ":" + authPolicyFunctionName);
+		if (!status.equals("OK")) {
+			return false;
+		}
 
-    SearchDbServiceAuth serviceAuth = new SearchDbServiceAuth();
-
-    String cipherSuite = (String) req.getAttribute("javax.servlet.request.cipher_suite");
-    String authUser = null;
-    if (cipherSuite != null) {
-      Object x509CertAttribute = req.getAttribute("javax.servlet.request.X509Certificate");
-      if (x509CertAttribute != null) {
-        X509Certificate[] certChain = (X509Certificate[]) x509CertAttribute;
-        X509Certificate clientCert = certChain[0];
-        X500Principal subjectDn = clientCert.getSubjectX500Principal();
-        authUser = subjectDn.toString();
-      }
-    }
-
-    if (authUser == null) {
-      return false;
-    }
-
-    String status = serviceAuth.authUser(headers, authUser.toLowerCase(),
-        action.toString() + ":" + authPolicyFunctionName);
-    if (!status.equals("OK")) {
-      return false;
-    }
-
-    return true;
-  }
+		return true;
+	}
 }

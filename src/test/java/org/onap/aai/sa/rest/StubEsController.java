@@ -35,216 +35,223 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This class implements a stubbed version of the document store DAO so
- * that we can run unit tests without trying to connect to a real
- * document store.
+ * This class implements a stubbed version of the document store DAO so that we
+ * can run unit tests without trying to connect to a real document store.
  */
 public class StubEsController implements DocumentStoreInterface {
 
-  public static final String DOES_NOT_EXIST_INDEX = "index-does-not-exist";
+	public static final String DOES_NOT_EXIST_INDEX = "index-does-not-exist";
 
-  private AnalysisConfiguration analysisConfig = null;
+	private AnalysisConfiguration analysisConfig = null;
 
-  /**
-   *
-   */
-  //private IndexAPIHarness indexAPIHarness;
+	/**
+	 *
+	 */
+	// private IndexAPIHarness indexAPIHarness;
 
-  StubEsController() {
-    analysisConfig = new AnalysisConfiguration();
-    analysisConfig.init("src/test/resources/json/filter-config.json",
-        "src/test/resources/json/analysis-config.json");
-  }
+	StubEsController() {
+		analysisConfig = new AnalysisConfiguration();
+		analysisConfig.init("src/test/resources/json/filter-config.json",
+				"src/test/resources/json/analysis-config.json");
+	}
 
+	@Override
+	public OperationResult createIndex(String index, DocumentSchema documentSchema) {
 
-  @Override
-  public OperationResult createIndex(String         index, 
-                                     DocumentSchema documentSchema) {
+		// Just return an OK result, with the parameters that we were passed
+		// bundled in the response string. This allows unit tests to validate
+		// that those parameters match what they expected to be passed.
+		OperationResult opResult = new OperationResult();
+		opResult.setResultCode(200);
 
-    // Just return an OK result, with the parameters that we were passed
-    // bundled in the response string. This allows unit tests to validate
-    // that those parameters match what they expected to be passed.
-    OperationResult opResult = new OperationResult();
-    opResult.setResultCode(200);
+		opResult.setResult(index + "@" + analysisConfig.getEsIndexSettings() + "@"
+				+ DocumentSchemaUtil.generateDocumentMappings(documentSchema));
 
-    opResult.setResult(index + "@" + analysisConfig.getEsIndexSettings() + "@"
-        + DocumentSchemaUtil.generateDocumentMappings(documentSchema));
+		return opResult;
+	}
 
-    return opResult;
-  }
+	@Override
+	public OperationResult createDynamicIndex(String index, String dynamicSchema) {
+		OperationResult opResult = new OperationResult();
+		opResult.setResultCode(200);
+		// Directly return the json as this flow should not edit the json in any
+		// way
+		opResult.setResult(dynamicSchema);
+		return opResult;
+	}
 
-  @Override
-  public OperationResult createDynamicIndex(String index, String dynamicSchema) {
-    OperationResult opResult = new OperationResult();
-    opResult.setResultCode(200);
-    // Directly return the json as this flow should not edit the json in any way
-    opResult.setResult(dynamicSchema);
-    return opResult;
-  }
+	@Override
+	public OperationResult deleteIndex(String indexName) throws DocumentStoreOperationException {
 
-  @Override
-  public OperationResult deleteIndex(String indexName) throws DocumentStoreOperationException {
+		OperationResult opResult = new OperationResult();
 
-    OperationResult opResult = new OperationResult();
+		if (indexName.equals(DOES_NOT_EXIST_INDEX)) {
+			opResult.setResultCode(404);
+		} else {
+			opResult.setResultCode(200);
+			opResult.setResult(indexName);
+		}
 
-    if (indexName.equals(DOES_NOT_EXIST_INDEX)) {
-      opResult.setResultCode(404);
-    } else {
-      opResult.setResultCode(200);
-      opResult.setResult(indexName);
-    }
+		return opResult;
+	}
 
-    return opResult;
-  }
+	@Override
+	public DocumentOperationResult createDocument(String indexName, DocumentStoreDataEntity document,
+			boolean allowImplicitIndexCreation) throws DocumentStoreOperationException {
 
-  @Override
-  public DocumentOperationResult createDocument(String                  indexName,
-                                                DocumentStoreDataEntity document,
-                                                boolean                 allowImplicitIndexCreation) 
-    throws DocumentStoreOperationException {
-    
-    DocumentOperationResult opResult = buildSampleDocumentOperationResult();
+		DocumentOperationResult opResult = buildSampleDocumentOperationResult();
 
-    if (indexName.equals(DOES_NOT_EXIST_INDEX)) {
-      opResult.setResultCode(404);
-    } else {
-      opResult.setResultCode(200);
-      String id = "dummy";
-      if (document.getId() != null) {
-        id = document.getId();
-      }
-      opResult.setResultVersion("1");
-    }
+		if (indexName.equals(DOES_NOT_EXIST_INDEX)) {
+			opResult.setResultCode(404);
+		} else {
+			opResult.setResultCode(200);
+			String id = "dummy";
+			if (document.getId() != null) {
+				id = document.getId();
+			}
+			opResult.setResultVersion("1");
+		}
 
-    return opResult;
-  }
+		return opResult;
+	}
 
-  @Override
-  public DocumentOperationResult updateDocument(String                  indexName,
-                                                DocumentStoreDataEntity document,
-                                                boolean                 allowImplicitIndexCreation) 
-    throws DocumentStoreOperationException {
-    
-    DocumentOperationResult opResult = buildSampleDocumentOperationResult();
+	@Override
+	public DocumentOperationResult updateDocument(String indexName, DocumentStoreDataEntity document,
+			boolean allowImplicitIndexCreation) throws DocumentStoreOperationException {
 
-    if (indexName.equals(DOES_NOT_EXIST_INDEX)) {
-      opResult.setResultCode(404);
-    } else {
-      opResult.setResultCode(200);
-      String version = "1";
-      if (document.getVersion() != null) {
-        version = String.valueOf(Integer.parseInt(document.getVersion()) + 1);
-      }
-      opResult.setResultVersion(version);
-    }
+		DocumentOperationResult opResult = buildSampleDocumentOperationResult();
 
-    return opResult;
-  }
+		if (indexName.equals(DOES_NOT_EXIST_INDEX)) {
+			opResult.setResultCode(404);
+		} else {
+			opResult.setResultCode(200);
+			String version = "1";
+			if (document.getVersion() != null) {
+				version = String.valueOf(Integer.parseInt(document.getVersion()) + 1);
+			}
+			opResult.setResultVersion(version);
+		}
 
-  @Override
-  public DocumentOperationResult deleteDocument(String indexName,
-                                                DocumentStoreDataEntity document) throws DocumentStoreOperationException {
-    DocumentOperationResult opResult = buildSampleDocumentOperationResult();
+		return opResult;
+	}
 
+	@Override
+	public DocumentOperationResult deleteDocument(String indexName, DocumentStoreDataEntity document)
+			throws DocumentStoreOperationException {
+		DocumentOperationResult opResult = buildSampleDocumentOperationResult();
 
-    if (indexName.equals(DOES_NOT_EXIST_INDEX)) {
-      opResult.setResultCode(404);
-    } else {
-      if (opResult.getDocument() != null) {
-        opResult.getDocument().setEtag(null);
-        opResult.getDocument().setUrl(null);
-      }
-      opResult.setResultCode(200);
-      opResult.setResult(indexName + "@" + document.getId());
-    }
+		if (indexName.equals(DOES_NOT_EXIST_INDEX)) {
+			opResult.setResultCode(404);
+		} else {
+			if (opResult.getDocument() != null) {
+				opResult.getDocument().setEtag(null);
+				opResult.getDocument().setUrl(null);
+			}
+			opResult.setResultCode(200);
+			opResult.setResult(indexName + "@" + document.getId());
+		}
 
-    return opResult;
-  }
+		return opResult;
+	}
 
-  @Override
-  public DocumentOperationResult getDocument(String indexName,
-                                             DocumentStoreDataEntity document) throws DocumentStoreOperationException {
-    DocumentOperationResult opResult = buildSampleDocumentOperationResult();
+	@Override
+	public DocumentOperationResult getDocument(String indexName, DocumentStoreDataEntity document)
+			throws DocumentStoreOperationException {
+		DocumentOperationResult opResult = buildSampleDocumentOperationResult();
 
-    if (indexName.equals(DOES_NOT_EXIST_INDEX)) {
-      opResult.setResultCode(404);
-    } else {
-      opResult.setResultCode(200);
-    }
+		if (indexName.equals(DOES_NOT_EXIST_INDEX)) {
+			opResult.setResultCode(404);
+		} else {
+			opResult.setResultCode(200);
+		}
 
-    return opResult;
-  }
+		return opResult;
+	}
 
-  @Override
-  public SearchOperationResult search(String indexName,
-                                      String queryText) throws DocumentStoreOperationException {
+	@Override
+	public SearchOperationResult search(String indexName, String queryText) throws DocumentStoreOperationException {
 
-    SearchOperationResult opResult = buildSampleSearchOperationResult();
+		SearchOperationResult opResult = buildSampleSearchOperationResult();
 
-    if (indexName.equals(DOES_NOT_EXIST_INDEX)) {
-      opResult.setResultCode(404);
-    } else {
-      opResult.setResultCode(200);
-      opResult.setResult(indexName + "@" + queryText);
-    }
+		if (indexName.equals(DOES_NOT_EXIST_INDEX)) {
+			opResult.setResultCode(404);
+		} else {
+			opResult.setResultCode(200);
+			opResult.setResult(indexName + "@" + queryText);
+		}
 
-    return opResult;
-  }
+		return opResult;
+	}
 
-  @Override
-  public SearchOperationResult searchWithPayload(String indexName,
-                                                 String query) throws DocumentStoreOperationException {
-    SearchOperationResult opResult = buildSampleSearchOperationResult();
+	@Override
+	public SearchOperationResult searchWithPayload(String indexName, String query)
+			throws DocumentStoreOperationException {
+		SearchOperationResult opResult = buildSampleSearchOperationResult();
 
-    if (indexName.equals(DOES_NOT_EXIST_INDEX)) {
-      opResult.setResultCode(404);
-    } else {
-      opResult.setResultCode(200);
-      opResult.setResult(indexName + "@" + query);
-    }
+		if (indexName.equals(DOES_NOT_EXIST_INDEX)) {
+			opResult.setResultCode(404);
+		} else {
+			opResult.setResultCode(200);
+			opResult.setResult(indexName + "@" + query);
+		}
 
-    return opResult;
-  }
+		return opResult;
+	}
 
-  @Override
-  public OperationResult performBulkOperations(BulkRequest[] requests) throws DocumentStoreOperationException {
+	@Override
+	public SearchOperationResult suggestionQueryWithPayload(String indexName, String query)
+			throws DocumentStoreOperationException {
+		SearchOperationResult opResult = new SearchOperationResult();
 
-    OperationResult opResult = new OperationResult();
-    opResult.setResultCode(200);
+		if (indexName.equals(DOES_NOT_EXIST_INDEX)) {
+			opResult.setResultCode(404);
+		} else {
+			opResult.setResultCode(200);
+			opResult.setResult(indexName + "@" + query);
+		}
 
-    return opResult;
-  }
+		return opResult;
+	}
 
-  private DocumentOperationResult buildSampleDocumentOperationResult() {
-    DocumentOperationResult result = new DocumentOperationResult();
-    Document doc = new Document();
-    doc.setEtag("etag1");
+	@Override
+	public OperationResult performBulkOperations(BulkRequest[] requests) throws DocumentStoreOperationException {
 
-    doc.setContent(new JSONObject());
-    result.setDocument(doc);
-    return result;
-  }
+		OperationResult opResult = new OperationResult();
+		opResult.setResultCode(200);
 
-  private SearchOperationResult buildSampleSearchOperationResult() {
-    SearchOperationResult result = new SearchOperationResult();
+		return opResult;
+	}
 
-    SearchHits searchHits = new SearchHits();
-    SearchHit[] searchHitArray = new SearchHit[1];
-    SearchHit searchHit = new SearchHit();
-    Document doc = new Document();
-    doc.setEtag("etag1");
-    Map<String, Object> content = new HashMap<String, Object>();
-    content.put("key1", "value1");
-    doc.setContent(new JSONObject());
-    searchHit.setDocument(doc);
-    searchHitArray[0] = searchHit;
+	private DocumentOperationResult buildSampleDocumentOperationResult() {
+		DocumentOperationResult result = new DocumentOperationResult();
+		Document doc = new Document();
+		doc.setEtag("etag1");
 
-    searchHits.setHits(searchHitArray);
-    searchHits.setTotalHits("1");
-    result.setSearchResult(searchHits);
+		doc.setContent(new JSONObject());
+		result.setDocument(doc);
+		return result;
+	}
 
-    return result;
+	private SearchOperationResult buildSampleSearchOperationResult() {
+		SearchOperationResult result = new SearchOperationResult();
 
-  }
+		SearchHits searchHits = new SearchHits();
+		SearchHit[] searchHitArray = new SearchHit[1];
+		SearchHit searchHit = new SearchHit();
+		Document doc = new Document();
+		doc.setEtag("etag1");
+		Map<String, Object> content = new HashMap<String, Object>();
+		content.put("key1", "value1");
+		doc.setContent(new JSONObject());
+		searchHit.setDocument(doc);
+		searchHitArray[0] = searchHit;
+
+		searchHits.setHits(searchHitArray);
+		searchHits.setTotalHits("1");
+		result.setSearchResult(searchHits);
+
+		return result;
+
+	}
 
 }
