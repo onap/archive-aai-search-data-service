@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_ac184b1f",
+        "filename": "src/main/java/org/onap/aai/sa/searchdbabstraction/elasticsearch/dao/ElasticSearchHttpController.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 651
+      },
+      "writtenOn": "2018-03-19T18:40:45Z",
+      "side": 1,
+      "message": "That file is pretty much resent.\nThis is strange as the changes are to put tabs",
+      "revId": "d797b4aa33cad74ca4e3644b40bae3c004c643ce",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
