@@ -56,6 +56,9 @@ public interface DocumentStoreInterface {
 
   public SearchOperationResult searchWithPayload(String indexName, String query)
       throws DocumentStoreOperationException;
+  
+  public SearchOperationResult suggestionQueryWithPayload(String indexName, String query)
+	      throws DocumentStoreOperationException;
 
 
   /**

@@ -20,40 +20,32 @@
  */
 package org.onap.aai.sa.searchdbabstraction.entity;
 
-public class SearchOperationResult extends OperationResult {
+import java.util.Arrays;
 
-  private SearchHits searchResult;
-  private AggregationResults aggregationResult;
-  private SuggestHits suggestResult;
+public class SuggestHits {
 
-  public SearchHits getSearchResult() {
-    return searchResult;
-  }
-  
-  public SuggestHits getSuggestResult() {
-	    return suggestResult;
-  }
+	
+	private String totalHits;
+	  private SuggestHit[] hits;
 
-  public AggregationResults getAggregationResult() {
-    return aggregationResult;
-  }
+	  public String getTotalHits() {
+	    return totalHits;
+	  }
 
-  public void setAggregationResult(AggregationResults aggregations) {
-    this.aggregationResult = aggregations;
-  }
+	  public void setTotalHits(String totalHits) {
+	    this.totalHits = totalHits;
+	  }
 
-  public void setSearchResult(SearchHits hits) {
-    this.searchResult = hits;
-  }
-  
-  public void setSuggestResult(SuggestHits hits) {
-	    this.suggestResult = hits;
-  }
+	  public SuggestHit[] getHits() {
+	    return hits;
+	  }
 
-  @Override
-  public String toString() {
-    return "SearchOperationResult [searchResult=" + searchResult
-        + ", aggregationResult=" + aggregationResult + ", suggestResult=" + suggestResult;
-  }
+	  public void setHits(SuggestHit[] hits) {
+	    this.hits = hits;
+	  }
 
+	  @Override
+	  public String toString() {
+	    return "SuggestHit [totalHits=" + totalHits + ", hits=" + Arrays.toString(hits) + "]";
+	  }
 }

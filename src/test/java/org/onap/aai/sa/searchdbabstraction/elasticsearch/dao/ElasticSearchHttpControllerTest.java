@@ -22,6 +22,7 @@ package org.onap.aai.sa.searchdbabstraction.elasticsearch.dao;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -143,6 +144,13 @@ public class ElasticSearchHttpControllerTest {
 
     OperationResult result = elasticSearch.createDocument("test", doc, false);
     System.out.println(result);
+  }
+  
+  @Test
+  public void testsuggestionQueryWithPayload() throws Exception {
+	  
+	  Assert.assertNotNull(elasticSearch.suggestionQueryWithPayload("autoSuggest","suggest-index"));
+ 
   }
 
   @Test

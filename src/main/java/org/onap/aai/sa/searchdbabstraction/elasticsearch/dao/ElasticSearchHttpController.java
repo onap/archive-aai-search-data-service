@@ -46,6 +46,8 @@ import org.onap.aai.sa.searchdbabstraction.entity.OperationResult;
 import org.onap.aai.sa.searchdbabstraction.entity.SearchHit;
 import org.onap.aai.sa.searchdbabstraction.entity.SearchHits;
 import org.onap.aai.sa.searchdbabstraction.entity.SearchOperationResult;
+import org.onap.aai.sa.searchdbabstraction.entity.SuggestHit;
+import org.onap.aai.sa.searchdbabstraction.entity.SuggestHits;
 import org.onap.aai.sa.searchdbabstraction.logging.SearchDbMsgs;
 import org.onap.aai.sa.searchdbabstraction.util.AggregationParsingUtil;
 import org.onap.aai.sa.searchdbabstraction.util.DocumentSchemaUtil;
@@ -417,6 +419,8 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
             .setField(LogLine.DefinedFields.RESPONSE_DESCRIPTION, result.getResultCode()),
         override,
         indexName);
+    
+    shutdownConnection(conn);
     
     return result;
   }
@@ -843,6 +847,56 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
     return opResult;
   }
+  
+  public SearchOperationResult suggestionQueryWithPayload(String indexName, String query)
+	      throws DocumentStoreOperationException {
+	  
+	  SearchOperationResult opResult = new SearchOperationResult();
+
+	    if (logger.isDebugEnabled()) {
+	      logger.debug("Querying Suggestion index: " + indexName + " with query string: " + query);
+	    }
+
+	    // Initialize operation result with a failure codes / fault string
+	    opResult.setResultCode(500);
+	    opResult.setResult(INTERNAL_SERVER_ERROR_ELASTIC_SEARCH_OPERATION_FAULT);
+	    
+	
+	    String fullUrl = getFullUrl("/" + indexName + "/_suggest", false);
+	   
+
+	    // Grab the current time so we can use it to generate a metrics log.
+	    MdcOverride override = getStartTime(new MdcOverride());
+
+	    HttpURLConnection conn = initializeConnection(fullUrl);
+
+	    try {
+	      conn.setRequestMethod("POST");
+	    } catch (ProtocolException e) {
+	      shutdownConnection(conn);
+	      throw new DocumentStoreOperationException("Failed to set HTTP request method to POST.", e);
+	    }
+
+	    attachContent(conn, query);
+
+	    logger.debug("\nsearch(), Sending 'POST' request to URL : " + conn.getURL());
+	    logger.debug("Request body =  Elasticsearch query = " + query);
+
+	    handleResponse(conn, opResult);
+	    buildSuggestResult(opResult, indexName);
+
+	    metricsLogger.info(SearchDbMsgs.QUERY_DOCUMENT_TIME,
+	        new LogFields()
+	            .setField(LogLine.DefinedFields.RESPONSE_CODE, opResult.getResultCode())
+	            .setField(LogLine.DefinedFields.RESPONSE_DESCRIPTION, opResult.getResult()),
+	        override,
+	        indexName,
+	        query);
+
+	    shutdownConnection(conn);
+
+	    return opResult;
+	  }
 
   private void attachContent(HttpURLConnection conn, String content)
       throws DocumentStoreOperationException {
@@ -1689,5 +1743,65 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
     }
 
   }
+  
+  private void buildSuggestResult(SearchOperationResult result, String index)
+	      throws DocumentStoreOperationException {
+
+	    JSONParser parser = new JSONParser();
+	    JSONObject root;
+	    try {
+	      root = (JSONObject) parser.parse(result.getResult());
+	      if (result.getResultCode() >= 200 && result.getResultCode() <= 299) {
+	        JSONArray hitArray = (JSONArray) root.get("suggest-vnf");
+	        JSONObject hitdata = (JSONObject) hitArray.get(0);
+	        JSONArray optionsArray = (JSONArray) hitdata.get("options");
+	        SuggestHits suggestHits = new SuggestHits();
+	        suggestHits.setTotalHits(String.valueOf(optionsArray.size()));
+	        
+	        ArrayList<SuggestHit> suggestHitArray = new ArrayList<SuggestHit>();
+
+	        for (int i = 0; i < optionsArray.size(); i++) {
+	          JSONObject hit = (JSONObject) optionsArray.get(i);
+	   
+	          SuggestHit suggestHit = new SuggestHit();
+	          suggestHit.setScore((hit.get("score") != null) ? hit.get("score").toString() : "");
+	          suggestHit.setText((hit.get("text") != null) ? hit.get("text").toString() : "");
+	          Document doc = new Document();
+	          if (hit.get("_version") != null) {
+	              doc.setEtag((hit.get("_version") != null) ? hit.get("_version").toString() : "");
+	            }
+	          doc.setUrl(buildDocumentResponseUrl(index, (hit.get("_id") != null)
+	                ? hit.get("_id").toString() : ""));
+	    
+	          doc.setContent((JSONObject) hit.get("payload"));
+	          suggestHit.setDocument(doc);
+	          suggestHitArray.add(suggestHit);
+	        }
+	        suggestHits.setHits(suggestHitArray.toArray(new SuggestHit[suggestHitArray.size()]));
+	        result.setSuggestResult(suggestHits);
+
+	        JSONObject aggregations = (JSONObject) root.get("aggregations");
+	        if (aggregations != null) {
+	          AggregationResult[] aggResults =
+	              AggregationParsingUtil.parseAggregationResults(aggregations);
+	          AggregationResults aggs = new AggregationResults();
+	          aggs.setAggregations(aggResults);
+	          result.setAggregationResult(aggs);
+	        }
+
+	        // success
+	      } else {
+	        JSONObject error = (JSONObject) root.get("error");
+	        if (error != null) {
+	          result.setError(new ErrorResult(error.get("type").toString(),
+	              error.get("reason").toString()));
+	        }
+	      }
+	    } catch (Exception e) {
+	      throw new DocumentStoreOperationException("Failed to parse Elastic Search response."
+	          + result.getResult());
+	    }
+
+	  }
 
 }

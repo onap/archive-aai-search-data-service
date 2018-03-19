@@ -205,6 +205,22 @@ public class StubEsController implements DocumentStoreInterface {
 
     return opResult;
   }
+  
+  @Override
+  public SearchOperationResult suggestionQueryWithPayload(String indexName,
+                                                 String query) throws DocumentStoreOperationException {
+	  SearchOperationResult opResult = new SearchOperationResult();
+
+    if (indexName.equals(DOES_NOT_EXIST_INDEX)) {
+      opResult.setResultCode(404);
+    } else {
+      opResult.setResultCode(200);
+      opResult.setResult(indexName + "@" + query);
+    }
+
+    return opResult;
+  }
+
 
   @Override
   public OperationResult performBulkOperations(BulkRequest[] requests) throws DocumentStoreOperationException {

@@ -31,6 +31,7 @@ import org.onap.aai.sa.searchdbabstraction.entity.DocumentOperationResult;
 import org.onap.aai.sa.searchdbabstraction.entity.SearchOperationResult;
 import org.onap.aai.sa.searchdbabstraction.logging.SearchDbMsgs;
 import org.onap.aai.sa.searchdbabstraction.searchapi.SearchStatement;
+import org.onap.aai.sa.searchdbabstraction.searchapi.SuggestionStatement;
 import org.onap.aai.cl.api.LogFields;
 import org.onap.aai.cl.api.LogLine;
 import org.onap.aai.cl.api.Logger;
@@ -385,6 +386,22 @@ public class DocumentApi {
 
     return processQuery(index, content, request, headers, documentStore);
   }
+  
+  public Response processSuggestQueryWithPost(String content, HttpServletRequest request,
+          HttpHeaders headers, String index,
+          DocumentStoreInterface documentStore) {
+
+	  // Initialize the MDC Context for logging purposes.
+	  ApiUtils.initMdcContext(request, headers);
+
+	  logger.info(SearchDbMsgs.PROCESS_PAYLOAD_QUERY, "POST", (request != null)
+			  ? request.getRequestURL().toString() : "");
+	  if (logger.isDebugEnabled()) {
+		  logger.debug("Request Body: " + content);
+	  }
+
+	  return processSuggestQuery(index, content, request, headers, documentStore);
+  }
 
   /**
    * Common handler for query requests. This is called by both the GET with
@@ -460,6 +477,81 @@ public class DocumentApi {
       return handleError(request, e.getMessage(), Status.INTERNAL_SERVER_ERROR);
     }
   }
+  
+  /**
+   * Common handler for query requests. This is called by both the GET with
+   * payload and POST with payload variants of the query endpoint.
+   *
+   * @param index   - The index to be queried against.
+   * @param content - The payload containing the query structure.
+   * @param request - The HTTP request.
+   * @param headers - The HTTP headers.
+   * @return - A standard HTTP response.
+   */
+  private Response processSuggestQuery(String index, String content, HttpServletRequest request,
+                                HttpHeaders headers, DocumentStoreInterface documentStore) {
+
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      mapper.setSerializationInclusion(Include.NON_EMPTY);
+
+      // Make sure that we were supplied a payload before proceeding.
+      if (content == null) {
+        return handleError(request, content, Status.BAD_REQUEST);
+      }
+
+      // Validate that the request has the appropriate authorization.
+      boolean isValid;
+      try {
+        isValid = searchService.validateRequest(headers, request, ApiUtils.Action.POST,
+            ApiUtils.SEARCH_AUTH_POLICY_NAME);
+
+      } catch (Exception e) {
+        logger.info(SearchDbMsgs.EXCEPTION_DURING_METHOD_CALL,
+            "processQuery",
+            e.getMessage());
+        return handleError(request, content, Status.FORBIDDEN);
+      }
+
+      if (!isValid) {
+        return handleError(request, content, Status.FORBIDDEN);
+      }
+
+      SuggestionStatement suggestionStatement;
+
+      try {
+        // Marshall the supplied request payload into a search statement
+        // object.
+    	  suggestionStatement = mapper.readValue(content, SuggestionStatement.class);
+
+      } catch (Exception e) {
+        return handleError(request, e.getMessage(), Status.BAD_REQUEST);
+      }
+
+      // Now, submit the search statement, translated into
+      // ElasticSearch syntax, to the document store DAO.
+      SearchOperationResult result = documentStore.suggestionQueryWithPayload(index,
+    		  suggestionStatement.toElasticSearch());
+      String output = null;
+      if (result.getResultCode() >= 200 && result.getResultCode() <= 299) {
+    	  output = prepareSuggestOutput(mapper, result);
+      } else {
+        output = result.getError() != null
+            ? mapper.writerWithDefaultPrettyPrinter().writeValueAsString(result.getError())
+            : result.getFailureCause();
+      }
+      Response response = Response.status(result.getResultCode()).entity(output).build();
+
+      // Clear the MDC context so that no other transaction inadvertently
+      // uses our transaction id.
+      ApiUtils.clearMdcContext();
+
+      return response;
+
+    } catch (Exception e) {
+      return handleError(request, e.getMessage(), Status.INTERNAL_SERVER_ERROR);
+    }
+  }
 
   
   /**
@@ -501,6 +593,22 @@ public class DocumentApi {
     output.append("\r\n}");
     return output.toString();
   }
+  
+  private String prepareSuggestOutput(ObjectMapper mapper, SearchOperationResult result)
+	      throws JsonProcessingException {
+	    StringBuffer output = new StringBuffer();
+	    output.append("{\r\n\"searchResult\":");
+	    output.append(mapper.writerWithDefaultPrettyPrinter()
+	        .writeValueAsString(result.getSuggestResult()));
+	    AggregationResults aggs = result.getAggregationResult();
+	    if (aggs != null) {
+	      output.append(",\r\n\"aggregationResult\":");
+	      output.append(mapper.setSerializationInclusion(Include.NON_NULL)
+	          .writerWithDefaultPrettyPrinter().writeValueAsString(aggs));
+	    }
+	    output.append("\r\n}");
+	    return output.toString();
+	  }
 
   private Response handleError(HttpServletRequest request, String message, Status status) {
     logResult(request, status);

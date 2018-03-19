@@ -219,6 +219,18 @@ public class SearchServiceApi {
     return documentApi.processSearchWithPost(requestBody, request, headers, index, documentStore);
   }
 
+  @POST
+  @Path("/indexes/{index}/suggest")
+  @Consumes({MediaType.APPLICATION_JSON})
+  public Response processSuggestQuery(String requestBody,
+                               @Context HttpServletRequest request,
+                               @Context HttpHeaders headers,
+                               @PathParam("index") String index) {
+
+    // Forward the request to our document API to query suggestions in the document.
+    DocumentApi documentApi = new DocumentApi(this);
+    return documentApi.processSuggestQueryWithPost(requestBody, request, headers, index, documentStore);
+  }
 
   @POST
   @Path("/bulk")
