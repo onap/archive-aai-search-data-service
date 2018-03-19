@@ -19,6 +19,23 @@
     },
     {
       "key": {
+        "uuid": "5a93c517_665fc476",
+        "filename": ".classpath",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1061
+      },
+      "writtenOn": "2018-03-19T15:27:01Z",
+      "side": 1,
+      "message": "I don\u0027t think this file is supposed to be committed. There are classes (the JSON-Schema based ones) that are generated during build.",
+      "revId": "4df36548a021ea37615ac523f2e5bd7dc560e55e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a93c517_66ed848e",
         "filename": "src/main/java/org/onap/aai/sa/rest/DocumentApi.java",
         "patchSetId": 1
