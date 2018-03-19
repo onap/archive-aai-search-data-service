@@ -20,40 +20,39 @@
  */
 package org.onap.aai.sa.searchdbabstraction.entity;
 
-public class SearchOperationResult extends OperationResult {
+public class SuggestHit {
 
-  private SearchHits searchResult;
-  private AggregationResults aggregationResult;
-  private SuggestHits suggestResult;
+	
+	private String score;
+	private String text; 
+	  Document document;
 
-  public SearchHits getSearchResult() {
-    return searchResult;
-  }
-  
-  public SuggestHits getSuggestResult() {
-	    return suggestResult;
-  }
+	  public String getScore() {
+	    return score;
+	  }
 
-  public AggregationResults getAggregationResult() {
-    return aggregationResult;
-  }
+	  public void setScore(String score) {
+	    this.score = score;
+	  }
+	  
+	  public String getText() {
+		    return text;
+		  }
 
-  public void setAggregationResult(AggregationResults aggregations) {
-    this.aggregationResult = aggregations;
-  }
+		  public void setText(String text) {
+		    this.text = text;
+		  }
 
-  public void setSearchResult(SearchHits hits) {
-    this.searchResult = hits;
-  }
-  
-  public void setSuggestResult(SuggestHits hits) {
-	    this.suggestResult = hits;
-  }
+	  public Document getDocument() {
+	    return document;
+	  }
 
-  @Override
-  public String toString() {
-    return "SearchOperationResult [searchResult=" + searchResult
-        + ", aggregationResult=" + aggregationResult + ", suggestResult=" + suggestResult;
-  }
+	  public void setDocument(Document document) {
+	    this.document = document;
+	  }
 
+	  @Override
+	  public String toString() {
+	    return "SearchHit [text=" + text + ",score=" + score + ", document=" + document + "]";
+	  }
 }
