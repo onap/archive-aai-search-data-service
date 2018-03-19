@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_c6e01899",
+        "filename": ".classpath",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 651
+      },
+      "writtenOn": "2018-03-19T15:25:46Z",
+      "side": 1,
+      "message": "Why is this file included?",
+      "revId": "4df36548a021ea37615ac523f2e5bd7dc560e55e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_66ed848e",
+        "filename": "src/main/java/org/onap/aai/sa/rest/DocumentApi.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 398,
+      "author": {
+        "id": 651
+      },
+      "writtenOn": "2018-03-19T15:25:46Z",
+      "side": 1,
+      "message": "formating.  tabs",
+      "revId": "4df36548a021ea37615ac523f2e5bd7dc560e55e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
