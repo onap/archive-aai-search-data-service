@@ -2,6 +2,46 @@
   "comments": [
     {
       "key": {
+        "uuid": "5a93c517_4ce187fd",
+        "filename": "src/main/java/org/onap/aai/sa/rest/DocumentApi.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 388,
+      "author": {
+        "id": 2957
+      },
+      "writtenOn": "2018-03-19T18:45:23Z",
+      "side": 1,
+      "message": "instead of having \"POST\"  we could refactor and have a constant attribute.",
+      "revId": "d797b4aa33cad74ca4e3644b40bae3c004c643ce",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_0ce37f06",
+        "filename": "src/main/java/org/onap/aai/sa/rest/DocumentApi.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 426,
+      "author": {
+        "id": 2957
+      },
+      "writtenOn": "2018-03-19T18:45:23Z",
+      "side": 1,
+      "message": "I would change all these hardcoded values to Const.",
+      "range": {
+        "startLine": 426,
+        "startChar": 64,
+        "endLine": 426,
+        "endChar": 76
+      },
+      "revId": "d797b4aa33cad74ca4e3644b40bae3c004c643ce",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a93c517_ac184b1f",
         "filename": "src/main/java/org/onap/aai/sa/searchdbabstraction/elasticsearch/dao/ElasticSearchHttpController.java",
         "patchSetId": 4
@@ -13,6 +53,23 @@
       "writtenOn": "2018-03-19T18:40:45Z",
       "side": 1,
       "message": "That file is pretty much resent.\nThis is strange as the changes are to put tabs",
+      "revId": "d797b4aa33cad74ca4e3644b40bae3c004c643ce",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_2cdc3b46",
+        "filename": "src/main/java/org/onap/aai/sa/searchdbabstraction/elasticsearch/dao/ElasticSearchHttpController.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 2957
+      },
+      "writtenOn": "2018-03-19T18:45:23Z",
+      "side": 1,
+      "message": "I guess you did use Tab. everything is pushed forward.",
       "revId": "d797b4aa33cad74ca4e3644b40bae3c004c643ce",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
