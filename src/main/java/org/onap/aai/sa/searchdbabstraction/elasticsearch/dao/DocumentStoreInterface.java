@@ -20,14 +20,12 @@
  */
 package org.onap.aai.sa.searchdbabstraction.elasticsearch.dao;
 
-
 import org.onap.aai.sa.rest.BulkRequest;
 import org.onap.aai.sa.searchdbabstraction.elasticsearch.exception.DocumentStoreOperationException;
 import org.onap.aai.sa.searchdbabstraction.entity.DocumentOperationResult;
 import org.onap.aai.sa.searchdbabstraction.entity.OperationResult;
 import org.onap.aai.sa.searchdbabstraction.entity.SearchOperationResult;
 import org.onap.aai.sa.rest.DocumentSchema;
-
 
 public interface DocumentStoreInterface {
 
@@ -37,13 +35,11 @@ public interface DocumentStoreInterface {
 
   public OperationResult deleteIndex(String indexName) throws DocumentStoreOperationException;
 
-  public DocumentOperationResult createDocument(String indexName, 
-                                                DocumentStoreDataEntity document, 
-                                                boolean allowImplicitIndexCreation) throws DocumentStoreOperationException;
+  public DocumentOperationResult createDocument(String indexName, DocumentStoreDataEntity document,
+      boolean allowImplicitIndexCreation) throws DocumentStoreOperationException;
 
-  public DocumentOperationResult updateDocument(String indexName, 
-                                                DocumentStoreDataEntity document,
-                                                boolean allowImplicitIndexCreation) throws DocumentStoreOperationException;
+  public DocumentOperationResult updateDocument(String indexName, DocumentStoreDataEntity document,
+      boolean allowImplicitIndexCreation) throws DocumentStoreOperationException;
 
   public DocumentOperationResult deleteDocument(String indexName, DocumentStoreDataEntity document)
       throws DocumentStoreOperationException;
@@ -57,14 +53,14 @@ public interface DocumentStoreInterface {
   public SearchOperationResult searchWithPayload(String indexName, String query)
       throws DocumentStoreOperationException;
 
+  public SearchOperationResult suggestionQueryWithPayload(String indexName, String query)
+      throws DocumentStoreOperationException;
 
   /**
-   * Forwards a set of operations to the document store as a single, bulk
-   * request.
+   * Forwards a set of operations to the document store as a single, bulk request.
    *
-   * @param anIndex    - The index to apply the operations to.
-   * @param operations - A java object containing the set of operations to
-   *                   be performed.
+   * @param anIndex - The index to apply the operations to.
+   * @param operations - A java object containing the set of operations to be performed.
    * @return - An operation result.
    * @throws DocumentStoreOperationException
    */
