@@ -35,9 +35,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This class implements a stubbed version of the document store DAO so
- * that we can run unit tests without trying to connect to a real
- * document store.
+ * This class implements a stubbed version of the document store DAO so that we can run unit tests
+ * without trying to connect to a real document store.
  */
 public class StubEsController implements DocumentStoreInterface {
 
@@ -48,7 +47,7 @@ public class StubEsController implements DocumentStoreInterface {
   /**
    *
    */
-  //private IndexAPIHarness indexAPIHarness;
+  // private IndexAPIHarness indexAPIHarness;
 
   StubEsController() {
     analysisConfig = new AnalysisConfiguration();
@@ -56,10 +55,8 @@ public class StubEsController implements DocumentStoreInterface {
         "src/test/resources/json/analysis-config.json");
   }
 
-
   @Override
-  public OperationResult createIndex(String         index, 
-                                     DocumentSchema documentSchema) {
+  public OperationResult createIndex(String index, DocumentSchema documentSchema) {
 
     // Just return an OK result, with the parameters that we were passed
     // bundled in the response string. This allows unit tests to validate
@@ -77,7 +74,8 @@ public class StubEsController implements DocumentStoreInterface {
   public OperationResult createDynamicIndex(String index, String dynamicSchema) {
     OperationResult opResult = new OperationResult();
     opResult.setResultCode(200);
-    // Directly return the json as this flow should not edit the json in any way
+    // Directly return the json as this flow should not edit the json in any
+    // way
     opResult.setResult(dynamicSchema);
     return opResult;
   }
@@ -98,11 +96,9 @@ public class StubEsController implements DocumentStoreInterface {
   }
 
   @Override
-  public DocumentOperationResult createDocument(String                  indexName,
-                                                DocumentStoreDataEntity document,
-                                                boolean                 allowImplicitIndexCreation) 
-    throws DocumentStoreOperationException {
-    
+  public DocumentOperationResult createDocument(String indexName, DocumentStoreDataEntity document,
+      boolean allowImplicitIndexCreation) throws DocumentStoreOperationException {
+
     DocumentOperationResult opResult = buildSampleDocumentOperationResult();
 
     if (indexName.equals(DOES_NOT_EXIST_INDEX)) {
@@ -120,11 +116,9 @@ public class StubEsController implements DocumentStoreInterface {
   }
 
   @Override
-  public DocumentOperationResult updateDocument(String                  indexName,
-                                                DocumentStoreDataEntity document,
-                                                boolean                 allowImplicitIndexCreation) 
-    throws DocumentStoreOperationException {
-    
+  public DocumentOperationResult updateDocument(String indexName, DocumentStoreDataEntity document,
+      boolean allowImplicitIndexCreation) throws DocumentStoreOperationException {
+
     DocumentOperationResult opResult = buildSampleDocumentOperationResult();
 
     if (indexName.equals(DOES_NOT_EXIST_INDEX)) {
@@ -142,10 +136,9 @@ public class StubEsController implements DocumentStoreInterface {
   }
 
   @Override
-  public DocumentOperationResult deleteDocument(String indexName,
-                                                DocumentStoreDataEntity document) throws DocumentStoreOperationException {
+  public DocumentOperationResult deleteDocument(String indexName, DocumentStoreDataEntity document)
+      throws DocumentStoreOperationException {
     DocumentOperationResult opResult = buildSampleDocumentOperationResult();
-
 
     if (indexName.equals(DOES_NOT_EXIST_INDEX)) {
       opResult.setResultCode(404);
@@ -162,8 +155,8 @@ public class StubEsController implements DocumentStoreInterface {
   }
 
   @Override
-  public DocumentOperationResult getDocument(String indexName,
-                                             DocumentStoreDataEntity document) throws DocumentStoreOperationException {
+  public DocumentOperationResult getDocument(String indexName, DocumentStoreDataEntity document)
+      throws DocumentStoreOperationException {
     DocumentOperationResult opResult = buildSampleDocumentOperationResult();
 
     if (indexName.equals(DOES_NOT_EXIST_INDEX)) {
@@ -176,8 +169,8 @@ public class StubEsController implements DocumentStoreInterface {
   }
 
   @Override
-  public SearchOperationResult search(String indexName,
-                                      String queryText) throws DocumentStoreOperationException {
+  public SearchOperationResult search(String indexName, String queryText)
+      throws DocumentStoreOperationException {
 
     SearchOperationResult opResult = buildSampleSearchOperationResult();
 
@@ -192,8 +185,8 @@ public class StubEsController implements DocumentStoreInterface {
   }
 
   @Override
-  public SearchOperationResult searchWithPayload(String indexName,
-                                                 String query) throws DocumentStoreOperationException {
+  public SearchOperationResult searchWithPayload(String indexName, String query)
+      throws DocumentStoreOperationException {
     SearchOperationResult opResult = buildSampleSearchOperationResult();
 
     if (indexName.equals(DOES_NOT_EXIST_INDEX)) {
@@ -207,7 +200,23 @@ public class StubEsController implements DocumentStoreInterface {
   }
 
   @Override
-  public OperationResult performBulkOperations(BulkRequest[] requests) throws DocumentStoreOperationException {
+  public SearchOperationResult suggestionQueryWithPayload(String indexName, String query)
+      throws DocumentStoreOperationException {
+    SearchOperationResult opResult = new SearchOperationResult();
+
+    if (indexName.equals(DOES_NOT_EXIST_INDEX)) {
+      opResult.setResultCode(404);
+    } else {
+      opResult.setResultCode(200);
+      opResult.setResult(indexName + "@" + query);
+    }
+
+    return opResult;
+  }
+
+  @Override
+  public OperationResult performBulkOperations(BulkRequest[] requests)
+      throws DocumentStoreOperationException {
 
     OperationResult opResult = new OperationResult();
     opResult.setResultCode(200);

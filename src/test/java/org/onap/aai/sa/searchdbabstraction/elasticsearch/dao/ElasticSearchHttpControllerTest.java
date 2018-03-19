@@ -22,6 +22,7 @@ package org.onap.aai.sa.searchdbabstraction.elasticsearch.dao;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -39,8 +40,10 @@ public class ElasticSearchHttpControllerTest {
   private static ElasticSearchHttpController elasticSearch;
   private static AAIEntityTestObject testDocument;
 
-  private static final String indexMappings = "{\r\n    \"properties\": {\r\n        \"entityType\": {\r\n            \"type\": \"string\"\r\n        },\r\n        \"edgeTagQueryEntityFieldName\": {\r\n            \"type\": \"string\",\r\n            \"index\": \"no\"\r\n        },\r\n        \"edgeTagQueryEntityFieldValue\": {\r\n            \"type\": \"string\",\r\n            \"index\": \"no\"\r\n        },\r\n        \"searchTagIDs\" : {\r\n            \"type\" : \"string\"\r\n          },\r\n        \"searchTags\": {\r\n            \"type\": \"string\",\r\n            \"analyzer\": \"nGram_analyzer\",\r\n            \"search_analyzer\": \"whitespace_analyzer\"\r\n        }\r\n    }\r\n}";
-  private static final String indexSettings = "{\r\n    \"analysis\": {\r\n        \"filter\": {\r\n            \"nGram_filter\": {\r\n                \"type\": \"nGram\",\r\n                \"min_gram\": 1,\r\n                \"max_gram\": 50,\r\n                \"token_chars\": [\r\n                    \"letter\",\r\n                    \"digit\",\r\n                    \"punctuation\",\r\n                    \"symbol\"\r\n                ]\r\n            }\r\n        },\r\n        \"analyzer\": {\r\n            \"nGram_analyzer\": {\r\n                \"type\": \"custom\",\r\n                \"tokenizer\": \"whitespace\",\r\n                \"filter\": [\r\n                    \"lowercase\",\r\n                    \"asciifolding\",\r\n                    \"nGram_filter\"\r\n                ]\r\n            },\r\n            \"whitespace_analyzer\": {\r\n                \"type\": \"custom\",\r\n                \"tokenizer\": \"whitespace\",\r\n                \"filter\": [\r\n                    \"lowercase\",\r\n                    \"asciifolding\"\r\n                ]\r\n            }\r\n        }\r\n    }\r\n}";
+  private static final String indexMappings =
+      "{\r\n    \"properties\": {\r\n        \"entityType\": {\r\n            \"type\": \"string\"\r\n        },\r\n        \"edgeTagQueryEntityFieldName\": {\r\n            \"type\": \"string\",\r\n            \"index\": \"no\"\r\n        },\r\n        \"edgeTagQueryEntityFieldValue\": {\r\n            \"type\": \"string\",\r\n            \"index\": \"no\"\r\n        },\r\n        \"searchTagIDs\" : {\r\n            \"type\" : \"string\"\r\n          },\r\n        \"searchTags\": {\r\n            \"type\": \"string\",\r\n            \"analyzer\": \"nGram_analyzer\",\r\n            \"search_analyzer\": \"whitespace_analyzer\"\r\n        }\r\n    }\r\n}";
+  private static final String indexSettings =
+      "{\r\n    \"analysis\": {\r\n        \"filter\": {\r\n            \"nGram_filter\": {\r\n                \"type\": \"nGram\",\r\n                \"min_gram\": 1,\r\n                \"max_gram\": 50,\r\n                \"token_chars\": [\r\n                    \"letter\",\r\n                    \"digit\",\r\n                    \"punctuation\",\r\n                    \"symbol\"\r\n                ]\r\n            }\r\n        },\r\n        \"analyzer\": {\r\n            \"nGram_analyzer\": {\r\n                \"type\": \"custom\",\r\n                \"tokenizer\": \"whitespace\",\r\n                \"filter\": [\r\n                    \"lowercase\",\r\n                    \"asciifolding\",\r\n                    \"nGram_filter\"\r\n                ]\r\n            },\r\n            \"whitespace_analyzer\": {\r\n                \"type\": \"custom\",\r\n                \"tokenizer\": \"whitespace\",\r\n                \"filter\": [\r\n                    \"lowercase\",\r\n                    \"asciifolding\"\r\n                ]\r\n            }\r\n        }\r\n    }\r\n}";
 
   @Before
   public void setUp() throws Exception {
@@ -62,7 +65,8 @@ public class ElasticSearchHttpControllerTest {
 
   @Test
   public void testCreateTable() throws Exception {
-    OperationResult result = elasticSearch.createTable("test", "aai-entities", indexSettings, indexMappings);
+    OperationResult result =
+        elasticSearch.createTable("test", "aai-entities", indexSettings, indexMappings);
     System.out.println(result);
   }
 
@@ -146,6 +150,13 @@ public class ElasticSearchHttpControllerTest {
   }
 
   @Test
+  public void testsuggestionQueryWithPayload() throws Exception {
+
+    Assert.assertNotNull(elasticSearch.suggestionQueryWithPayload("autoSuggest", "suggest-index"));
+
+  }
+
+  @Test
   public void testDeleteIndex() throws Exception {
     OperationResult result = elasticSearch.deleteIndex("test");
     System.out.println(result);
@@ -216,12 +227,10 @@ public class ElasticSearchHttpControllerTest {
     @Override
     public String getContentInJson() {
       try {
-        return new JSONObject()
-            .put("entityType", entityType)
+        return new JSONObject().put("entityType", entityType)
             .put("edgeTagQueryEntityFieldName", edgeTagQueryEntityFieldName)
             .put("edgeTagQueryEntityFieldValue", edgeTagQueryEntityFieldValue)
-            .put("searchTagIDs", searchTagIDs)
-            .put("searchTags", searchTags).toString();
+            .put("searchTagIDs", searchTagIDs).put("searchTags", searchTags).toString();
       } catch (JSONException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
