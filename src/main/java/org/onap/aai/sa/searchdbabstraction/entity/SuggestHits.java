@@ -24,27 +24,27 @@ import java.util.Arrays;
 
 public class SuggestHits {
 
-  private String totalHits;
-  private SuggestHit[] hits;
+    private String totalHits;
+    private SuggestHit[] hits;
 
-  public String getTotalHits() {
-    return totalHits;
-  }
+    public String getTotalHits() {
+        return totalHits;
+    }
 
-  public void setTotalHits(String totalHits) {
-    this.totalHits = totalHits;
-  }
+    public void setTotalHits(String totalHits) {
+        this.totalHits = totalHits;
+    }
 
-  public SuggestHit[] getHits() {
-    return hits;
-  }
+    public SuggestHit[] getHits() {
+        return hits;
+    }
 
-  public void setHits(SuggestHit[] hits) {
-    this.hits = hits;
-  }
+    public void setHits(SuggestHit[] hits) {
+        this.hits = hits;
+    }
 
-  @Override
-  public String toString() {
-    return "SuggestHit [totalHits=" + totalHits + ", hits=" + Arrays.toString(hits) + "]";
-  }
+    @Override
+    public String toString() {
+        return "SuggestHit [totalHits=" + totalHits + ", hits=" + Arrays.toString(hits) + "]";
+    }
 }
