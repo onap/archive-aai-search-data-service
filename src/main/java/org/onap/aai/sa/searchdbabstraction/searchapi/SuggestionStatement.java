@@ -34,61 +34,61 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class SuggestionStatement {
 
-  @JsonProperty("results-size")
-  private Integer size;
+    @JsonProperty("results-size")
+    private Integer size;
 
-  @JsonProperty("suggest-field")
-  private String field;
+    @JsonProperty("suggest-field")
+    private String field;
 
-  @JsonProperty("suggest-text")
-  private String text;
+    @JsonProperty("suggest-text")
+    private String text;
 
-  public Integer getSize() {
-    return size;
-  }
+    public Integer getSize() {
+        return size;
+    }
 
-  public void setSize(Integer size) {
-    this.size = size;
-  }
+    public void setSize(Integer size) {
+        this.size = size;
+    }
 
-  public String getField() {
-    return field;
-  }
+    public String getField() {
+        return field;
+    }
 
-  public void setField(String field) {
-    this.field = field;
-  }
+    public void setField(String field) {
+        this.field = field;
+    }
 
-  public String getText() {
-    return text;
-  }
+    public String getText() {
+        return text;
+    }
 
-  public void setText(String text) {
-    this.text = text;
-  }
+    public void setText(String text) {
+        this.text = text;
+    }
 
-  /**
-   * This method returns a string which represents this statement in syntax that is understandable
-   * by ElasticSearch and is suitable for inclusion in an ElasticSearch query string.
-   *
-   * @return - ElasticSearch syntax string.
-   */
-  public String toElasticSearch() {
+    /**
+     * This method returns a string which represents this statement in syntax that is understandable
+     * by ElasticSearch and is suitable for inclusion in an ElasticSearch query string.
+     *
+     * @return - ElasticSearch syntax string.
+     */
+    public String toElasticSearch() {
 
-    StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
 
-    sb.append("{");
-    sb.append("\"suggest-vnf\": {");
-    sb.append("\"text\": ").append("\"" + text + "\"").append(", ");
-    sb.append("\"completion\": {");
-    sb.append("\"field\": ").append("\"" + field + "\"").append(", ");
-    sb.append("\"size\": ").append(size);
-    sb.append("}");
-    sb.append("}");
-    sb.append("}");
+        sb.append("{");
+        sb.append("\"suggest-vnf\": {");
+        sb.append("\"text\": ").append("\"" + text + "\"").append(", ");
+        sb.append("\"completion\": {");
+        sb.append("\"field\": ").append("\"" + field + "\"").append(", ");
+        sb.append("\"size\": ").append(size);
+        sb.append("}");
+        sb.append("}");
+        sb.append("}");
 
-    Logger.debug("Generated raw ElasticSearch suggest statement: " + sb.toString());
-    return sb.toString();
-  }
+        Logger.debug("Generated raw ElasticSearch suggest statement: " + sb.toString());
+        return sb.toString();
+    }
 
 }

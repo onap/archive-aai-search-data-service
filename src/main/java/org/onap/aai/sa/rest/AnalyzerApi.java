@@ -33,10 +33,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response;
 
-@Path("/analyzers")
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+//@Path("/analyzers")
+@RestController
+@RequestMapping("/services/search-db-service/v1/analyzers")
 public class AnalyzerApi {
 
   private SearchServiceApi searchService = null;
@@ -46,16 +55,16 @@ public class AnalyzerApi {
   private static Logger auditLogger = LoggerFactory.getInstance()
       .getAuditLogger(IndexApi.class.getName());
 
-  public AnalyzerApi(SearchServiceApi searchService) {
+  public AnalyzerApi( @Qualifier("searchServiceApi") SearchServiceApi searchService) {
     this.searchService = searchService;
   }
 
   @GET
-  public Response processGet(@Context HttpServletRequest request,
+  public ResponseEntity<String> processGet(@Context HttpServletRequest request,
                              @Context HttpHeaders headers,
                              ApiUtils apiUtils) {
 
-    Response.Status responseCode = Response.Status.INTERNAL_SERVER_ERROR;
+    HttpStatus responseCode = HttpStatus.INTERNAL_SERVER_ERROR;
     String responseString = "Undefined error";
 
     // Initialize the MDC Context for logging purposes.
@@ -68,14 +77,14 @@ public class AnalyzerApi {
       if (!searchService.validateRequest(headers, request,
           ApiUtils.Action.GET, ApiUtils.SEARCH_AUTH_POLICY_NAME)) {
         logger.warn(SearchDbMsgs.GET_ANALYZERS_FAILURE, "Authentication failure.");
-        return Response.status(Response.Status.FORBIDDEN).entity("Authentication failure.").build();
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).contentType ( MediaType.APPLICATION_JSON ).body("Authentication failure.");
       }
 
     } catch (Exception e) {
 
       logger.warn(SearchDbMsgs.GET_ANALYZERS_FAILURE,
           "Unexpected authentication failure - cause: " + e.getMessage());
-      return Response.status(Response.Status.FORBIDDEN).entity("Authentication failure.").build();
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).contentType ( MediaType.APPLICATION_JSON ).body("Authentication failure.");
     }
 
 
@@ -83,7 +92,7 @@ public class AnalyzerApi {
     try {
       responseString = buildAnalyzerList(ElasticSearchHttpController.getInstance()
           .getAnalysisConfig());
-      responseCode = Response.Status.OK;
+      responseCode = HttpStatus.OK;
 
     } catch (Exception e) {
 
@@ -93,17 +102,17 @@ public class AnalyzerApi {
     }
 
     // Build the HTTP response.
-    Response response = Response.status(responseCode).entity(responseString).build();
+    ResponseEntity response = ResponseEntity.status(responseCode).contentType ( MediaType.APPLICATION_JSON ).body(responseString);
 
     // Generate our audit log.
     auditLogger.info(SearchDbMsgs.PROCESS_REST_REQUEST,
         new LogFields()
-            .setField(LogLine.DefinedFields.RESPONSE_CODE, responseCode.getStatusCode())
-            .setField(LogLine.DefinedFields.RESPONSE_DESCRIPTION, responseCode.getStatusCode()),
+            .setField(LogLine.DefinedFields.RESPONSE_CODE, responseCode.value ())
+            .setField(LogLine.DefinedFields.RESPONSE_DESCRIPTION, responseCode.value()),
         (request != null) ? request.getMethod() : "Unknown",
-        (request != null) ? request.getRequestURL().toString() : "Unknown",
-        (request != null) ? request.getRemoteHost() : "Unknown",
-        Integer.toString(response.getStatus()));
+        (request != null) ? request.getRequestURL ().toString () : "Unknown",
+        (request != null) ? request.getRemoteHost () : "Unknown",
+        Integer.toString(response.getStatusCodeValue ()));
 
     // Clear the MDC context so that no other transaction inadvertently
     // uses our transaction id.

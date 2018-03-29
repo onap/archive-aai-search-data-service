@@ -18,40 +18,40 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.aai.sa.searchdbabstraction.entity;
+   package org.onap.aai.sa.searchdbabstraction.entity;
 
 public class SuggestHit {
 
-  private String score;
-  private String text;
-  Document document;
+    private String score;
+    private String text;
+    Document document;
 
-  public String getScore() {
-    return score;
-  }
+    public String getScore() {
+        return score;
+    }
 
-  public void setScore(String score) {
-    this.score = score;
-  }
+    public void setScore(String score) {
+        this.score = score;
+    }
 
-  public String getText() {
-    return text;
-  }
+    public String getText() {
+        return text;
+    }
 
-  public void setText(String text) {
-    this.text = text;
-  }
+    public void setText(String text) {
+        this.text = text;
+    }
 
-  public Document getDocument() {
-    return document;
-  }
+    public Document getDocument() {
+        return document;
+    }
 
-  public void setDocument(Document document) {
-    this.document = document;
-  }
+    public void setDocument(Document document) {
+        this.document = document;
+    }
 
-  @Override
-  public String toString() {
-    return "SearchHit [text=" + text + ",score=" + score + ", document=" + document + "]";
-  }
+    @Override
+    public String toString() {
+        return "SearchHit [text=" + text + ",score=" + score + ", document=" + document + "]";
+    }
 }

@@ -1,8 +1,6 @@
 #!/bin/sh
 
 BASEDIR="/opt/app/search-data-service/"
-AJSC_HOME="$BASEDIR"
-AJSC_CONF_HOME="$BASEDIR/bundleconfig/"
 
 if [ -z "$CONFIG_HOME" ]; then
 	echo "CONFIG_HOME must be set in order to start up process"
@@ -13,29 +11,22 @@ if [ -z "$KEY_STORE_PASSWORD" ]; then
 	echo "KEY_STORE_PASSWORD must be set in order to start up process"
 	exit 1
 else
-	echo "KEY_STORE_PASSWORD=$KEY_STORE_PASSWORD\n" >> $AJSC_CONF_HOME/etc/sysprops/sys-props.properties
+	echo "server.ssl.key-store-password=$KEY_STORE_PASSWORD" >> $BASEDIR/config/application.properties
 fi
 
-if [ -z "$KEY_MANAGER_PASSWORD" ]; then
-	echo "KEY_MANAGER_PASSWORD must be set in order to start up process"
-	exit 1
-else
-	echo "KEY_MANAGER_PASSWORD=$KEY_MANAGER_PASSWORD\n" >> $AJSC_CONF_HOME/etc/sysprops/sys-props.properties
-fi
+## tomcat_keystore to p12
+## keytool -importkeystore -deststorepass onapSecret -destkeypass onapSecret -srckeystore /opt/app/search-data-service/config/auth/tomcat_keystore -destkeystore /opt/app/search-data-service/config/auth/onap.p12 -deststoretype PKCS12 -srcstorepass onapSecret
+keytool -importkeystore -noprompt -deststorepass onapSecret -destkeypass onapSecret -srckeystore /opt/app/search-data-service/config/auth/tomcat_keystore -destkeystore /opt/app/search-data-service/config/auth/onap.p12 -deststoretype PKCS12 -srcstorepass onapSecret
 
-CLASSPATH="$AJSC_HOME/lib/*"
-CLASSPATH="$CLASSPATH:$AJSC_HOME/extJars/"
-CLASSPATH="$CLASSPATH:$AJSC_HOME/etc/"
-PROPS="-DAJSC_HOME=$AJSC_HOME"
-PROPS="$PROPS -DAJSC_CONF_HOME=$BASEDIR/bundleconfig/"
+## import into cacerts
+## keytool -importkeystore -deststorepass changeit -destkeypass changeit -destkeystore $JAVA_HOME/jre/lib/security/cacerts -srckeystore /opt/app/search-data-service/config/auth/onap.p12 -srcstoretype PKCS12 -srcstorepass onapSecret  -alias tomcat
+keytool -importkeystore -noprompt -deststorepass changeit -destkeypass changeit -destkeystore $JAVA_HOME/jre/lib/security/cacerts -srckeystore /opt/app/search-data-service/config/auth/onap.p12 -srcstoretype PKCS12 -srcstorepass onapSecret  -alias tomcat
+
+
+
 PROPS="$PROPS -Dlogback.configurationFile=$BASEDIR/bundleconfig/etc/logback.xml"
-PROPS="$PROPS -DAJSC_SHARED_CONFIG=$AJSC_CONF_HOME"
-PROPS="$PROPS -DAJSC_SERVICE_NAMESPACE=search-data-service"
-PROPS="$PROPS -DAJSC_SERVICE_VERSION=v1"
-PROPS="$PROPS -Dserver.port=9509"
+#PROPS="$PROPS -Dserver.port=9509"
 PROPS="$PROPS -DCONFIG_HOME=$CONFIG_HOME"
 JVM_MAX_HEAP=${MAX_HEAP:-1024}
 
-echo $CLASSPATH
-
-exec java -Xmx${JVM_MAX_HEAP}m $PROPS -classpath $CLASSPATH com.att.ajsc.runner.Runner context=// sslport=9509
+java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000 $PROPS -jar $BASEDIR/search-data-service-1.2.0-SNAPSHOT.jar --spring.config.location=$BASEDIR/config/application.properties

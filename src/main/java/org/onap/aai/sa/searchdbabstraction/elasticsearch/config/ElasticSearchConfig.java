@@ -36,9 +36,9 @@ public class ElasticSearchConfig {
 
   public ElasticSearchConfig(Properties props) {
 
-    setClusterName(props.getProperty(ES_CLUSTER_NAME));
-    setIpAddress(props.getProperty(ES_IP_ADDRESS));
-    setHttpPort(props.getProperty(ES_HTTP_PORT));
+     setClusterName(props.getProperty(ES_CLUSTER_NAME));
+     setIpAddress(props.getProperty(ES_IP_ADDRESS));
+     setHttpPort(props.getProperty(ES_HTTP_PORT));
     setJavaApiPort(JAVA_API_PORT_DEFAULT);
   }
 

@@ -24,20 +24,21 @@ import org.junit.Test;
 import org.onap.aai.sa.rest.ApiUtils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 
 public class ApiUtilsTest {
 
   @Test
   public void testHTTPStatusConversion() {
-    String statusString = ApiUtils.getHttpStatusString(201);
-    assertEquals(0, statusString.compareToIgnoreCase("Created"));
+      String statusString;
+      statusString = ApiUtils.getHttpStatusString(201);
+      assertEquals(0, statusString.compareToIgnoreCase("Created"));
 
-    statusString = ApiUtils.getHttpStatusString(207);
-    assertEquals(0, statusString.compareToIgnoreCase("Multi Status"));
+      statusString = ApiUtils.getHttpStatusString(207);
+      assertEquals(0, statusString.compareToIgnoreCase("Multi-Status"));
 
-    statusString = ApiUtils.getHttpStatusString(9999);
-    assertEquals(0, statusString.compareToIgnoreCase("Unknown"));
+      statusString = ApiUtils.getHttpStatusString(9999);
+      assertEquals(0, statusString.compareToIgnoreCase("Unknown"));
   }
-
 }

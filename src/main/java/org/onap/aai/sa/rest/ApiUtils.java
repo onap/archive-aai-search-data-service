@@ -20,15 +20,16 @@
  */
 package org.onap.aai.sa.rest;
 
-import org.onap.aai.sa.searchdbabstraction.util.SearchDbConstants;
 import org.onap.aai.cl.mdc.MdcContext;
+import org.onap.aai.sa.searchdbabstraction.util.SearchDbConstants;
 import org.slf4j.MDC;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 
-import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response;
+import java.util.UUID;
 
+// Spring Imports
 
 public class ApiUtils {
 
@@ -37,10 +38,7 @@ public class ApiUtils {
 
   public enum Action {
     POST, GET, PUT, DELETE
-  }
-
-  ;
-
+  };
 
   /**
    * This method uses the contents of the supplied HTTP headers and request
@@ -49,24 +47,44 @@ public class ApiUtils {
    * @param httpReq - HTTP request structure.
    * @param headers - HTTP headers
    */
-  protected static void initMdcContext(HttpServletRequest httpReq, HttpHeaders headers) {
+//  protected static void initMdcContext(HttpServletRequest httpReq, HttpHeaders headers) {
+//
+//    // Auto generate a transaction if we were not provided one.
+//    String transId = null;
+//    if (headers != null) {
+//      // transId = headers.getRequestHeaders().getFirst("X-TransactionId");
+//      transId = headers.getFirst("X-TransactionId");
+//
+//      if ((transId == null) || (transId.equals(""))) {
+//        transId = UUID.randomUUID().toString();
+//      }
+//    }
+//
+//    String fromIp = (httpReq != null) ? httpReq.getRemoteAddr() : "";
+//    String fromApp = (headers != null) ? headers.getFirst("X-FromAppId") : "";
+//
+//    MdcContext.initialize(transId, SearchDbConstants.SDB_SERVICE_NAME, "", fromApp, fromIp);
+//  }
+
+  protected static void initMdcContext ( HttpServletRequest httpReq, HttpHeaders headers) {
 
     // Auto generate a transaction if we were not provided one.
     String transId = null;
     if (headers != null) {
-      transId = headers.getRequestHeaders().getFirst("X-TransactionId");
+      // transId = headers.getRequestHeaders().getFirst("X-TransactionId");
+      transId = headers.getFirst("X-TransactionId");
 
       if ((transId == null) || (transId.equals(""))) {
         transId = UUID.randomUUID().toString();
       }
     }
 
-    String fromIp = (httpReq != null) ? httpReq.getRemoteAddr() : "";
-    String fromApp = (headers != null) ? headers.getRequestHeaders().getFirst("X-FromAppId") : "";
+
+    String fromIp = (httpReq != null) ? httpReq.getRemoteHost () : "";
+    String fromApp = (headers != null) ? headers.getFirst("X-FromAppId") : "";
 
     MdcContext.initialize(transId, SearchDbConstants.SDB_SERVICE_NAME, "", fromApp, fromIp);
   }
-
 
   protected static void clearMdcContext() {
     MDC.clear();
@@ -104,10 +122,10 @@ public class ApiUtils {
 
     if (requireId) {
       return (tokens.length == 8) && (tokens[4].equals("indexes")
-          && (tokens[6].equals("documents")));
+                                      && (tokens[6].equals("documents")));
     } else {
       return ((tokens.length == 8) || (tokens.length == 7))
-          && (tokens[4].equals("indexes") && (tokens[6].equals("documents")));
+        && (tokens[4].equals("indexes") && (tokens[6].equals("documents")));
     }
   }
 
@@ -158,17 +176,22 @@ public class ApiUtils {
     // recognized in the javax library.  We need to manually translate these to human-readable
     // strings.
     String statusString = "Unknown";
-    Response.Status status = Response.Status.fromStatusCode(httpStatusCode);
+    HttpStatus status = null;
+
+    try {
+      status = HttpStatus.valueOf ( httpStatusCode );
+    } catch (IllegalArgumentException e) {}
+
 
     if (status == null) {
       switch (httpStatusCode) {
-        case 207:
-          statusString = "Multi Status";
-          break;
-        default:
+      case 207:
+        statusString = "Multi Status";
+        break;
+      default:
       }
     } else {
-      statusString = status.toString();
+      statusString = status.getReasonPhrase ();
     }
 
     return statusString;

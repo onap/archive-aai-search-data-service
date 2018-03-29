@@ -23,29 +23,28 @@ package org.onap.aai.sa.rest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
-
-import org.onap.aai.sa.searchdbabstraction.elasticsearch.dao.DocumentStoreInterface;
-import org.onap.aai.sa.searchdbabstraction.elasticsearch.exception.DocumentStoreOperationException;
-import org.onap.aai.sa.searchdbabstraction.entity.OperationResult;
-import org.onap.aai.sa.searchdbabstraction.logging.SearchDbMsgs;
 import org.onap.aai.cl.api.LogFields;
 import org.onap.aai.cl.api.LogLine;
 import org.onap.aai.cl.api.Logger;
 import org.onap.aai.cl.eelf.LoggerFactory;
+import org.onap.aai.sa.searchdbabstraction.elasticsearch.dao.DocumentStoreInterface;
+import org.onap.aai.sa.searchdbabstraction.elasticsearch.exception.DocumentStoreOperationException;
+import org.onap.aai.sa.searchdbabstraction.entity.OperationResult;
+import org.onap.aai.sa.searchdbabstraction.logging.SearchDbMsgs;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response;
 
 
 /**
  * This class encapsulates the REST end points associated with performing
  * bulk operations against the document store.
  */
-@Path("/bulk")
 public class BulkApi {
 
   /**
@@ -92,8 +91,8 @@ public class BulkApi {
    * @param headers    - HTTP headers.
    * @return - A standard REST response structure.
    */
-  public Response processPost(String operations,
-                              HttpServletRequest request,
+  public ResponseEntity<String> processPost(String operations,
+                                            HttpServletRequest request,
                               HttpHeaders headers,
                               DocumentStoreInterface documentStore,
                               ApiUtils apiUtils) {
@@ -119,7 +118,7 @@ public class BulkApi {
           ApiUtils.Action.POST, ApiUtils.SEARCH_AUTH_POLICY_NAME)) {
         logger.warn(SearchDbMsgs.BULK_OPERATION_FAILURE, "Authentication failure.");
 
-        return buildResponse(Response.Status.FORBIDDEN.getStatusCode(),
+        return buildResponse(HttpStatus.FORBIDDEN.value (),
             "Authentication failure.", request, apiUtils);
       }
 
@@ -133,7 +132,7 @@ public class BulkApi {
         logger.debug("Stack Trace:\n" + e.getStackTrace());
       }
 
-      return buildResponse(Response.Status.FORBIDDEN.getStatusCode(),
+      return buildResponse(HttpStatus.FORBIDDEN.value (),
           "Authentication failure - cause " + e.getMessage(),
           request,
           apiUtils);
@@ -164,7 +163,7 @@ public class BulkApi {
 
       // Populate the result code and entity string for our HTTP response
       // and return the response to the client..
-      return buildResponse(javax.ws.rs.core.Response.Status.BAD_REQUEST.getStatusCode(),
+      return buildResponse(HttpStatus.BAD_REQUEST.value(),
           "Unable to marshal operations: " + e.getMessage(),
           request,
           apiUtils);
@@ -178,7 +177,7 @@ public class BulkApi {
 
       // Populate the result code and entity string for our HTTP response
       // and return the response to the client..
-      return buildResponse(javax.ws.rs.core.Response.Status.BAD_REQUEST.getStatusCode(),
+      return buildResponse(HttpStatus.BAD_REQUEST.value(),
           "Empty operations list in bulk request",
           request,
           apiUtils);
@@ -202,18 +201,18 @@ public class BulkApi {
       }
 
       // Populate the result code and entity string for our HTTP response.
-      resultCode = javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR.getStatusCode();
+      resultCode = HttpStatus.INTERNAL_SERVER_ERROR.value ();
       resultString = "Unexpected failure processing bulk operations: " + e.getMessage();
     }
 
     // Build our HTTP response.
-    Response response = Response.status(resultCode).entity(resultString).build();
+    ResponseEntity response = ResponseEntity.status(resultCode).contentType ( MediaType.APPLICATION_JSON ).body(resultString);
 
     // Log the result.
-    if ((response.getStatus() >= 200) && (response.getStatus() < 300)) {
+    if ((response.getStatusCodeValue () >= 200) && (response.getStatusCodeValue () < 300)) {
       logger.info(SearchDbMsgs.PROCESSED_BULK_OPERATIONS);
     } else {
-      logger.warn(SearchDbMsgs.BULK_OPERATION_FAILURE, (String) response.getEntity());
+      logger.warn(SearchDbMsgs.BULK_OPERATION_FAILURE, (String) response.getBody ());
     }
 
     // Finally, return the HTTP response to the client.
@@ -229,10 +228,10 @@ public class BulkApi {
    * @param request       - The HTTP request to extract data from for the audit log.
    * @return - An HTTP response object.
    */
-  private Response buildResponse(int resultCode, String resultString,
-                                 HttpServletRequest request, ApiUtils apiUtils) {
+  private ResponseEntity<String> buildResponse(int resultCode, String resultString,
+                                               HttpServletRequest request, ApiUtils apiUtils) {
 
-    Response response = Response.status(resultCode).entity(resultString).build();
+    ResponseEntity<String> response = ResponseEntity.status(resultCode).contentType ( MediaType.APPLICATION_JSON ) .body(resultString);
 
     // Generate our audit log.
     auditLogger.info(SearchDbMsgs.PROCESS_REST_REQUEST,
@@ -240,10 +239,10 @@ public class BulkApi {
             .setField(LogLine.DefinedFields.RESPONSE_CODE, resultCode)
             .setField(LogLine.DefinedFields.RESPONSE_DESCRIPTION,
                 ApiUtils.getHttpStatusString(resultCode)),
-        (request != null) ? request.getMethod() : "Unknown",
-        (request != null) ? request.getRequestURL().toString() : "Unknown",
-        (request != null) ? request.getRemoteHost() : "Unknown",
-        Integer.toString(response.getStatus()));
+        (request != null) ? request.getMethod().toString () : "Unknown",
+        (request != null) ? request.getRequestURL ().toString () : "Unknown",
+        (request != null) ? request.getRemoteHost ()  : "Unknown",
+        Integer.toString(response.getStatusCodeValue ()));
 
     // Clear the MDC context so that no other transaction inadvertently
     // uses our transaction id.

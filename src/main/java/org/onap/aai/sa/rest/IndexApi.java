@@ -32,12 +32,18 @@ import org.onap.aai.cl.api.Logger;
 import org.onap.aai.cl.eelf.LoggerFactory;
 import org.onap.aai.sa.rest.DocumentFieldSchema;
 import org.onap.aai.sa.rest.DocumentSchema;
+import org.slf4j.MDC;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response;
+
+// Spring Imports
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+// import org.springframework.http.server.HttpServletRequest;
 
 
 /**
@@ -46,8 +52,8 @@ import javax.ws.rs.core.Response;
  */
 public class IndexApi {
 
+
   private static final String HEADER_VALIDATION_SUCCESS = "SUCCESS";
-  
   protected SearchServiceApi searchService = null;
 
   /**
@@ -57,9 +63,9 @@ public class IndexApi {
 
   // Set up the loggers.
   private static Logger logger = LoggerFactory.getInstance()
-      .getLogger(IndexApi.class.getName());
+    .getLogger(IndexApi.class.getName());
   private static Logger auditLogger = LoggerFactory.getInstance()
-      .getAuditLogger(IndexApi.class.getName());
+    .getAuditLogger(IndexApi.class.getName());
 
 
   public IndexApi(SearchServiceApi searchService) {
@@ -92,15 +98,15 @@ public class IndexApi {
    * @param index          - The name of the index to create.
    * @return - A Standard REST response
    */
-  public Response processCreateIndex(String documentSchema,
-                                     HttpServletRequest request,
-                                     HttpHeaders headers,
-                                     String index,
-                                     DocumentStoreInterface documentStore) {
+  public ResponseEntity<String> processCreateIndex (String documentSchema,
+                                                    HttpServletRequest request,
+                                                    HttpHeaders headers,
+                                                    String index,
+                                                    DocumentStoreInterface documentStore) {
 
     int resultCode = 500;
     String resultString = "Unexpected error";
-
+   
     // Initialize the MDC Context for logging purposes.
     ApiUtils.initMdcContext(request, headers);
 
@@ -109,16 +115,16 @@ public class IndexApi {
     try {
 
       if (!searchService.validateRequest(headers, request,
-          ApiUtils.Action.POST, ApiUtils.SEARCH_AUTH_POLICY_NAME)) {
+                                         ApiUtils.Action.POST, ApiUtils.SEARCH_AUTH_POLICY_NAME)) {
         logger.warn(SearchDbMsgs.INDEX_CREATE_FAILURE, index, "Authentication failure.");
-        return errorResponse(Response.Status.FORBIDDEN, "Authentication failure.", request);
+        return errorResponse(HttpStatus.FORBIDDEN, "Authentication failure.", request);
       }
 
     } catch (Exception e) {
 
       logger.warn(SearchDbMsgs.INDEX_CREATE_FAILURE, index,
-          "Unexpected authentication failure - cause: " + e.getMessage());
-      return errorResponse(Response.Status.FORBIDDEN, "Authentication failure.", request);
+                  "Unexpected authentication failure - cause: " + e.getMessage());
+      return errorResponse(HttpStatus.FORBIDDEN, "Authentication failure.", request);
     }
 
 
@@ -126,7 +132,7 @@ public class IndexApi {
     // it is present.
     if (documentSchema == null) {
       logger.warn(SearchDbMsgs.INDEX_CREATE_FAILURE, index, "Missing document schema payload");
-      return errorResponse(Response.Status.fromStatusCode(resultCode), "Missing payload", request);
+      return errorResponse(HttpStatus.valueOf(resultCode), "Missing payload", request);
     }
 
     try {
@@ -146,27 +152,28 @@ public class IndexApi {
       // translate that int a 201.
       resultCode = (result.getResultCode() == 200) ? 201 : result.getResultCode();
       resultString = (result.getFailureCause() == null)
-          ? result.getResult() : result.getFailureCause();
+        ? result.getResult() : result.getFailureCause();
 
     } catch (com.fasterxml.jackson.core.JsonParseException
-        | com.fasterxml.jackson.databind.JsonMappingException e) {
+             | com.fasterxml.jackson.databind.JsonMappingException e) {
 
       // We were unable to marshal the supplied json string into a valid
       // document schema, so return an appropriate error response.
-      resultCode = javax.ws.rs.core.Response.Status.BAD_REQUEST.getStatusCode();
+      resultCode = HttpStatus.BAD_REQUEST.value();
       resultString = "Malformed schema: " + e.getMessage();
 
     } catch (IOException e) {
 
       // We'll treat this is a general internal error.
-      resultCode = javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR.getStatusCode();
+      resultCode = HttpStatus.INTERNAL_SERVER_ERROR.value();
       resultString = "IO Failure: " + e.getMessage();
     }
 
-    Response response = Response.status(resultCode).entity(resultString).build();
+    ResponseEntity<String> response = ResponseEntity.status(resultCode).contentType ( MediaType.APPLICATION_JSON ).body(resultString);
+
 
     // Log the result.
-    if ((response.getStatus() >= 200) && (response.getStatus() < 300)) {
+    if ((response.getStatusCodeValue() >= 200) && (response.getStatusCodeValue() < 300)) {
       logger.info(SearchDbMsgs.CREATED_INDEX, index);
     } else {
       logger.warn(SearchDbMsgs.INDEX_CREATE_FAILURE, index, resultString);
@@ -174,14 +181,16 @@ public class IndexApi {
 
     // Generate our audit log.
     auditLogger.info(SearchDbMsgs.PROCESS_REST_REQUEST,
-        new LogFields()
-            .setField(LogLine.DefinedFields.RESPONSE_CODE, resultCode)
-            .setField(LogLine.DefinedFields.RESPONSE_DESCRIPTION,
-                Response.Status.fromStatusCode(resultCode).toString()),
-        (request != null) ? request.getMethod() : "Unknown",
-        (request != null) ? request.getRequestURL().toString() : "Unknown",
-        (request != null) ? request.getRemoteHost() : "Unknown",
-        Integer.toString(response.getStatus()));
+                     new LogFields()
+                     .setField(LogLine.DefinedFields.RESPONSE_CODE, resultCode)
+                     .setField(LogLine.DefinedFields.RESPONSE_DESCRIPTION,
+                               HttpStatus.valueOf(resultCode).toString()),
+                     (request != null) ? request.getMethod().toString () : "Unknown",
+                     (request != null) ? request.getRequestURL ().toString () : "Unknown",
+                     (request != null) ? request.getRemoteHost () : "Unknown",
+                     Integer.toString(response.getStatusCodeValue ()));
+
+
 
     // Clear the MDC context so that no other transaction inadvertently
     // uses our transaction id.
@@ -190,27 +199,28 @@ public class IndexApi {
     // Finally, return the response.
     return response;
   }
-  
+
   /**
-   * This function accepts any JSON and will "blindly" write it to the 
+   * This function accepts any JSON and will "blindly" write it to the
    * document store.
-   * 
+   *
    * Note, eventually this "dynamic" flow should follow the same JSON-Schema
    * validation procedure as the normal create index flow.
-   * 
+   *
    * @param dynamicSchema - The JSON string that will be sent to the document store.
    * @param index - The name of the index to be created.
    * @param documentStore - The document store specific interface.
    * @return The result of the document store interface's operation.
    */
-  public Response processCreateDynamicIndex(String dynamicSchema, HttpServletRequest request,
-      HttpHeaders headers, String index, DocumentStoreInterface documentStore) {
+  public ResponseEntity<String> processCreateDynamicIndex(String dynamicSchema, HttpServletRequest request,
+                                            HttpHeaders headers, String index, DocumentStoreInterface documentStore) {
 
-    Response response = null;
+    ResponseEntity<String> response = null;
 
-    Response validationResponse = validateRequest(request, headers, index, SearchDbMsgs.INDEX_CREATE_FAILURE);
+    ResponseEntity<String> validationResponse = validateRequest(request, headers, index, SearchDbMsgs.INDEX_CREATE_FAILURE);
 
-    if (validationResponse.getStatus() != Response.Status.OK.getStatusCode()) {
+
+    if (validationResponse.getStatusCodeValue () != HttpStatus.OK.value ()) {
       response = validationResponse;
     } else {
       OperationResult result = documentStore.createDynamicIndex(index, dynamicSchema);
@@ -218,12 +228,11 @@ public class IndexApi {
       int resultCode = (result.getResultCode() == 200) ? 201 : result.getResultCode();
       String resultString = (result.getFailureCause() == null) ? result.getResult() : result.getFailureCause();
 
-      response = Response.status(resultCode).entity(resultString).build();
+      response = ResponseEntity.status(resultCode).body(resultString);
     }
 
     return response;
   }
-
 
   /**
    * Processes a client request to remove an index from the document store.
@@ -232,63 +241,60 @@ public class IndexApi {
    * @param index - The index to be deleted.
    * @return - A standard REST response.
    */
-  public Response processDelete(String index,
-                                HttpServletRequest request,
-                                HttpHeaders headers,
-                                DocumentStoreInterface documentStore) {
+  public ResponseEntity<String> processDelete(String index,
+                                              HttpServletRequest request,
+                                              HttpHeaders headers,
+                                              DocumentStoreInterface documentStore) {
 
     // Initialize the MDC Context for logging purposes.
     ApiUtils.initMdcContext(request, headers);
 
     // Set a default response in case something unexpected goes wrong.
-    Response response = Response.status(javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR)
-        .entity("Unknown")
-        .build();
+    ResponseEntity<String> response = ResponseEntity.status ( HttpStatus.INTERNAL_SERVER_ERROR ).body ( "Unknown" );
 
     // Validate that the request is correctly authenticated before going
     // any further.
     try {
 
       if (!searchService.validateRequest(headers, request, ApiUtils.Action.POST,
-          ApiUtils.SEARCH_AUTH_POLICY_NAME)) {
+                                         ApiUtils.SEARCH_AUTH_POLICY_NAME)) {
         logger.warn(SearchDbMsgs.INDEX_CREATE_FAILURE, index, "Authentication failure.");
-        return errorResponse(Response.Status.FORBIDDEN, "Authentication failure.", request);
+        return errorResponse(HttpStatus.FORBIDDEN, "Authentication failure.", request);
       }
 
     } catch (Exception e) {
 
       logger.warn(SearchDbMsgs.INDEX_CREATE_FAILURE, index,
-          "Unexpected authentication failure - cause: " + e.getMessage());
-      return errorResponse(Response.Status.FORBIDDEN, "Authentication failure.", request);
+                  "Unexpected authentication failure - cause: " + e.getMessage());
+      return errorResponse(HttpStatus.FORBIDDEN, "Authentication failure.", request);
     }
+
 
     try {
       // Send the request to the document store.
       response = responseFromOperationResult(documentStore.deleteIndex(index));
 
     } catch (DocumentStoreOperationException e) {
-      response = Response.status(javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR)
-          .entity(e.getMessage())
-          .build();
+      response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType ( MediaType.APPLICATION_JSON ).body(e.getMessage());
     }
-    
+
     // Log the result.
-    if ((response.getStatus() >= 200) && (response.getStatus() < 300)) {
+    if ((response.getStatusCodeValue() >= 200) && (response.getStatusCodeValue() < 300)) {
       logger.info(SearchDbMsgs.DELETED_INDEX, index);
     } else {
-      logger.warn(SearchDbMsgs.INDEX_DELETE_FAILURE, index, (String) response.getEntity());
+      logger.warn(SearchDbMsgs.INDEX_DELETE_FAILURE, index, (String) response.getBody ());
     }
 
     // Generate our audit log.
     auditLogger.info(SearchDbMsgs.PROCESS_REST_REQUEST,
-        new LogFields()
-            .setField(LogLine.DefinedFields.RESPONSE_CODE, response.getStatus())
-            .setField(LogLine.DefinedFields.RESPONSE_DESCRIPTION,
-                response.getStatusInfo().getReasonPhrase()),
-        (request != null) ? request.getMethod() : "Unknown",
-        (request != null) ? request.getRequestURL().toString() : "Unknown",
-        (request != null) ? request.getRemoteHost() : "Unknown",
-        Integer.toString(response.getStatus()));
+                     new LogFields()
+                     .setField(LogLine.DefinedFields.RESPONSE_CODE, response.getStatusCodeValue())
+                     .setField(LogLine.DefinedFields.RESPONSE_DESCRIPTION,
+                               response.getStatusCode ().getReasonPhrase()),
+                     (request != null) ? request.getMethod().toString () : "Unknown",
+                     (request != null) ? request.getRequestURL ().toString () : "Unknown",
+                     (request != null) ? request.getRemoteHost () : "Unknown",
+                     Integer.toString(response.getStatusCodeValue()));
 
     // Clear the MDC context so that no other transaction inadvertently
     // uses our transaction id.
@@ -309,8 +315,8 @@ public class IndexApi {
    * @throws IOException
    */
   public String generateDocumentMappings(String documentSchema)
-      throws com.fasterxml.jackson.core.JsonParseException,
-      com.fasterxml.jackson.databind.JsonMappingException, IOException {
+    throws com.fasterxml.jackson.core.JsonParseException,
+           com.fasterxml.jackson.databind.JsonMappingException, IOException {
 
     // Unmarshal the json content into a document schema object.
     ObjectMapper mapper = new ObjectMapper();
@@ -338,7 +344,7 @@ public class IndexApi {
       // If the index field was specified, then append it.
       if (field.getSearchable() != null) {
         sb.append(", \"index\": \"").append(field.getSearchable()
-            ? "analyzed" : "not_analyzed").append("\"");
+                                            ? "analyzed" : "not_analyzed").append("\"");
       }
 
       // If a search analyzer was specified, then append it.
@@ -366,65 +372,64 @@ public class IndexApi {
 
 
   /**
-   * Converts an {@link OperationResult} to a standard REST {@link Response}
+   * Converts an {@link OperationResult} to a standard REST {@link ResponseEntity}
    * object.
    *
    * @param result - The {@link OperationResult} to be converted.
-   * @return - The equivalent {@link Response} object.
+   * @return - The equivalent {@link ResponseEntity} object.
    */
-  public Response responseFromOperationResult(OperationResult result) {
+  public ResponseEntity<String> responseFromOperationResult(OperationResult result) {
 
     if ((result.getResultCode() >= 200) && (result.getResultCode() < 300)) {
-      return Response.status(result.getResultCode()).entity(result.getResult()).build();
+      return ResponseEntity.status(result.getResultCode()).contentType ( MediaType.APPLICATION_JSON ).body(result.getResult());
     } else {
       if (result.getFailureCause() != null) {
-        return Response.status(result.getResultCode()).entity(result.getFailureCause()).build();
+        return ResponseEntity.status(result.getResultCode()).contentType ( MediaType.APPLICATION_JSON ).body(result.getFailureCause());
       } else {
-        return Response.status(result.getResultCode()).entity(result.getResult()).build();
+        return ResponseEntity.status(result.getResultCode()).contentType ( MediaType.APPLICATION_JSON ).body(result.getResult());
       }
     }
   }
 
-  public Response errorResponse(Response.Status status, String msg, HttpServletRequest request) {
+  public ResponseEntity<String> errorResponse(HttpStatus status, String msg, HttpServletRequest request) {
 
     // Generate our audit log.
     auditLogger.info(SearchDbMsgs.PROCESS_REST_REQUEST,
-        new LogFields()
-            .setField(LogLine.DefinedFields.RESPONSE_CODE, status.getStatusCode())
-            .setField(LogLine.DefinedFields.RESPONSE_DESCRIPTION, status.getReasonPhrase()),
-        (request != null) ? request.getMethod() : "Unknown",
-        (request != null) ? request.getRequestURL().toString() : "Unknown",
-        (request != null) ? request.getRemoteHost() : "Unknown",
-        Integer.toString(status.getStatusCode()));
+                     new LogFields()
+                     .setField(LogLine.DefinedFields.RESPONSE_CODE, status.value ())
+                     .setField(LogLine.DefinedFields.RESPONSE_DESCRIPTION, status.getReasonPhrase()),
+                     (request != null) ? request.getMethod().toString () : "Unknown",
+                     (request != null) ? request.getRequestURL ().toString () : "Unknown",
+                     (request != null) ? request.getRemoteHost () : "Unknown",
+                     Integer.toString(status.value ()));
 
     // Clear the MDC context so that no other transaction inadvertently
     // uses our transaction id.
     ApiUtils.clearMdcContext();
 
-    return Response.status(status)
-        .entity(msg)
-        .build();
+    return ResponseEntity.status(status).contentType ( MediaType.APPLICATION_JSON ).body(msg);
   }
-  
+
+
   /**
    * A helper method used for validating/authenticating an incoming request.
-   * 
+   *
    * @param request - The http request that will be validated.
    * @param headers - The http headers that will be validated.
    * @param index - The name of the index that the document store request is being made against.
    * @param failureMsgEnum - The logging message to be used upon validation failure.
    * @return A success or failure response
    */
-  private Response validateRequest(HttpServletRequest request, HttpHeaders headers, String index, SearchDbMsgs failureMsgEnum) {
+  private ResponseEntity<String> validateRequest(HttpServletRequest request, HttpHeaders headers, String index, SearchDbMsgs failureMsgEnum) {
     try {
       if (!searchService.validateRequest(headers, request, ApiUtils.Action.POST, ApiUtils.SEARCH_AUTH_POLICY_NAME)) {
         logger.warn(failureMsgEnum, index, "Authentication failure.");
-        return errorResponse(Response.Status.FORBIDDEN, "Authentication failure.", request);
+        return errorResponse(HttpStatus.FORBIDDEN, "Authentication failure.", request);
       }
     } catch (Exception e) {
       logger.warn(failureMsgEnum, index, "Unexpected authentication failure - cause: " + e.getMessage());
-      return errorResponse(Response.Status.FORBIDDEN, "Authentication failure.", request);
+      return errorResponse(HttpStatus.FORBIDDEN, "Authentication failure.", request);
     }
-    return Response.status(Response.Status.OK).entity(HEADER_VALIDATION_SUCCESS).build();
+    return ResponseEntity.status(HttpStatus.OK).body(HEADER_VALIDATION_SUCCESS);
   }
 }
