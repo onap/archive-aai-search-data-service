@@ -31,7 +31,7 @@ import java.util.Set;
 
 public class AggregationParsingUtil {
   public static AggregationResult[] parseAggregationResults(JSONObject aggregations)
-      throws JsonProcessingException {
+    throws JsonProcessingException {
 
     // Obtain the set of aggregation names
     Set keySet = aggregations.keySet();
@@ -65,7 +65,7 @@ public class AggregationParsingUtil {
   }
 
   private static AggregationBucket[] parseAggregationBuckets(JSONArray buckets)
-      throws JsonProcessingException {
+    throws JsonProcessingException {
     AggregationBucket[] aggBuckets = new AggregationBucket[buckets.size()];
     for (int i = 0; i < buckets.size(); i++) {
       AggregationBucket aggBucket = new AggregationBucket();

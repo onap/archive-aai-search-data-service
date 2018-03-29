@@ -29,7 +29,7 @@ import static org.junit.Assert.fail;
 
 public class AggregationTest {
   private static ObjectMapper mapper = new ObjectMapper();
-
+//
   @Test
   public void test() {
     String input = "{\r\n  \"name\": \"byDate\",\r\n  \"aggregation\": {\r\n    \"date-range\": {\r\n      \"field\": \"mydate\",\r\n      \"ranges\": [\r\n        {\r\n          \"from\": \"2016-12-19T00:00:00.738-05:00\",\r\n          \"to\": \"2016-12-23T23:59:59.738-05:00\"\r\n        }\r\n      ]\r\n    },\r\n    \"sub-aggregations\": [{\r\n        \"name\": \"byTerm\",\r\n        \"aggregation\": {\r\n          \"group-by\": {\r\n            \"field\": \"myterm\"\r\n          }\r\n        }\r\n      }]\r\n  }\r\n}";

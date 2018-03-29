@@ -70,16 +70,17 @@ public class DocumentSchemaTest {
         fileString.equals(jsonString));
   }
 
+//
+//  /**
+//   * This test validates that we convert document definitions back and
+//   * forth between json strings and POJOs without any loss of data in
+//   * the case of document schemas which contain nested fields.
+//   *
+//   * @throws com.fasterxml.jackson.core.JsonParseException
+//   * @throws com.fasterxml.jackson.databind.JsonMappingException
+//   * @throws IOException
+//   */
 
-  /**
-   * This test validates that we convert document definitions back and
-   * forth between json strings and POJOs without any loss of data in
-   * the case of document schemas which contain nested fields.
-   *
-   * @throws com.fasterxml.jackson.core.JsonParseException
-   * @throws com.fasterxml.jackson.databind.JsonMappingException
-   * @throws IOException
-   */
   @Test
   public void nestedDocSchemaFromJsonFileTest() throws JsonParseException, JsonMappingException, IOException {
 

@@ -20,8 +20,9 @@
  */
 package org.onap.aai.sa.auth;
 
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.HttpHeaders;
+ import org.springframework.http.HttpHeaders;
+
+ import javax.servlet.http.Cookie;
 
 public class SearchDbServiceAuth {
 
@@ -49,11 +50,9 @@ public class SearchDbServiceAuth {
 
   public boolean authCookie(Cookie cookie, String authFunction, StringBuilder username) {
 
-    // String result = "no value";
     if (cookie == null) {
       return false;
     }
-
     return SearchDbServiceAuthCore.authorize(username.toString(), authFunction);
   }
 }

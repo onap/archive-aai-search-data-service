@@ -26,6 +26,7 @@ import org.onap.aai.sa.searchdbabstraction.logging.SearchDbMsgs;
 import org.onap.aai.sa.searchdbabstraction.util.SearchDbConstants;
 import org.onap.aai.cl.api.Logger;
 import org.onap.aai.cl.eelf.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.FileInputStream;
 import java.util.Properties;
@@ -35,6 +36,9 @@ public class SearchService {
   private ElasticSearchHttpController esController = null;
 
   static Logger logger = LoggerFactory.getInstance().getLogger(SearchService.class.getName());
+
+  @Autowired
+  private  ElasticSearchConfig esConfig;
 
   public SearchService() {
     try {
@@ -47,8 +51,6 @@ public class SearchService {
   protected void start() throws Exception {
     Properties configProperties = new Properties();
     configProperties.load(new FileInputStream(SearchDbConstants.ES_CONFIG_FILE));
-    ElasticSearchConfig esConfig = new ElasticSearchConfig(configProperties);
-
     esController = new ElasticSearchHttpController(esConfig);
     logger.info(SearchDbMsgs.SERVICE_STARTED);
   }

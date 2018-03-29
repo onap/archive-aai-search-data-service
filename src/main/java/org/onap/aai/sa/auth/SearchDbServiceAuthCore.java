@@ -25,24 +25,20 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.onap.aai.sa.searchdbabstraction.util.SearchDbConstants;
 import org.onap.aai.cl.api.Logger;
 import org.onap.aai.cl.eelf.LoggerFactory;
+import org.onap.aai.sa.searchdbabstraction.util.SearchDbConstants;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
+import java.util.*;
 
 public class SearchDbServiceAuthCore {
 
   private static Logger logger = LoggerFactory.getInstance()
-      .getLogger(SearchDbServiceAuthCore.class.getName());
+    .getLogger(SearchDbServiceAuthCore.class.getName());
 
   private static String GlobalAuthFileName = SearchDbConstants.SDB_AUTH_CONFIG_FILENAME;
 
@@ -75,11 +71,10 @@ public class SearchDbServiceAuthCore {
 
   public static String getConfigFile() {
     if (GlobalAuthFileName == null) {
-      String nc = SearchDbConstants.SDB_AUTH_CONFIG_FILENAME;
+      String nc = GlobalAuthFileName;
       if (nc == null) {
         nc = "/home/aaiadmin/etc/aaipolicy.json";
       }
-
       GlobalAuthFileName = nc;
     }
     return GlobalAuthFileName;
@@ -87,13 +82,10 @@ public class SearchDbServiceAuthCore {
 
   public synchronized static void reloadUsers() {
     users = new HashMap<String, SearchDbAuthUser>();
-
-
     ObjectMapper mapper = new ObjectMapper(); // can reuse, share globally
     JSONParser parser = new JSONParser();
     try {
       Object obj = parser.parse(new FileReader(GlobalAuthFileName));
-      // aailogger.debug(logline, "Reading from " + GlobalAuthFileName);
       JsonNode rootNode = mapper.readTree(new File(GlobalAuthFileName));
       JsonNode rolesNode = rootNode.path("roles");
 
@@ -230,7 +222,6 @@ public class SearchDbServiceAuthCore {
   }
 
   public static boolean authorize(String username, String authFunction) {
-    // logline.init(component, transId, fromAppId, "authorize()");
 
     if (!usersInitialized || (users == null)) {
       init();

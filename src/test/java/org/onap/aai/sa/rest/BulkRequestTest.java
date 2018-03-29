@@ -22,7 +22,14 @@ package org.onap.aai.sa.rest;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 public class BulkRequestTest {
 
     @Test
@@ -42,6 +49,7 @@ public class BulkRequestTest {
         Assert.assertEquals(operation, request.getOperation());
         Assert.assertEquals(BulkRequest.OperationType.DELETE, request.getOperationType());
         Assert.assertTrue(request.toString().contains("delete:"));
+
 
     }
 
@@ -92,6 +100,7 @@ public class BulkRequestTest {
         Assert.assertNull(request.getOperationType());
         Assert.assertEquals("UNDEFINED", request.toString());
     }
+
     @Test
     public void testGetIndex(){
         BulkRequest request = new BulkRequest();

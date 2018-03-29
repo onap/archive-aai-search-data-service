@@ -46,14 +46,12 @@ public class SearchOperationResult extends OperationResult {
     this.searchResult = hits;
   }
 
-  public void setSuggestResult(SuggestHits hits) {
-    this.suggestResult = hits;
-  }
+  public void setSuggestResult(SuggestHits hits) { this.suggestResult = hits; }
 
   @Override
   public String toString() {
-    return "SearchOperationResult [searchResult=" + searchResult + ", aggregationResult="
-        + aggregationResult + ", suggestResult=" + suggestResult;
+    return "SearchOperationResult [searchResult=" + searchResult
+        + ", aggregationResult=" + aggregationResult + ", suggestResult=" + suggestResult;
   }
 
 }
