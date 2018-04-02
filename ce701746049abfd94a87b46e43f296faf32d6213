@@ -67,6 +67,57 @@
       "revId": "ce701746049abfd94a87b46e43f296faf32d6213",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_dbb3b84b",
+        "filename": "src/main/bin/start.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 453
+      },
+      "writtenOn": "2018-04-02T13:31:49Z",
+      "side": 1,
+      "message": "You are hardcoding the keystore password here.  You need to get rid of that.",
+      "revId": "ce701746049abfd94a87b46e43f296faf32d6213",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_7b82a453",
+        "filename": "src/main/bin/start.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 453
+      },
+      "writtenOn": "2018-04-02T13:31:49Z",
+      "side": 1,
+      "message": "Same thing here.",
+      "revId": "ce701746049abfd94a87b46e43f296faf32d6213",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_3b7c1c72",
+        "filename": "src/main/bin/start.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 453
+      },
+      "writtenOn": "2018-04-02T13:31:49Z",
+      "side": 1,
+      "message": "You are hardcoding the jar name and version.  Need to fix this.",
+      "revId": "ce701746049abfd94a87b46e43f296faf32d6213",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
