@@ -118,6 +118,74 @@
       "revId": "ce701746049abfd94a87b46e43f296faf32d6213",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_fb955488",
+        "filename": "src/main/docker/Dockerfile",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 453
+      },
+      "writtenOn": "2018-04-02T13:37:22Z",
+      "side": 1,
+      "message": "We don\u0027t need to do this anymore?  Why is all this stuff commented out?",
+      "revId": "ce701746049abfd94a87b46e43f296faf32d6213",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_1b91209a",
+        "filename": "src/main/docker/Dockerfile",
+        "patchSetId": 3
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 453
+      },
+      "writtenOn": "2018-04-02T13:37:22Z",
+      "side": 1,
+      "message": "Why is this commented out?  Don\u0027t we need to run start.sh?",
+      "revId": "ce701746049abfd94a87b46e43f296faf32d6213",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_bb8fcc74",
+        "filename": "src/main/docker/Dockerfile",
+        "patchSetId": 3
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 453
+      },
+      "writtenOn": "2018-04-02T13:37:22Z",
+      "side": 1,
+      "message": "Why do we need to expose these ports now?",
+      "revId": "ce701746049abfd94a87b46e43f296faf32d6213",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_db8ad863",
+        "filename": "src/main/java/org/onap/aai/sa/Application.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 453
+      },
+      "writtenOn": "2018-04-02T13:37:22Z",
+      "side": 1,
+      "message": "What is this for?  Don\u0027t we need this class to do secret obfuscation?",
+      "revId": "ce701746049abfd94a87b46e43f296faf32d6213",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
