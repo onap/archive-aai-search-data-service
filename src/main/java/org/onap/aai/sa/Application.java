@@ -20,34 +20,26 @@
  */
 package org.onap.aai.sa;
 
-// import org.eclipse.jetty.util.security.Password;
-
+import org.eclipse.jetty.util.security.Password;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.support.SpringBootServletInitializer;
+
+import java.util.HashMap;
 
 @SpringBootApplication
-public class Application {
+public class Application extends SpringBootServletInitializer {
 
-//	public static String[] deobfuscateArgs(String[] args, String ... attrnames) {
-//
-//		String[] deobfuscatedArgs = args.clone();
-//
-//		Password.deobfuscate("HI");
-//
-//		//System.setProperty(arg0, arg1)
-//
-//		return deobfuscatedArgs;
-//	}
-//
+
     public static void main(String[] args) {
-    	
-    	//server.ssl.key-store-password=onapSecret
-    	//server.ssl.key-password=onapSecret
-//    	args = new String[]{"-Dserver.ssl.key-store-password", "onapSecret",
-//    			"-Dserver.ssl.key-password", "onapSecret"};
-    	
-    	SpringApplication.run(Application.class, args);
 
-    	//deobfuscateArgs(args, "server.ssl.key-store-password", "server.ssl.key-password"));
+        String keyStorePassword = System.getProperty("KEY_STORE_PASSWORD");
+        if(keyStorePassword==null || keyStorePassword.isEmpty()){
+            throw new RuntimeException("Env property KEY_STORE_PASSWORD not set");
+        }
+        HashMap<String, Object> props = new HashMap<>();
+        props.put("server.ssl.key-store-password", Password.deobfuscate(keyStorePassword));
+        new Application().configure(new SpringApplicationBuilder (Application.class).properties(props)).run(args);
     }
 }
