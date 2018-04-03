@@ -228,6 +228,19 @@ limitations under the License.
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
+        <!--Logback classic-->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>1.2.1</version>
+        </dependency>
+
     </dependencies>
 
     <repositories>
@@ -254,6 +267,7 @@ limitations under the License.
     </repositories>
 
     <build>
+        <finalName>search-data-service-package</finalName>
       <plugins>
 	    <plugin>
           <groupId>org.springframework.boot</groupId>
