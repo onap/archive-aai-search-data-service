@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_0821cb9e",
+        "filename": "src/main/docker/Dockerfile",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 453
+      },
+      "writtenOn": "2018-04-03T20:39:47Z",
+      "side": 1,
+      "message": "Remove this",
+      "revId": "9cd5240b1f89eee38b0af9cfa25d74c1ee8b8b52",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_6803af0d",
+        "filename": "src/main/java/org/onap/aai/sa/Application.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 453
+      },
+      "writtenOn": "2018-04-03T20:39:47Z",
+      "side": 1,
+      "message": "Need to add back the license",
+      "revId": "9cd5240b1f89eee38b0af9cfa25d74c1ee8b8b52",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
