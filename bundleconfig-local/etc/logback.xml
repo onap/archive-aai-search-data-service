@@ -132,18 +132,6 @@
 		<appender-ref ref="asyncEELFDebug" />
 	</logger>
 
-	<logger name="com.att.eelf.security" level="info" additivity="false">
-		<appender-ref ref="asyncEELFSecurity" />
-	</logger>
-	<logger name="com.att.eelf.perf" level="info" additivity="false">
-		<appender-ref ref="asyncEELFPerformance" />
-	</logger>
-	<logger name="com.att.eelf.server" level="info" additivity="false">
-		<appender-ref ref="asyncEELFServer" />
-	</logger>
-	<logger name="com.att.eelf.policy" level="info" additivity="false">
-		<appender-ref ref="asyncEELFPolicy" />
-	</logger>
 	<logger name="com.att.eelf.audit" level="info" additivity="false">
 		<appender-ref ref="asyncEELFAudit" />
 	</logger>
@@ -156,29 +144,6 @@
 	<logger name="org.springframework.beans" level="WARN" />
 	<logger name="org.springframework.web" level="WARN" />
 	<logger name="com.blog.spring.jms" level="WARN" />
-
-	<!-- AJSC Services (bootstrap services) -->
-	<logger name="ajsc" level="WARN" />
-	<logger name="ajsc.RouteMgmtService" level="WARN" />
-	<logger name="ajsc.ComputeService" level="WARN" />
-	<logger name="ajsc.VandelayService" level="WARN" />
-	<logger name="ajsc.FilePersistenceService" level="WARN" />
-	<logger name="ajsc.UserDefinedJarService" level="WARN" />
-	<logger name="ajsc.UserDefinedBeansDefService" level="WARN" />
-	<logger name="ajsc.LoggingConfigurationService" level="WARN" />
-	<logger name="ajsc.ErrorMessageLookupService" level="WARN" />
-
-	<!-- AJSC related loggers (DME2 Registration, csi logging, restlet, servlet
-         logging) -->
-	<logger name="ajsc.utils" level="WARN" />
-	<logger name="ajsc.utils.DME2Helper" level="WARN" />
-	<logger name="ajsc.filters" level="WARN" />
-	<logger name="ajsc.beans.interceptors" level="WARN" />
-	<logger name="ajsc.restlet" level="WARN" />
-	<logger name="ajsc.servlet" level="WARN" />
-	<logger name="com.att" level="INFO" />
-	<logger name="com.att.ajsc.csi.logging" level="WARN" />
-	<logger name="com.att.ajsc.filemonitor" level="WARN" />
 
 	<!-- SearchDB loggers -->
 	<logger name="org.openecomp.sa" level="INFO" />
