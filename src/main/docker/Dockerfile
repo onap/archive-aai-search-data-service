@@ -13,9 +13,12 @@ RUN export JAVA_HOME
 
 # Build up the deployment folder structure
 RUN mkdir -p $MICRO_HOME
+RUN mkdir -p $MICRO_HOME/bundleconfig/etc
 ADD search-data-service* $MICRO_HOME/
 RUN mkdir -p $BIN_HOME
 COPY *.sh $BIN_HOME
+COPY bundleconfig-local $MICRO_HOME/bundleconfig
+COPY bundleconfig-local/etc/logback.xml $MICRO_HOME/bundleconfig/etc
 RUN chmod 755 $BIN_HOME/*
 RUN ln -s /logs $MICRO_HOME/logs
 

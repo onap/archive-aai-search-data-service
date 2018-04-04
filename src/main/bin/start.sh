@@ -1,6 +1,8 @@
 #!/bin/sh
 
 BASEDIR="/opt/app/search-data-service"
+AJSC_HOME="$BASEDIR"
+AJSC_CONF_HOME="$AJSC_HOME/bundleconfig/"
 
 if [ -z "$CONFIG_HOME" ]; then
 	echo "CONFIG_HOME must be set in order to start up process"
@@ -27,7 +29,9 @@ keytool -importkeystore -noprompt -deststorepass $PASS -destkeypass $PASS -srcke
 ## import into cacerts
 sudo keytool -importkeystore -noprompt -deststorepass changeit -destkeypass changeit -destkeystore /$JAVA_HOME/jre/lib/security/cacerts -srckeystore $BASEDIR/config/auth/onap.p12 -srcstoretype PKCS12 -srcstorepass $PASS -alias tomcat
 
-PROPS="$PROPS -Dlogback.configurationFile=$BASEDIR/bundleconfig/etc/logback.xml"
+PROPS="-DAJSC_HOME=$AJSC_HOME"
+PROPS="$PROPS -DAJSC_CONF_HOME=$AJSC_CONF_HOME"
+PROPS="$PROPS -Dlogging.config=$BASEDIR/bundleconfig/etc/logback.xml"
 PROPS="$PROPS -DCONFIG_HOME=$CONFIG_HOME"
 PROPS="$PROPS -DKEY_STORE_PASSWORD=$KEY_STORE_PASSWORD"
 JVM_MAX_HEAP=${MAX_HEAP:-1024}
