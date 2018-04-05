@@ -40,12 +40,17 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-//@Path("/analyzers")
+@Component
+@EnableWebSecurity
 @RestController
-@RequestMapping("/services/search-db-service/v1/analyzers")
+@RequestMapping("/services/search-data-service/v1/analyzers/search")
 public class AnalyzerApi {
 
   private SearchServiceApi searchService = null;
@@ -59,10 +64,12 @@ public class AnalyzerApi {
     this.searchService = searchService;
   }
 
-  @GET
-  public ResponseEntity<String> processGet(@Context HttpServletRequest request,
-                             @Context HttpHeaders headers,
-                             ApiUtils apiUtils) {
+  @RequestMapping(method = RequestMethod.GET,
+          consumes = {"application/json"},
+          produces = {"application/json"})
+  public ResponseEntity<String> processGet(HttpServletRequest request,
+                                           @RequestHeader HttpHeaders headers,
+                                           ApiUtils apiUtils) {
 
     HttpStatus responseCode = HttpStatus.INTERNAL_SERVER_ERROR;
     String responseString = "Undefined error";
