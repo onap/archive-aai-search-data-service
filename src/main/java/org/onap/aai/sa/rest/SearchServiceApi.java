@@ -35,12 +35,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.security.cert.X509Certificate;
 
-// import javax.servlet.http.HttpServletRequest;
-
 @Component
 @EnableWebSecurity
 @RestController
-@RequestMapping("/services/search-db-service/v1")
+@RequestMapping("/services/search-data-service/v1/search")
 public class SearchServiceApi {
 
   /**
@@ -88,8 +86,7 @@ public class SearchServiceApi {
                   method = RequestMethod.DELETE,
                   consumes = {"application/json"},
                   produces = {"application/json"})
-                  public ResponseEntity<String> processDeleteIndex(String requestBody,
-                                                                   HttpServletRequest request,
+                  public ResponseEntity<String> processDeleteIndex(HttpServletRequest request,
                                                                    @RequestHeader HttpHeaders headers,
                                                                    @PathVariable ("index") String index) {
 
@@ -102,7 +99,7 @@ public class SearchServiceApi {
   @RequestMapping(value = "/indexes/{index}/documents",
                   method = RequestMethod.POST,
                   consumes = {"application/json"})
-                  public ResponseEntity<String> processCreateDocWithoutId(String requestBody,
+                  public ResponseEntity<String> processCreateDocWithoutId(@RequestBody String requestBody,
                                                                           HttpServletRequest request,
                                                                           HttpServletResponse httpResponse,
                                                                           @RequestHeader HttpHeaders headers,
@@ -117,7 +114,7 @@ public class SearchServiceApi {
   @RequestMapping(value = "/indexes/{index}/documents/{id}",
                   method = RequestMethod.PUT,
                   consumes = {"application/json"})
-                  public ResponseEntity<String> processUpsertDoc(String requestBody,
+                  public ResponseEntity<String> processUpsertDoc(@RequestBody String requestBody,
                                                                  HttpServletRequest request,
                                                                  HttpServletResponse httpResponse,
                                                                  @RequestHeader HttpHeaders headers,
@@ -131,9 +128,9 @@ public class SearchServiceApi {
   }
 
   @RequestMapping(value = "/indexes/{index}/documents/{id}",
-          method = RequestMethod.GET)
-  public ResponseEntity<String> processGetDocument(String requestBody,
-                                                   HttpServletRequest request,
+          method = RequestMethod.GET,
+          consumes = {"application/json"})
+  public ResponseEntity<String> processGetDocument(HttpServletRequest request,
                                                    HttpServletResponse httpResponse,
                                                    @RequestHeader HttpHeaders headers,
                                                    @PathVariable ("index") String index,
@@ -141,14 +138,14 @@ public class SearchServiceApi {
 
     // Forward the request to our document API to retrieve the document.
     DocumentApi documentApi = new DocumentApi(this);
-    return documentApi.processGet(requestBody, request, headers, httpResponse,
+    return documentApi.processGet("", request, headers, httpResponse,
             index, id, documentStore);
   }
 
   @RequestMapping(value = "/indexes/{index}/documents/{id}",
                   method = RequestMethod.DELETE,
                   consumes = {"application/json"})
-  public ResponseEntity<String> processDeleteDoc(String requestBody,
+  public ResponseEntity<String> processDeleteDoc(@RequestBody String requestBody,
                                                                  HttpServletRequest request,
                                                                  HttpServletResponse httpResponse,
                                                                  @RequestHeader HttpHeaders headers,
@@ -164,7 +161,7 @@ public class SearchServiceApi {
   @RequestMapping(value = "/indexes/{index}/query/{queryText}",
                   method = RequestMethod.GET,
                   consumes = {"application/json"})
-                  public ResponseEntity<String> processInlineQuery(String requestBody,
+                  public ResponseEntity<String> processInlineQuery(@RequestBody String requestBody,
                                                                    HttpServletRequest request,
                                                                    @RequestHeader HttpHeaders headers,
                                                                    @PathVariable ("index") String index,
@@ -179,7 +176,7 @@ public class SearchServiceApi {
   @RequestMapping(value = "/indexes/{index}/query",
                   method = RequestMethod.GET,
                   consumes = {"application/json"})
-  public ResponseEntity<String> processQueryWithGet(String requestBody,
+  public ResponseEntity<String> processQueryWithGet(@RequestBody String requestBody,
                                                                     HttpServletRequest request,
                                                                     @RequestHeader HttpHeaders headers,
                                                                     @PathVariable ("index") String index) {
@@ -192,7 +189,7 @@ public class SearchServiceApi {
   @RequestMapping(value = "/indexes/{index}/query",
                   method = RequestMethod.POST,
                   consumes = {"application/json"})
-  public ResponseEntity<String> processQuery(String requestBody,
+  public ResponseEntity<String> processQuery(@RequestBody String requestBody,
                                                              HttpServletRequest request,
                                                              @RequestHeader HttpHeaders headers,
                                                              @PathVariable ("index") String index) {
@@ -205,7 +202,7 @@ public class SearchServiceApi {
   @RequestMapping(value = "/indexes/{index}/suggest",
           method = RequestMethod.POST,
           consumes = {"application/json"})
-  public ResponseEntity<String> processSuggestQuery(String requestBody, HttpServletRequest request,
+  public ResponseEntity<String> processSuggestQuery(@RequestBody String requestBody, HttpServletRequest request,
                                       @RequestHeader HttpHeaders headers, @PathVariable("index") String index) {
     // Forward the request to our document API to query suggestions in the
     // document.
@@ -217,7 +214,7 @@ public class SearchServiceApi {
   @RequestMapping(value = "/indexes/dynamic/{index}",
           method = RequestMethod.PUT,
           consumes = {"application/json"})
-  public ResponseEntity<String> processCreateDynamicIndex(String requestBody,
+  public ResponseEntity<String> processCreateDynamicIndex(@RequestBody String requestBody,
                                                           HttpServletRequest request,
                                                           @RequestHeader HttpHeaders headers,
                                             @PathVariable ("index") String index) {
@@ -230,7 +227,7 @@ public class SearchServiceApi {
   @RequestMapping(value = "/bulk",
                   method = RequestMethod.POST,
                   consumes = {"application/json"})
-  public ResponseEntity<String> processBulkRequest(String requestBody,
+  public ResponseEntity<String> processBulkRequest(@RequestBody String requestBody,
                                                    HttpServletRequest request,
                                                    @RequestHeader HttpHeaders headers) {
 

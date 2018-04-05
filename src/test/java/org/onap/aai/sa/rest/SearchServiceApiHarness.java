@@ -49,9 +49,6 @@ public class SearchServiceApiHarness extends SearchServiceApi {
     documentStore = new StubEsController();
   }
 
-//  @PUT
-//  @Path("/indexes/dynamic/{index}")
-//  @Consumes({MediaType.APPLICATION_JSON})
   @Override
   @RequestMapping (value="/indexes/dynamic/{index}",
           method = RequestMethod.PUT,
@@ -81,12 +78,11 @@ public class SearchServiceApiHarness extends SearchServiceApi {
   @RequestMapping (value="/indexes/{index}",
           method = RequestMethod.DELETE,
           consumes = { "application/json"})
-  public ResponseEntity<String> processDeleteIndex(@RequestBody String requestBody,
-                                     HttpServletRequest request,
+  public ResponseEntity<String> processDeleteIndex(HttpServletRequest request,
                                      @RequestHeader HttpHeaders headers,
                                      @PathVariable("index") String index) {
 
-    return super.processDeleteIndex(requestBody, request, headers, index);
+    return super.processDeleteIndex(request, headers, index);
   }
 
   @Override
@@ -95,14 +91,13 @@ public class SearchServiceApiHarness extends SearchServiceApi {
           produces = { "application/json"},
           consumes = { "application/json", "application/xml" })
   public ResponseEntity<String> processGetDocument(
-          @RequestBody  String requestBody,
           HttpServletRequest request,
           HttpServletResponse httpResponse,
           @RequestHeader HttpHeaders headers,
           @PathVariable("index") String index,
           @PathVariable("id") String id) {
 
-    return super.processGetDocument(requestBody, request, httpResponse, headers, index, id);
+    return super.processGetDocument(request, httpResponse, headers, index, id);
   }
 
   @Override
@@ -150,7 +145,7 @@ public class SearchServiceApiHarness extends SearchServiceApi {
   @RequestMapping(value = "/indexes/{index}/query/{queryText}",
           method = RequestMethod.GET,
           consumes = { "application/json"})
-  public ResponseEntity<String> processInlineQuery(String requestBody,
+  public ResponseEntity<String> processInlineQuery(@RequestBody String requestBody,
                                      HttpServletRequest request,
                                      @RequestHeader HttpHeaders headers,
                                      @PathVariable("index") String index,
@@ -175,7 +170,7 @@ public class SearchServiceApiHarness extends SearchServiceApi {
   @RequestMapping(value = "/indexes/{index}/query",
           method = RequestMethod.POST,
           consumes = { "application/json"})
-  public ResponseEntity<String> processQuery(String requestBody,
+  public ResponseEntity<String> processQuery(@RequestBody String requestBody,
                                              HttpServletRequest request,
                                              @RequestHeader HttpHeaders headers,
                                              @PathVariable("index") String index) {
@@ -189,7 +184,7 @@ public class SearchServiceApiHarness extends SearchServiceApi {
                   consumes = { "application/json", "application/xml" })
   public ResponseEntity<String> processBulkRequest(@RequestBody String requestBody,
                                                    HttpServletRequest request,
-                                     @RequestHeader HttpHeaders headers) {
+                                                   @RequestHeader HttpHeaders headers) {
 
     // If the operations string contains a special keyword, set the
     // harness to fail the authentication validation.
