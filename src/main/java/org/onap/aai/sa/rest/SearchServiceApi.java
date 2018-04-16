@@ -128,8 +128,7 @@ public class SearchServiceApi {
   }
 
   @RequestMapping(value = "/indexes/{index}/documents/{id}",
-          method = RequestMethod.GET,
-          consumes = {"application/json"})
+          method = RequestMethod.GET)
   public ResponseEntity<String> processGetDocument(HttpServletRequest request,
                                                    HttpServletResponse httpResponse,
                                                    @RequestHeader HttpHeaders headers,
@@ -158,8 +157,7 @@ public class SearchServiceApi {
   }
 
   @RequestMapping(value = "/indexes/{index}/query/{queryText}",
-                  method = RequestMethod.GET,
-                  consumes = {"application/json"})
+                  method = RequestMethod.GET)
   public ResponseEntity<String> processInlineQuery(HttpServletRequest request,
                                                    @RequestHeader HttpHeaders headers,
                                                    @PathVariable ("index") String index,
@@ -224,7 +222,8 @@ public class SearchServiceApi {
 
   @RequestMapping(value = "/bulk",
                   method = RequestMethod.POST,
-                  consumes = {"application/json"})
+                  consumes = {"application/json"},
+                  produces = { "application/json"})
   public ResponseEntity<String> processBulkRequest(@RequestBody String requestBody,
                                                    HttpServletRequest request,
                                                    @RequestHeader HttpHeaders headers) {

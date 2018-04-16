@@ -87,9 +87,7 @@ public class SearchServiceApiHarness extends SearchServiceApi {
 
   @Override
   @RequestMapping (value="/indexes/{index}/documents/{id}",
-          method = RequestMethod.GET,
-          produces = { "application/json"},
-          consumes = { "application/json", "application/xml" })
+          method = RequestMethod.GET)
   public ResponseEntity<String> processGetDocument(
           HttpServletRequest request,
           HttpServletResponse httpResponse,
@@ -142,8 +140,7 @@ public class SearchServiceApiHarness extends SearchServiceApi {
 
   @Override
   @RequestMapping(value = "/indexes/{index}/query/{queryText}",
-          method = RequestMethod.GET,
-          consumes = { "application/json"})
+          method = RequestMethod.GET)
   public ResponseEntity<String> processInlineQuery(HttpServletRequest request,
                                      @RequestHeader HttpHeaders headers,
                                      @PathVariable("index") String index,
@@ -179,7 +176,8 @@ public class SearchServiceApiHarness extends SearchServiceApi {
   @Override
   @RequestMapping(value = "/bulk",
                   method = RequestMethod.POST,
-                  consumes = { "application/json", "application/xml" })
+                  consumes = { "application/json"},
+                  produces = { "application/json"})
   public ResponseEntity<String> processBulkRequest(@RequestBody String requestBody,
                                                    HttpServletRequest request,
                                                    @RequestHeader HttpHeaders headers) {
