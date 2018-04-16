@@ -1,0 +1,8 @@
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review+1: Nitin Bansal <nitin.bansal@amdocs.com>
+Code-Review+2: Steven Blimkie <Steven.Blimkie@amdocs.com>
+Submitted-by: Steven Blimkie <Steven.Blimkie@amdocs.com>
+Submitted-at: Mon, 16 Apr 2018 15:32:18 +0000
+Reviewed-on: https://gerrit.onap.org/r/43077
+Project: aai/search-data-service
+Branch: refs/heads/master
