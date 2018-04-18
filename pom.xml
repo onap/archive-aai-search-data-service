@@ -26,7 +26,7 @@ limitations under the License.
     <parent>
       <artifactId>spring-boot-starter-parent</artifactId>
       <groupId>org.springframework.boot</groupId>
-      <version>1.5.10.RELEASE</version>
+      <version>1.5.12.RELEASE</version>
     </parent>
     <groupId>org.onap.aai</groupId>
     <artifactId>search-data-service</artifactId>
