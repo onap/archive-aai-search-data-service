@@ -21,7 +21,8 @@
 package org.onap.aai.sa.searchdbabstraction.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import edu.emory.mathcs.backport.java.util.Arrays;
+
+import java.util.Arrays;
 
 public class AggregationBucket {
   private Object key;
