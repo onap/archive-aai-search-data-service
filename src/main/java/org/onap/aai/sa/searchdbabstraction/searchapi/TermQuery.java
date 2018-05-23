@@ -21,7 +21,7 @@
 package org.onap.aai.sa.searchdbabstraction.searchapi;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import edu.emory.mathcs.backport.java.util.Arrays;
+import java.util.Arrays;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
