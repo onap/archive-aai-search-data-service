@@ -20,30 +20,30 @@
  */
 package org.onap.aai.sa.searchdbabstraction;
 
-import java.util.HashMap;
-import java.util.Map;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 
-@Path("/user")
-public class JaxrsUserService {
 
-  private static final Map<String, String> userIdToNameMap;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-  static {
-    userIdToNameMap = new HashMap<String, String>();
-    userIdToNameMap.put("dw113c", "Doug Wait");
-    userIdToNameMap.put("so401q", "Stuart O'Day");
-  }
 
-  @GET
-  @Path("/{userId}")
-  @Produces("text/plain")
-  public String lookupUser(@PathParam("userId") String userId) {
-    String name = userIdToNameMap.get(userId);
-    return name != null ? name : "unknown id";
+/**
+ * Exposes REST endpoints for a simple echo service.
+ */
+@RestController
+@RequestMapping("/services/search-data-service/v1")
+public class RestEchoService {
+
+  /**
+   * REST endpoint for a simple echo service.
+   *
+   * @param input - The value to be echoed back.
+   * @return - The input value.
+   */
+  @RequestMapping(value = "/echo/{input}", method = {RequestMethod.GET})
+  public String ping(@PathVariable("input") String input) {
+    return "[Search Database Abstraction Micro Service] - Echo Service: " + input + ".";
   }
 
 }

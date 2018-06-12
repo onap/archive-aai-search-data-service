@@ -79,7 +79,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.ws.rs.core.Response.Status;
+
+import org.springframework.http.HttpStatus;
+
 
 
 /**
@@ -440,7 +442,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
       if ((indexExistsResult.getResultCode() < 200) || (indexExistsResult.getResultCode() >= 300)) {
 
         DocumentOperationResult opResult = new DocumentOperationResult();
-        opResult.setResultCode(Status.NOT_FOUND.getStatusCode());
+        opResult.setResultCode(HttpStatus.NOT_FOUND.value());
         opResult.setResult("Document Index '" + indexName + "' does not exist.");
         opResult.setFailureCause("Document Index '" + indexName + "' does not exist.");
         return opResult;
@@ -461,13 +463,13 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
     DocumentOperationResult opResult = checkDocumentExistence(indexName, document.getId());
 
 
-    if (opResult.getResultCode() != Status.NOT_FOUND.getStatusCode()) {
-      if (opResult.getResultCode() == Status.OK.getStatusCode()) {
+    if (opResult.getResultCode() != HttpStatus.NOT_FOUND.value()) {
+      if (opResult.getResultCode() == HttpStatus.CONFLICT.value()) {
         opResult.setFailureCause("A document with the same id already exists.");
       } else {
         opResult.setFailureCause("Failed to verify a document with the specified id does not already exist.");
       }
-      opResult.setResultCode(Status.CONFLICT.getStatusCode());
+      opResult.setResultCode(HttpStatus.CONFLICT.value());
       return opResult;
     }
 
@@ -626,7 +628,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
       if ((indexExistsResult.getResultCode() < 200) || (indexExistsResult.getResultCode() >= 300)) {
 
         DocumentOperationResult opResult = new DocumentOperationResult();
-        opResult.setResultCode(Status.NOT_FOUND.getStatusCode());
+        opResult.setResultCode(HttpStatus.NOT_FOUND.value());
         opResult.setResult("Document Index '" + indexName + "' does not exist.");
         opResult.setFailureCause("Document Index '" + indexName + "' does not exist.");
         return opResult;
@@ -979,8 +981,8 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
       throw new DocumentStoreOperationException("Failed getting the response body payload.", e);
     }
 
-    if (resultCode == Status.CONFLICT.getStatusCode()) {
-      opResult.setResultCode(Status.PRECONDITION_FAILED.getStatusCode());
+    if (resultCode == HttpStatus.CONFLICT.value()) {
+      opResult.setResultCode(HttpStatus.PRECONDITION_FAILED.value());
     } else {
       opResult.setResultCode(resultCode);
     }
