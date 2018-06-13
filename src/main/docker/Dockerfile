@@ -22,15 +22,6 @@ COPY bundleconfig-local/etc/logback.xml $MICRO_HOME/bundleconfig/etc
 RUN chmod 755 $BIN_HOME/*
 RUN ln -s /logs $MICRO_HOME/logs
 
-# Create the aai user
-RUN mkdir /opt/aaihome && \
-     groupadd -g 492381 aaiadmin && \
-     useradd -r -u 341790 -g 492381 -ms /bin/bash -d /opt/aaihome/aaiadmin aaiadmin && \
-     chown -R aaiadmin:aaiadmin $MICRO_HOME
-RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-RUN sudo usermod -a -G sudo aaiadmin
-USER aaiadmin
-
 EXPOSE 9509 9509
 
 CMD ["/opt/app/search-data-service/bin/start.sh"]
