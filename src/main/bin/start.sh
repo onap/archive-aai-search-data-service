@@ -17,7 +17,7 @@ else
 	CURR_D=`pwd`
 	cd $BASEDIR
 	jar xf search-data-service-package.jar
-	sudo java -cp ./BOOT-INF/lib/jetty-util-9.4.8.v20171121.jar org.eclipse.jetty.util.security.Password $KEY_STORE_PASSWORD > pass.txt 2>> pass.txt
+	sudo java -cp ./BOOT-INF/lib/jetty-util-9.4.9.v20180320.jar org.eclipse.jetty.util.security.Password $KEY_STORE_PASSWORD > pass.txt 2>> pass.txt
 	PASS=`sed "2q;d" pass.txt`
 	sudo rm pass.txt
 	cd $CURR_D
