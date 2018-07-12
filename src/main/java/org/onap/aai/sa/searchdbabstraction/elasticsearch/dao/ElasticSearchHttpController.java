@@ -26,6 +26,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.emory.mathcs.backport.java.util.Arrays;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -48,6 +49,7 @@ import org.onap.aai.sa.searchdbabstraction.entity.SearchOperationResult;
 import org.onap.aai.sa.searchdbabstraction.logging.SearchDbMsgs;
 import org.onap.aai.sa.searchdbabstraction.util.AggregationParsingUtil;
 import org.onap.aai.sa.searchdbabstraction.util.DocumentSchemaUtil;
+import org.onap.aai.sa.searchdbabstraction.util.ElasticSearchPayloadTranslator;
 import org.onap.aai.sa.searchdbabstraction.util.SearchDbConstants;
 import org.onap.aai.cl.api.LogFields;
 import org.onap.aai.cl.api.LogLine;
@@ -75,7 +77,6 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -350,6 +351,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
     try {
       conn.setRequestMethod("PUT");
+      conn.setRequestProperty("Content-Type", "application/json");
     } catch (ProtocolException e) {
       shutdownConnection(conn);
       throw new DocumentStoreOperationException("Failed to set HTTP request method to PUT.", e);
@@ -365,7 +367,11 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
     sb.append(indexMappings);
     sb.append("}}");
 
-    attachContent(conn, sb.toString());
+    try {
+    	attachContent(conn, ElasticSearchPayloadTranslator.translateESPayload(sb.toString()));
+    } catch(IOException e) {
+    	throw new DocumentStoreOperationException("Error in translating Index payload to make it ES compliant.", e);
+    }
 
     logger.debug("\ncreateTable(), Sending 'PUT' request to URL : " + conn.getURL());
     logger.debug("Request content: " + sb.toString());
@@ -407,12 +413,17 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
     try {
       conn.setRequestMethod("PUT");
+      conn.setRequestProperty("Content-Type", "application/json");
     } catch (ProtocolException e) {
       shutdownConnection(conn);
       throw new DocumentStoreOperationException("Failed to set HTTP request method to PUT.", e);
     }
 
-    attachContent(conn, settingsAndMappings);
+    try {
+    	attachContent(conn, ElasticSearchPayloadTranslator.translateESPayload(settingsAndMappings));
+    } catch(IOException e) {
+    	throw new DocumentStoreOperationException("Error in translating DynamicIndex payload to make it ES compliant.", e);
+    }
     handleResponse(conn, result);
 
     // Generate a metrics log so we can track how long the operation took.
@@ -557,10 +568,15 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
   private void attachDocument(HttpURLConnection conn, DocumentStoreDataEntity doc)
       throws DocumentStoreOperationException {
-    conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+//    conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+    conn.setRequestProperty("Content-Type", "application/json");
     conn.setRequestProperty("Connection", "Close");
-
-    attachContent(conn, doc.getContentInJson());
+    
+    try {
+    	attachContent(conn, ElasticSearchPayloadTranslator.translateESPayload(doc.getContentInJson()));
+    } catch(IOException e) {
+    	throw new DocumentStoreOperationException("Error in translating Document payload to make it ES compliant.", e);
+    }
   }
 
   private DocumentOperationResult checkDocumentExistence(String indexName,
@@ -650,6 +666,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
     try {
       conn.setRequestMethod("PUT");
+      conn.setRequestProperty("Content-Type", "application/json");
     } catch (ProtocolException e) {
       shutdownConnection(conn);
       throw new DocumentStoreOperationException("Failed to set HTTP request method to PUT.", e);
@@ -823,6 +840,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
     try {
       conn.setRequestMethod("POST");
+      conn.setRequestProperty("Content-Type", "application/json");
     } catch (ProtocolException e) {
       shutdownConnection(conn);
       throw new DocumentStoreOperationException("Failed to set HTTP request method to POST.", e);
@@ -872,6 +890,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
     try {
       conn.setRequestMethod("POST");
+      conn.setRequestProperty("Content-Type", "application/json");
     } catch (ProtocolException e) {
       shutdownConnection(conn);
       throw new DocumentStoreOperationException("Failed to set HTTP request method to POST.", e);
