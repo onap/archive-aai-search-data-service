@@ -31,6 +31,7 @@ import org.onap.aai.sa.searchdbabstraction.util.DocumentSchemaUtil;
 import org.onap.aai.sa.searchdbabstraction.entity.Document;
 import org.onap.aai.sa.rest.DocumentSchema;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,8 +68,12 @@ public class StubEsController implements DocumentStoreInterface {
     OperationResult opResult = new OperationResult();
     opResult.setResultCode(200);
 
-    opResult.setResult(index + "@" + analysisConfig.getEsIndexSettings() + "@"
-        + DocumentSchemaUtil.generateDocumentMappings(documentSchema));
+    try {
+		opResult.setResult(index + "@" + analysisConfig.getEsIndexSettings() + "@"
+		    + DocumentSchemaUtil.generateDocumentMappings(documentSchema));
+	} catch (IOException e) {
+		e.printStackTrace();
+	}
 
     return opResult;
   }

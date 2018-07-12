@@ -21,6 +21,7 @@
 package org.onap.aai.sa.rest;
 
 
+import org.junit.Before;
 // import org.glassfish.jersey.server.ResourceConfig;
 // import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Test;
@@ -75,6 +76,11 @@ public class IndexApiTest {
 //  }
 //
 //
+  
+  @Before
+  public void setup() throws Exception {
+	  System.setProperty("CONFIG_HOME", System.getProperty("user.dir")+ File.separator + "appconfig-local");
+  }
 
   /**
    * Tests the dynamic shcema creation flow that send the request
@@ -177,7 +183,8 @@ public class IndexApiTest {
             + "\"tokenizer\": \"whitespace\","
             + "\"filter\": [\"lowercase\",\"asciifolding\"]}}}}";
     String EXPECTED_MAPPINGS =
-        "{\"properties\": {"
+        "{\"dynamic_templates\":[{\"strings\":{\"match_mapping_type\":\"string\",\"match\":\"*\",\"mapping\":{\"type\":\"text\",\"fielddata\":true}}}]"
+        + ",\"properties\": {"
             + "\"serverName\": {"
             + "\"type\": \"string\", "
             + "\"index\": \"analyzed\", "
