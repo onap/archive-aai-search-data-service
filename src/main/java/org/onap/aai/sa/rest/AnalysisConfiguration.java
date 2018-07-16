@@ -61,7 +61,7 @@ public class AnalysisConfiguration {
    * all of the custom filters and analyzers that we need Elastic Search
    * to know about.
    */
-  private static String esSettings = null;
+  private String esSettings = null;
 
   private static Logger logger = LoggerFactory.getInstance()
       .getLogger(AnalysisConfiguration.class.getName());
