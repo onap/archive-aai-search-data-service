@@ -1,0 +1,9 @@
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review+1: Dave Adams <Dave.Adams@amdocs.com>
+Code-Review+1: Gabriel Sanchez <gabriel.sanchez@amdocs.com>
+Code-Review+2: James Forsyth <jf2512@att.com>
+Submitted-by: James Forsyth <jf2512@att.com>
+Submitted-at: Thu, 02 Aug 2018 18:08:25 +0000
+Reviewed-on: https://gerrit.onap.org/r/56297
+Project: aai/search-data-service
+Branch: refs/heads/master
