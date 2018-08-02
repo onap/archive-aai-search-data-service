@@ -23,15 +23,23 @@ package org.onap.aai.sa.searchdbabstraction.util;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.apache.commons.io.IOUtils;
 import org.onap.aai.sa.rest.DocumentFieldSchema;
 import org.onap.aai.sa.rest.DocumentSchema;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class DocumentSchemaUtil {
 
+  private static String dynamicCustomMapping = null;
+  private static final String DYNAMIC_CUSTOM_TEMPALTE_FILE = System.getProperty("CONFIG_HOME") + File.separator 
+		  + "dynamic-custom-template.json";
+  
   public static String generateDocumentMappings(String documentSchema)
       throws JsonParseException, JsonMappingException, IOException {
 
@@ -42,11 +50,23 @@ public class DocumentSchemaUtil {
     return generateDocumentMappings(schema);
   }
 
-  public static String generateDocumentMappings(DocumentSchema schema) {
+  public static String generateDocumentMappings(DocumentSchema schema) throws IOException {
+	  
+	// Adding dynamic template to add fielddata=true to dynamic fields of type "string"  
+	// in order to avoid aggregation queries breaking in ESv6.1.2
+	if(dynamicCustomMapping == null) {
+		try {
+			dynamicCustomMapping = IOUtils.toString(new FileInputStream(DYNAMIC_CUSTOM_TEMPALTE_FILE), "UTF-8").replaceAll("\\s+", "");
+		} catch (IOException e) {
+			throw new IOException("Dynamic Custom template configuration went wrong! Please check for the correct template file.", e);
+		}
+	}
 
     // Now, generate the Elastic Search mapping json and return it.
     StringBuilder sb = new StringBuilder();
     sb.append("{");
+    // Adding custom mapping which adds fielddata=true to dynamic fields of type "string"
+    sb.append(dynamicCustomMapping != null ? dynamicCustomMapping : "");
     sb.append("\"properties\": {");
 
     generateFieldMappings(schema.getFields(), sb);
