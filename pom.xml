@@ -288,7 +288,7 @@ limitations under the License.
                 <configuration>
                     <verbose>true</verbose>
                     <serverId>docker-hub</serverId>
-                    <imageName>onap/${project.artifactId}</imageName>
+                    <imageName>${docker.push.registry}/onap/${project.artifactId}</imageName>
                     <dockerDirectory>${docker.location}</dockerDirectory>
                     <imageTags>
                         <imageTag>latest</imageTag>
