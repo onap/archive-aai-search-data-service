@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "1a76adc5_ad7accba",
+        "filename": "src/main/java/org/onap/aai/sa/searchdbabstraction/util/ElasticSearchPayloadTranslator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1157
+      },
+      "writtenOn": "2018-09-13T13:10:56Z",
+      "side": 1,
+      "message": "Another behavior you could have in here pretty easily is a default behavior in absence of the es-payload-translation file.\n\nIf you pull out the file object:\n\nFile translationFile \u003d new File(pathToTranslationFile);\n\nif ( !translationFile.exists() ) {\n   // log(Payload translation skipped, assuming 2.4.1 syntax or something;\n   return source;\n} \n\n// do the rest of your flow",
+      "range": {
+        "startLine": 70,
+        "startChar": 2,
+        "endLine": 71,
+        "endChar": 68
+      },
+      "revId": "ea58421c331d5f39f80f2f6806b605d4a593466f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a76adc5_4de458e0",
         "filename": "src/main/java/org/onap/aai/sa/searchdbabstraction/util/ElasticSearchPayloadTranslator.java",
         "patchSetId": 1
