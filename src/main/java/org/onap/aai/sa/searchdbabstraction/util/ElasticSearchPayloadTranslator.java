@@ -23,13 +23,19 @@ package org.onap.aai.sa.searchdbabstraction.util;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.onap.aai.cl.api.Logger;
 import org.onap.aai.cl.eelf.LoggerFactory;
 import org.onap.aai.sa.searchdbabstraction.logging.SearchDbMsgs;
+
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
 
 
 /**
@@ -52,8 +58,9 @@ public class ElasticSearchPayloadTranslator {
 
 
 	/**
-	 *  Using String replacement to translate the payload to ES compatible version
-	 * 
+	 *  Using JSON Path query to filter objects to translate the payload to ES compatible version
+	 *  The filter queries and the replacement attributes are configured in the es-payload-translation.json file.
+	 *  
 	 * @param source
 	 * @return translated payload in String
 	 * @throws IOException
@@ -61,23 +68,33 @@ public class ElasticSearchPayloadTranslator {
 	public static String translateESPayload(String source) throws IOException {
 		logger.info(SearchDbMsgs.PROCESS_PAYLOAD_QUERY, "translateESPayload, method-params[ source=" + source + "]");
 		String pathToTranslationFile = CONFIG_DIRECTORY + File.separator + ES_PAYLOAD_TRANSLATION_FILE;
-		
-		String translatedPayload = source.replaceAll("\\s+", ""); // removing whitespaces
-		JSONObject translationConfigPayload = new JSONObject(IOUtils.toString(
-				new FileInputStream(new File(pathToTranslationFile)), "UTF-8"));
 
-		JSONArray attrTranslations = translationConfigPayload.getJSONArray("attr-translations");
+		try {
+			
+			JSONObject translationConfigPayload = new JSONObject(IOUtils.toString(
+					new FileInputStream(new File(pathToTranslationFile)), "UTF-8"));
+			JSONArray attrTranslations = translationConfigPayload.getJSONArray("attr-translations");
+			DocumentContext payloadToTranslate = JsonPath.parse(source);
 
-		for(Object obj : attrTranslations) {
-			JSONObject jsonObj = ((JSONObject)obj);
-			String from = jsonObj.get("from").toString();
-			String to = jsonObj.get("to").toString();
-			if(translatedPayload.indexOf(from) > 0) {
-				translatedPayload = translatedPayload.replaceAll(from, to);
+			for(Object obj : attrTranslations) {
+				JSONObject jsonObj = ((JSONObject) obj);
+				String query = jsonObj.get("query").toString();
+				JSONObject attrToUpdate = (JSONObject) jsonObj.get("update");
+				List<Map<String, Object>> filteredObjects = payloadToTranslate.read(query);
+				for(Map<String, Object> objMap : filteredObjects) {
+					objMap.putAll(attrToUpdate.toMap());
+				}
 			}
-		}
-
-		logger.info(SearchDbMsgs.PROCESS_PAYLOAD_QUERY, "Payload after translation: "+translatedPayload);
-		return translatedPayload;
+			
+			logger.info(SearchDbMsgs.PROCESS_PAYLOAD_QUERY, "Payload after translation: "+payloadToTranslate.jsonString());
+			return payloadToTranslate.jsonString();
+			
+		} catch (JSONException | IOException e) {
+			logger.error(SearchDbMsgs.FILTERS_CONFIG_FAILURE, e, ES_PAYLOAD_TRANSLATION_FILE, e.getMessage());
+			if(e instanceof JSONException) {
+				throw new IOException("Payload translation configuration looks corrupted. Please correct!", e);
+			}
+			throw new IOException("Error in configuring payload translation file. Please check if it exists.", e);
+		}	
 	}
 }

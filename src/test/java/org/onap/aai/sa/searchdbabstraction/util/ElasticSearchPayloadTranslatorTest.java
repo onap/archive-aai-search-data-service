@@ -21,16 +21,19 @@
 package org.onap.aai.sa.searchdbabstraction.util;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.io.File;
+import java.io.FileInputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.aai.sa.rest.TestUtils;
 
 public class ElasticSearchPayloadTranslatorTest {
 	
-	private final String SIMPLE_DOC_SCHEMA_JSON = "src/test/resources/json/simpleDocument.json";
+	private final String SIMPLE_DOC_SCHEMA_JSON = "src/test/resources/json/index-mapping.json";
 
 	@Before
 	public void setup() throws Exception {
@@ -38,13 +41,17 @@ public class ElasticSearchPayloadTranslatorTest {
 	}
 	
 	@Test
-	public void testPayloadTranslation_FromStringToText() throws Exception {
+	public void testPayloadTranslation() throws Exception {
+		String expectedErrMsg = "Sample error message for whitespace check";
 		File schemaFile = new File(SIMPLE_DOC_SCHEMA_JSON);
-	    String documentJson = TestUtils.readFileToString(schemaFile);
-	    assertTrue(documentJson.contains("\"data-type\":\"string\""));
-		assertTrue(documentJson.contains("\"searchable\":true"));
+	    String documentJson = IOUtils.toString(new FileInputStream(schemaFile), "UTF-8");
+	    assertTrue(documentJson.contains("\"type\": \"string\""));
+		assertTrue(documentJson.contains("\"index\": \"analyzed\""));
 		String translatedPayload = ElasticSearchPayloadTranslator.translateESPayload(documentJson);
-		assertTrue(translatedPayload.contains("\"data-type\":\"text\""));
+		assertTrue(translatedPayload.contains("\"type\":\"text\""));
 		assertTrue(translatedPayload.contains("\"index\":true"));
+		assertTrue(translatedPayload.contains("\"fielddata\":true"));
+		assertFalse(documentJson.contains("\"index\":\"analyzed\""));
+		assertTrue(translatedPayload.contains("\"errMsg\":\""+expectedErrMsg+"\""));
 	}
 }

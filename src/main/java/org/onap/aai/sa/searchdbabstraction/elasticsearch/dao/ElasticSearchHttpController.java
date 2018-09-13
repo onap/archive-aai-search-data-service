@@ -370,7 +370,8 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
     try {
     	attachContent(conn, ElasticSearchPayloadTranslator.translateESPayload(sb.toString()));
     } catch(IOException e) {
-    	throw new DocumentStoreOperationException("Error in translating Index payload to make it ES compliant.", e);
+    	logger.error(SearchDbMsgs.INDEX_CREATE_FAILURE, e);
+    	throw new DocumentStoreOperationException(e.getMessage(), e);
     }
 
     logger.debug("\ncreateTable(), Sending 'PUT' request to URL : " + conn.getURL());
@@ -422,7 +423,8 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
     try {
     	attachContent(conn, ElasticSearchPayloadTranslator.translateESPayload(settingsAndMappings));
     } catch(IOException e) {
-    	throw new DocumentStoreOperationException("Error in translating DynamicIndex payload to make it ES compliant.", e);
+    	logger.error(SearchDbMsgs.INDEX_CREATE_FAILURE, e);
+    	throw new DocumentStoreOperationException(e.getMessage());
     }
     handleResponse(conn, result);
 
@@ -571,12 +573,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 //    conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
     conn.setRequestProperty("Content-Type", "application/json");
     conn.setRequestProperty("Connection", "Close");
-    
-    try {
-    	attachContent(conn, ElasticSearchPayloadTranslator.translateESPayload(doc.getContentInJson()));
-    } catch(IOException e) {
-    	throw new DocumentStoreOperationException("Error in translating Document payload to make it ES compliant.", e);
-    }
+    attachContent(conn, doc.getContentInJson());
   }
 
   private DocumentOperationResult checkDocumentExistence(String indexName,
