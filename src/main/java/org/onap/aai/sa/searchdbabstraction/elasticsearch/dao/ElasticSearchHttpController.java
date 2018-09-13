@@ -571,12 +571,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 //    conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
     conn.setRequestProperty("Content-Type", "application/json");
     conn.setRequestProperty("Connection", "Close");
-    
-    try {
-    	attachContent(conn, ElasticSearchPayloadTranslator.translateESPayload(doc.getContentInJson()));
-    } catch(IOException e) {
-    	throw new DocumentStoreOperationException("Error in translating Document payload to make it ES compliant.", e);
-    }
+    attachContent(conn, doc.getContentInJson());
   }
 
   private DocumentOperationResult checkDocumentExistence(String indexName,
