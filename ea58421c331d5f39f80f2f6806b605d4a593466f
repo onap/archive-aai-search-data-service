@@ -25,6 +25,29 @@
     },
     {
       "key": {
+        "uuid": "1a76adc5_4d1f786c",
+        "filename": "src/main/java/org/onap/aai/sa/searchdbabstraction/util/ElasticSearchPayloadTranslator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1157
+      },
+      "writtenOn": "2018-09-13T13:17:45Z",
+      "side": 1,
+      "message": "You could wrap all of the translation logic in a general try {} catch (Exception e) {} block as means to handle parse exceptions of the translation file, and return the original source request.\n\nIn a way you would be trading one error, potentially for another.   Another idea would be to extract an interface for the PayloadTranslator and then wire-in specific ES payload translation implementations via spring-wiring dedicated to instances of elasticsearch.  Depending on the deployment model different translation implementation could be layered in without changing any code.\n\nJust some ideas...",
+      "range": {
+        "startLine": 72,
+        "startChar": 2,
+        "endLine": 72,
+        "endChar": 18
+      },
+      "revId": "ea58421c331d5f39f80f2f6806b605d4a593466f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a76adc5_4de458e0",
         "filename": "src/main/java/org/onap/aai/sa/searchdbabstraction/util/ElasticSearchPayloadTranslator.java",
         "patchSetId": 1
