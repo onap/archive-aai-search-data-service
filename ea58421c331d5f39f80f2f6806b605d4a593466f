@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_4de458e0",
+        "filename": "src/main/java/org/onap/aai/sa/searchdbabstraction/util/ElasticSearchPayloadTranslator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 703
+      },
+      "writtenOn": "2018-09-13T12:52:00Z",
+      "side": 1,
+      "message": "This doesn\u0027t need to be declared outside of the for loop.",
+      "range": {
+        "startLine": 74,
+        "startChar": 2,
+        "endLine": 74,
+        "endChar": 51
+      },
+      "revId": "ea58421c331d5f39f80f2f6806b605d4a593466f",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
