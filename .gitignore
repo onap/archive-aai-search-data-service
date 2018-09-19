@@ -1,8 +1,9 @@
+/src/main/java-gen/
 /target/
 /bin/
 .project
 .settings/
-src/main/java-gen/
-logs/
+.classpath
 .idea/
+logs/
 debug-logs/
