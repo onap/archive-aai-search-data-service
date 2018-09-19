@@ -342,7 +342,6 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
         try {
             conn.setRequestMethod("PUT");
-            conn.setRequestProperty("Content-Type", "application/json");
         } catch (ProtocolException e) {
             shutdownConnection(conn);
             throw new DocumentStoreOperationException("Failed to set HTTP request method to PUT.", e);
@@ -405,7 +404,6 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
         try {
             conn.setRequestMethod("PUT");
-            conn.setRequestProperty("Content-Type", "application/json");
         } catch (ProtocolException e) {
             shutdownConnection(conn);
             throw new DocumentStoreOperationException("Failed to set HTTP request method to PUT.", e);
@@ -553,7 +551,6 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
     private void attachDocument(HttpURLConnection conn, DocumentStoreDataEntity doc)
             throws DocumentStoreOperationException {
-        conn.setRequestProperty("Content-Type", "application/json");
         conn.setRequestProperty("Connection", "Close");
         attachContent(conn, doc.getContentInJson());
     }
@@ -640,7 +637,6 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
         try {
             conn.setRequestMethod("PUT");
-            conn.setRequestProperty("Content-Type", "application/json");
         } catch (ProtocolException e) {
             shutdownConnection(conn);
             throw new DocumentStoreOperationException("Failed to set HTTP request method to PUT.", e);
@@ -805,7 +801,6 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
         try {
             conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/json");
         } catch (ProtocolException e) {
             shutdownConnection(conn);
             throw new DocumentStoreOperationException("Failed to set HTTP request method to POST.", e);
@@ -854,7 +849,6 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
         try {
             conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/json");
         } catch (ProtocolException e) {
             shutdownConnection(conn);
             throw new DocumentStoreOperationException("Failed to set HTTP request method to POST.", e);
@@ -913,6 +907,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
         try {
             conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestProperty("Content-Type", "application/json");
             conn.setDoOutput(true);
         } catch (IOException e) {
             shutdownConnection(conn);
