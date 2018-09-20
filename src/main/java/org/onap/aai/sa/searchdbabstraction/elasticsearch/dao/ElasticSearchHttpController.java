@@ -99,6 +99,23 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
     private static final Logger metricsLogger =
             LoggerFactory.getInstance().getMetricsLogger(ElasticSearchHttpController.class.getName());
 
+    private static final String JSON_ATTR_VERSION = "_version";
+    private static final String JSON_ATTR_ERROR = "error";
+    private static final String JSON_ATTR_REASON = "reason";
+
+    private static final String QUERY_PARAM_VERSION = "?version=";
+
+    private static final String MSG_RESOURCE_MISSING = "Specified resource does not exist: ";
+    private static final String MSG_RESPONSE_CODE = "Response Code : ";
+    private static final String MSG_INVALID_DOCUMENT_URL = "Invalid document URL: ";
+    private static final String MSG_HTTP_PUT_FAILED = "Failed to set HTTP request method to PUT.";
+    private static final String MSG_HTTP_POST_FAILED = "Failed to set HTTP request method to POST.";
+    private static final String INTERNAL_SERVER_ERROR_ELASTIC_SEARCH_OPERATION_FAULT =
+            "Internal Error: ElasticSearch operation fault occurred";
+    private static final String FAILED_TO_GET_THE_RESPONSE_CODE_FROM_THE_CONNECTION =
+            "Failed to get the response code from the connection.";
+    private static final String FAILED_TO_PARSE_ELASTIC_SEARCH_RESPONSE = "Failed to parse Elastic Search response.";
+
     private static final String BULK_CREATE_WITHOUT_INDEX_TEMPLATE =
             "{\"create\":{\"_index\" : \"%s\", \"_type\" : \"%s\"} }\n";
     private static final String BULK_CREATE_WITH_INDEX_TEMPLATE =
@@ -108,8 +125,6 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
     private static final String BULK_DELETE_TEMPLATE =
             "{ \"delete\": { \"_index\": \"%s\", \"_type\": \"%s\", \"_id\": \"%s\", \"_version\":\"%s\"}}\n";
 
-    private static final String INTERNAL_SERVER_ERROR_ELASTIC_SEARCH_OPERATION_FAULT =
-            "Internal Error: ElasticSearch operation fault occurred";
     private final ElasticSearchConfig config;
 
     private static final String DEFAULT_TYPE = "default";
@@ -117,9 +132,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
     protected AnalysisConfiguration analysisConfig;
 
     public static ElasticSearchHttpController getInstance() {
-
         synchronized (ElasticSearchHttpController.class) {
-
             if (instance == null) {
                 Properties properties = new Properties();
                 File file = new File(SearchDbConstants.ES_CONFIG_FILE);
@@ -151,7 +164,6 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
                     e.getMessage());
         }
     }
-
 
     public AnalysisConfiguration getAnalysisConfig() {
         return analysisConfig;
@@ -283,20 +295,20 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
             return;
         }
 
+        final String methodName = "shutdownConnection";
         InputStream inputstream = null;
         OutputStream outputstream = null;
 
         try {
             inputstream = connection.getInputStream();
         } catch (IOException e) {
-            logger.debug(SearchDbMsgs.EXCEPTION_DURING_METHOD_CALL, "shutdownConnection", e.getLocalizedMessage());
+            logger.debug(SearchDbMsgs.EXCEPTION_DURING_METHOD_CALL, methodName, e.getLocalizedMessage());
         } finally {
             if (inputstream != null) {
                 try {
                     inputstream.close();
                 } catch (IOException e) {
-                    logger.debug(SearchDbMsgs.EXCEPTION_DURING_METHOD_CALL, "shutdownConnection",
-                            e.getLocalizedMessage());
+                    logger.debug(SearchDbMsgs.EXCEPTION_DURING_METHOD_CALL, methodName, e.getLocalizedMessage());
                 }
             }
         }
@@ -304,14 +316,13 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         try {
             outputstream = connection.getOutputStream();
         } catch (IOException e) {
-            logger.debug(SearchDbMsgs.EXCEPTION_DURING_METHOD_CALL, "shutdownConnection", e.getLocalizedMessage());
+            logger.debug(SearchDbMsgs.EXCEPTION_DURING_METHOD_CALL, methodName, e.getLocalizedMessage());
         } finally {
             if (outputstream != null) {
                 try {
                     outputstream.close();
                 } catch (IOException e) {
-                    logger.debug(SearchDbMsgs.EXCEPTION_DURING_METHOD_CALL, "shutdownConnection",
-                            e.getLocalizedMessage());
+                    logger.debug(SearchDbMsgs.EXCEPTION_DURING_METHOD_CALL, methodName, e.getLocalizedMessage());
                 }
             }
         }
@@ -347,7 +358,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
             conn.setRequestMethod("PUT");
         } catch (ProtocolException e) {
             shutdownConnection(conn);
-            throw new DocumentStoreOperationException("Failed to set HTTP request method to PUT.", e);
+            throw new DocumentStoreOperationException(MSG_HTTP_PUT_FAILED, e);
         }
 
         StringBuilder sb = new StringBuilder(128);
@@ -409,7 +420,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
             conn.setRequestMethod("PUT");
         } catch (ProtocolException e) {
             shutdownConnection(conn);
-            throw new DocumentStoreOperationException("Failed to set HTTP request method to PUT.", e);
+            throw new DocumentStoreOperationException(MSG_HTTP_PUT_FAILED, e);
         }
 
         try {
@@ -443,8 +454,9 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
             if (!isSuccess(indexExistsResult)) {
                 DocumentOperationResult opResult = new DocumentOperationResult();
                 opResult.setResultCode(Status.NOT_FOUND.getStatusCode());
-                opResult.setResult("Document Index '" + indexName + "' does not exist.");
-                opResult.setFailureCause("Document Index '" + indexName + "' does not exist.");
+                String resultMsg = "Document Index '" + indexName + "' does not exist.";
+                opResult.setResult(resultMsg);
+                opResult.setFailureCause(resultMsg);
                 return opResult;
             }
         }
@@ -486,7 +498,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
             conn.setRequestMethod("PUT");
         } catch (ProtocolException e) {
             shutdownConnection(conn);
-            throw new DocumentStoreOperationException("Failed to set HTTP request method to PUT.", e);
+            throw new DocumentStoreOperationException(MSG_HTTP_PUT_FAILED, e);
         }
 
         attachDocument(conn, document);
@@ -526,7 +538,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
             conn.setRequestMethod("POST");
         } catch (ProtocolException e) {
             shutdownConnection(conn);
-            throw new DocumentStoreOperationException("Failed to set HTTP request method to POST.", e);
+            throw new DocumentStoreOperationException(MSG_HTTP_POST_FAILED, e);
         }
 
         attachDocument(conn, document);
@@ -581,10 +593,10 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
             resultCode = conn.getResponseCode();
         } catch (IOException e) {
             shutdownConnection(conn);
-            throw new DocumentStoreOperationException("Failed to get the response code from the connection.", e);
+            throw new DocumentStoreOperationException(FAILED_TO_GET_THE_RESPONSE_CODE_FROM_THE_CONNECTION, e);
         }
 
-        logger.debug("Response Code : " + resultCode);
+        logger.debug(MSG_RESPONSE_CODE + resultCode);
 
         opResult.setResultCode(resultCode);
 
@@ -613,8 +625,9 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
             if (!isSuccess(indexExistsResult)) {
                 DocumentOperationResult opResult = new DocumentOperationResult();
                 opResult.setResultCode(Status.NOT_FOUND.getStatusCode());
-                opResult.setResult("Document Index '" + indexName + "' does not exist.");
-                opResult.setFailureCause("Document Index '" + indexName + "' does not exist.");
+                String resultMsg = "Document Index '" + indexName + "' does not exist.";
+                opResult.setResult(resultMsg);
+                opResult.setFailureCause(resultMsg);
                 return opResult;
             }
         }
@@ -628,16 +641,15 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         // Grab the current time so we can use it to generate a metrics log.
         MdcOverride override = getStartTime(new MdcOverride());
 
-        String fullUrl = getFullUrl(
-                "/" + indexName + "/" + DEFAULT_TYPE + "/" + document.getId() + "?version=" + document.getVersion(),
-                false);
+        String fullUrl = getFullUrl("/" + indexName + "/" + DEFAULT_TYPE + "/" + document.getId() + QUERY_PARAM_VERSION
+                + document.getVersion(), false);
         HttpURLConnection conn = initializeConnection(fullUrl);
 
         try {
             conn.setRequestMethod("PUT");
         } catch (ProtocolException e) {
             shutdownConnection(conn);
-            throw new DocumentStoreOperationException("Failed to set HTTP request method to PUT.", e);
+            throw new DocumentStoreOperationException(MSG_HTTP_PUT_FAILED, e);
         }
 
         attachDocument(conn, document);
@@ -670,9 +682,8 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         // Grab the current time so we can use it to generate a metrics log.
         MdcOverride override = getStartTime(new MdcOverride());
 
-        String fullUrl = getFullUrl(
-                "/" + indexName + "/" + DEFAULT_TYPE + "/" + document.getId() + "?version=" + document.getVersion(),
-                false);
+        String fullUrl = getFullUrl("/" + indexName + "/" + DEFAULT_TYPE + "/" + document.getId() + QUERY_PARAM_VERSION
+                + document.getVersion(), false);
         HttpURLConnection conn = initializeConnection(fullUrl);
 
         try {
@@ -719,9 +730,8 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         if (document.getVersion() == null) {
             fullUrl = getFullUrl("/" + indexName + "/" + DEFAULT_TYPE + "/" + document.getId(), false);
         } else {
-            fullUrl = getFullUrl(
-                    "/" + indexName + "/" + DEFAULT_TYPE + "/" + document.getId() + "?version=" + document.getVersion(),
-                    false);
+            fullUrl = getFullUrl("/" + indexName + "/" + DEFAULT_TYPE + "/" + document.getId() + QUERY_PARAM_VERSION
+                    + document.getVersion(), false);
         }
         HttpURLConnection conn = initializeConnection(fullUrl);
 
@@ -801,7 +811,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
             conn.setRequestMethod("POST");
         } catch (ProtocolException e) {
             shutdownConnection(conn);
-            throw new DocumentStoreOperationException("Failed to set HTTP request method to POST.", e);
+            throw new DocumentStoreOperationException(MSG_HTTP_POST_FAILED, e);
         }
 
         attachContent(conn, query);
@@ -849,7 +859,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
             conn.setRequestMethod("POST");
         } catch (ProtocolException e) {
             shutdownConnection(conn);
-            throw new DocumentStoreOperationException("Failed to set HTTP request method to POST.", e);
+            throw new DocumentStoreOperationException(MSG_HTTP_POST_FAILED, e);
         }
 
         attachContent(conn, query);
@@ -923,10 +933,10 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
             resultCode = conn.getResponseCode();
         } catch (IOException e) {
             shutdownConnection(conn);
-            throw new DocumentStoreOperationException("Failed to get the response code from the connection.", e);
+            throw new DocumentStoreOperationException(FAILED_TO_GET_THE_RESPONSE_CODE_FROM_THE_CONNECTION, e);
         }
 
-        logger.debug("Response Code : " + resultCode);
+        logger.debug(MSG_RESPONSE_CODE + resultCode);
 
         InputStream inputStream = null;
 
@@ -973,8 +983,8 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         String version = null;
         try {
             JSONObject root = (JSONObject) parser.parse(result);
-            if (root.get("_version") != null) {
-                version = root.get("_version").toString();
+            if (root.get(JSON_ATTR_VERSION) != null) {
+                version = root.get(JSON_ATTR_VERSION).toString();
             }
         } catch (ParseException e) {
             // Not all responses from ElasticSearch include a version, so
@@ -1024,13 +1034,13 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
     public OperationResult performBulkOperations(BulkRequest[] requests) throws DocumentStoreOperationException {
 
         if (logger.isDebugEnabled()) {
-            String dbgString = "ESController: performBulkOperations - Operations: ";
+            StringBuilder dbgString = new StringBuilder("ESController: performBulkOperations - Operations: ");
 
             for (BulkRequest request : requests) {
-                dbgString += "[" + request.toString() + "] ";
+                dbgString.append("[").append(request).append("] ");
             }
 
-            logger.debug(dbgString);
+            logger.debug(dbgString.toString());
         }
 
         // Grab the current time so we can use it to generate a metrics log.
@@ -1187,7 +1197,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
                 // correctly.
                 if (!ApiUtils.validateDocumentUri(request.getOperation().getMetaData().getUrl(), false)) {
                     fails.add(generateRejectionEntry(request.getOperationType(),
-                            "Invalid document URL: " + request.getOperation().getMetaData().getUrl(),
+                            MSG_INVALID_DOCUMENT_URL + request.getOperation().getMetaData().getUrl(),
                             request.getIndex(), "", 400, request.getOperation().getMetaData().getUrl()));
                     return false;
                 }
@@ -1197,8 +1207,8 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
                 if (!indexExists(ApiUtils.extractIndexFromUri(request.getOperation().getMetaData().getUrl()))) {
 
                     fails.add(generateRejectionEntry(request.getOperationType(),
-                            "Specified resource does not exist: " + request.getOperation().getMetaData().getUrl(),
-                            request.getIndex(), request.getId(), 404, request.getOperation().getMetaData().getUrl()));
+                            MSG_RESOURCE_MISSING + request.getOperation().getMetaData().getUrl(), request.getIndex(),
+                            request.getId(), 404, request.getOperation().getMetaData().getUrl()));
                     return false;
                 }
 
@@ -1239,7 +1249,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
                 // correctly.
                 if (!ApiUtils.validateDocumentUri(request.getOperation().getMetaData().getUrl(), true)) {
                     fails.add(generateRejectionEntry(request.getOperationType(),
-                            "Invalid document URL: " + request.getOperation().getMetaData().getUrl(),
+                            MSG_INVALID_DOCUMENT_URL + request.getOperation().getMetaData().getUrl(),
                             request.getIndex(), "", 400, request.getOperation().getMetaData().getUrl()));
                     return false;
                 }
@@ -1249,8 +1259,8 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
                 if (!indexExists(request.getIndex())) {
 
                     fails.add(generateRejectionEntry(request.getOperationType(),
-                            "Specified resource does not exist: " + request.getOperation().getMetaData().getUrl(),
-                            request.getIndex(), request.getId(), 404, request.getOperation().getMetaData().getUrl()));
+                            MSG_RESOURCE_MISSING + request.getOperation().getMetaData().getUrl(), request.getIndex(),
+                            request.getId(), 404, request.getOperation().getMetaData().getUrl()));
                     return false;
                 }
 
@@ -1259,8 +1269,8 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
                 if (!documentExists(request.getIndex(), request.getId())) {
 
                     fails.add(generateRejectionEntry(request.getOperationType(),
-                            "Specified resource does not exist: " + request.getOperation().getMetaData().getUrl(),
-                            request.getIndex(), request.getId(), 404, request.getOperation().getMetaData().getUrl()));
+                            MSG_RESOURCE_MISSING + request.getOperation().getMetaData().getUrl(), request.getIndex(),
+                            request.getId(), 404, request.getOperation().getMetaData().getUrl()));
                     return false;
                 }
 
@@ -1292,7 +1302,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
                 // correctly.
                 if (!ApiUtils.validateDocumentUri(request.getOperation().getMetaData().getUrl(), true)) {
                     fails.add(generateRejectionEntry(request.getOperationType(),
-                            "Invalid document URL: " + request.getOperation().getMetaData().getUrl(),
+                            MSG_INVALID_DOCUMENT_URL + request.getOperation().getMetaData().getUrl(),
                             request.getIndex(), "", 400, request.getOperation().getMetaData().getUrl()));
                     return false;
                 }
@@ -1302,8 +1312,8 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
                 if (!indexExists(request.getIndex())) {
 
                     fails.add(generateRejectionEntry(request.getOperationType(),
-                            "Specified resource does not exist: " + request.getOperation().getMetaData().getUrl(),
-                            request.getIndex(), request.getId(), 404, request.getOperation().getMetaData().getUrl()));
+                            MSG_RESOURCE_MISSING + request.getOperation().getMetaData().getUrl(), request.getIndex(),
+                            request.getId(), 404, request.getOperation().getMetaData().getUrl()));
                     return false;
                 }
 
@@ -1312,8 +1322,8 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
                 if (!documentExists(request.getIndex(), request.getId())) {
 
                     fails.add(generateRejectionEntry(request.getOperationType(),
-                            "Specified resource does not exist: " + request.getOperation().getMetaData().getUrl(),
-                            request.getIndex(), request.getId(), 404, request.getOperation().getMetaData().getUrl()));
+                            MSG_RESOURCE_MISSING + request.getOperation().getMetaData().getUrl(), request.getIndex(),
+                            request.getId(), 404, request.getOperation().getMetaData().getUrl()));
                     return false;
                 }
 
@@ -1498,9 +1508,9 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
             resultCode = conn.getResponseCode();
         } catch (IOException e) {
             shutdownConnection(conn);
-            throw new DocumentStoreOperationException("Failed to get the response code from the connection.", e);
+            throw new DocumentStoreOperationException(FAILED_TO_GET_THE_RESPONSE_CODE_FROM_THE_CONNECTION, e);
         }
-        logger.debug("Response Code : " + resultCode);
+        logger.debug(MSG_RESPONSE_CODE + resultCode);
 
         opResult.setResultCode(resultCode);
 
@@ -1535,17 +1545,16 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
             } else {
                 // Error response object
-                JSONObject error = (JSONObject) root.get("error");
+                JSONObject error = (JSONObject) root.get(JSON_ATTR_ERROR);
                 if (error != null) {
-                    result.setError(new ErrorResult(error.get("type").toString(), error.get("reason").toString()));
+                    result.setError(
+                            new ErrorResult(error.get("type").toString(), error.get(JSON_ATTR_REASON).toString()));
                 }
 
             }
         } catch (Exception e) {
-            throw new DocumentStoreOperationException("Failed to parse Elastic Search response." + result.getResult());
+            throw new DocumentStoreOperationException(FAILED_TO_PARSE_ELASTIC_SEARCH_RESPONSE + result.getResult());
         }
-
-
     }
 
     private String buildDocumentResponseUrl(String index, String id) {
@@ -1571,8 +1580,8 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
                     SearchHit searchHit = new SearchHit();
                     searchHit.setScore((hit.get("_score") != null) ? hit.get("_score").toString() : "");
                     Document doc = new Document();
-                    if (hit.get("_version") != null) {
-                        doc.setEtag((hit.get("_version") != null) ? hit.get("_version").toString() : "");
+                    if (hit.get(JSON_ATTR_VERSION) != null) {
+                        doc.setEtag((hit.get(JSON_ATTR_VERSION) != null) ? hit.get(JSON_ATTR_VERSION).toString() : "");
                     }
 
                     doc.setUrl(
@@ -1594,13 +1603,14 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
                 // success
             } else {
-                JSONObject error = (JSONObject) root.get("error");
+                JSONObject error = (JSONObject) root.get(JSON_ATTR_ERROR);
                 if (error != null) {
-                    result.setError(new ErrorResult(error.get("type").toString(), error.get("reason").toString()));
+                    result.setError(
+                            new ErrorResult(error.get("type").toString(), error.get(JSON_ATTR_REASON).toString()));
                 }
             }
         } catch (Exception e) {
-            throw new DocumentStoreOperationException("Failed to parse Elastic Search response." + result.getResult());
+            throw new DocumentStoreOperationException(FAILED_TO_PARSE_ELASTIC_SEARCH_RESPONSE + result.getResult());
         }
 
     }
@@ -1626,8 +1636,8 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
                     suggestHit.setScore((hit.get("score") != null) ? hit.get("score").toString() : "");
                     suggestHit.setText((hit.get("text") != null) ? hit.get("text").toString() : "");
                     Document doc = new Document();
-                    if (hit.get("_version") != null) {
-                        doc.setEtag((hit.get("_version") != null) ? hit.get("_version").toString() : "");
+                    if (hit.get(JSON_ATTR_VERSION) != null) {
+                        doc.setEtag((hit.get(JSON_ATTR_VERSION) != null) ? hit.get(JSON_ATTR_VERSION).toString() : "");
                     }
                     doc.setUrl(
                             buildDocumentResponseUrl(index, (hit.get("_id") != null) ? hit.get("_id").toString() : ""));
@@ -1649,13 +1659,14 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
                 // success
             } else {
-                JSONObject error = (JSONObject) root.get("error");
+                JSONObject error = (JSONObject) root.get(JSON_ATTR_ERROR);
                 if (error != null) {
-                    result.setError(new ErrorResult(error.get("type").toString(), error.get("reason").toString()));
+                    result.setError(
+                            new ErrorResult(error.get("type").toString(), error.get(JSON_ATTR_REASON).toString()));
                 }
             }
         } catch (Exception e) {
-            throw new DocumentStoreOperationException("Failed to parse Elastic Search response." + result.getResult());
+            throw new DocumentStoreOperationException(FAILED_TO_PARSE_ELASTIC_SEARCH_RESPONSE + result.getResult());
         }
     }
 }
