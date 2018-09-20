@@ -21,6 +21,10 @@
 
 package org.onap.aai.sa.searchdbabstraction.elasticsearch.dao;
 
+import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
+import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -47,6 +51,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.Response.Status.Family;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -80,7 +86,6 @@ import org.onap.aai.sa.searchdbabstraction.util.AggregationParsingUtil;
 import org.onap.aai.sa.searchdbabstraction.util.DocumentSchemaUtil;
 import org.onap.aai.sa.searchdbabstraction.util.ElasticSearchPayloadTranslator;
 import org.onap.aai.sa.searchdbabstraction.util.SearchDbConstants;
-import org.springframework.http.HttpStatus;
 
 /**
  * This class has the Elasticsearch implementation of the DB operations defined in DocumentStoreInterface.
@@ -116,7 +121,6 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         synchronized (ElasticSearchHttpController.class) {
 
             if (instance == null) {
-
                 Properties properties = new Properties();
                 File file = new File(SearchDbConstants.ES_CONFIG_FILE);
                 try {
@@ -155,9 +159,8 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
     @Override
     public OperationResult createIndex(String index, DocumentSchema documentSchema) {
-
         OperationResult result = new OperationResult();
-        result.setResultCode(500);
+        result.setResultCode(Status.INTERNAL_SERVER_ERROR.getStatusCode());
 
         try {
 
@@ -168,13 +171,14 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
             // ElasticSearch will return us a 200 code on success when we
             // want to report a 201, so translate the result here.
-            result.setResultCode((result.getResultCode() == 200) ? 201 : result.getResultCode());
+            if (result.getResultCode() == Status.OK.getStatusCode()) {
+                result.setResultCode(Status.CREATED.getStatusCode());
+            }
+
             if (isSuccess(result)) {
                 result.setResult("{\"url\": \"" + ApiUtils.buildIndexUri(index) + "\"}");
             }
-
         } catch (DocumentStoreOperationException | IOException e) {
-
             result.setFailureCause("Document store operation failure.  Cause: " + e.getMessage());
         }
 
@@ -184,14 +188,16 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
     @Override
     public OperationResult createDynamicIndex(String index, String dynamicSchema) {
         OperationResult result = new OperationResult();
-        result.setResultCode(500);
+        result.setResultCode(Status.INTERNAL_SERVER_ERROR.getStatusCode());
 
         try {
             result = createTable(index, dynamicSchema);
 
             // ElasticSearch will return us a 200 code on success when we
             // want to report a 201, so translate the result here.
-            result.setResultCode((result.getResultCode() == 200) ? 201 : result.getResultCode());
+            if (result.getResultCode() == Status.OK.getStatusCode()) {
+                result.setResultCode(Status.CREATED.getStatusCode());
+            }
             if (isSuccess(result)) {
                 result.setResult("{\"url\": \"" + ApiUtils.buildIndexUri(index) + "\"}");
             }
@@ -202,13 +208,12 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         return result;
     }
 
-
     @Override
     public OperationResult deleteIndex(String indexName) throws DocumentStoreOperationException {
 
         // Initialize operation result with a failure codes / fault string
         OperationResult opResult = new OperationResult();
-        opResult.setResultCode(500);
+        opResult.setResultCode(Status.INTERNAL_SERVER_ERROR.getStatusCode());
         opResult.setResult(INTERNAL_SERVER_ERROR_ELASTIC_SEARCH_OPERATION_FAULT);
 
         // Grab the current time so we can use it to generate a metrics log.
@@ -240,9 +245,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         return opResult;
     }
 
-
-    private OperationResult checkConnection() throws Exception {
-
+    private OperationResult checkConnection() throws IOException {
         String fullUrl = getFullUrl("/_cluster/health", false);
         URL url = null;
         HttpURLConnection conn = null;
@@ -331,7 +334,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         OperationResult opResult = new OperationResult();
 
         // Initialize operation result with a failure codes / fault string
-        opResult.setResultCode(500);
+        opResult.setResultCode(Status.INTERNAL_SERVER_ERROR.getStatusCode());
         opResult.setResult(INTERNAL_SERVER_ERROR_ELASTIC_SEARCH_OPERATION_FAULT);
 
         // Grab the current time so we can use it to generate a metrics log.
@@ -393,7 +396,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
     protected OperationResult createTable(String indexName, String settingsAndMappings)
             throws DocumentStoreOperationException {
         OperationResult result = new OperationResult();
-        result.setResultCode(500);
+        result.setResultCode(Status.INTERNAL_SERVER_ERROR.getStatusCode());
         result.setResult(INTERNAL_SERVER_ERROR_ELASTIC_SEARCH_OPERATION_FAULT);
 
         // Grab the current time so we can use it to generate a metrics log.
@@ -432,16 +435,14 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
             boolean allowImplicitIndexCreation) throws DocumentStoreOperationException {
 
         if (!allowImplicitIndexCreation) {
-
             // Before we do anything, make sure that the specified index actually exists in the
             // document store - we don't want to rely on ElasticSearch to fail the document
             // create because it could be configured to implicitly create a non-existent index,
             // which can lead to hard-to-debug behaviour with queries down the road.
             OperationResult indexExistsResult = checkIndexExistence(indexName);
-            if ((indexExistsResult.getResultCode() < 200) || (indexExistsResult.getResultCode() >= 300)) {
-
+            if (!isSuccess(indexExistsResult)) {
                 DocumentOperationResult opResult = new DocumentOperationResult();
-                opResult.setResultCode(HttpStatus.NOT_FOUND.value());
+                opResult.setResultCode(Status.NOT_FOUND.getStatusCode());
                 opResult.setResult("Document Index '" + indexName + "' does not exist.");
                 opResult.setFailureCause("Document Index '" + indexName + "' does not exist.");
                 return opResult;
@@ -460,20 +461,19 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         // check if the document already exists
         DocumentOperationResult opResult = checkDocumentExistence(indexName, document.getId());
 
-
-        if (opResult.getResultCode() != HttpStatus.NOT_FOUND.value()) {
-            if (opResult.getResultCode() == HttpStatus.CONFLICT.value()) {
+        if (opResult.getResultCode() != Status.NOT_FOUND.getStatusCode()) {
+            if (opResult.getResultCode() == Status.CONFLICT.getStatusCode()) {
                 opResult.setFailureCause("A document with the same id already exists.");
             } else {
                 opResult.setFailureCause("Failed to verify a document with the specified id does not already exist.");
             }
-            opResult.setResultCode(HttpStatus.CONFLICT.value());
+            opResult.setResultCode(Status.CONFLICT.getStatusCode());
             return opResult;
         }
 
         opResult = new DocumentOperationResult();
         // Initialize operation result with a failure codes / fault string
-        opResult.setResultCode(500);
+        opResult.setResultCode(Status.INTERNAL_SERVER_ERROR.getStatusCode());
         opResult.setResult(INTERNAL_SERVER_ERROR_ELASTIC_SEARCH_OPERATION_FAULT);
 
         // Grab the current time so we can use it to generate a metrics log.
@@ -506,7 +506,6 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         shutdownConnection(conn);
 
         return opResult;
-
     }
 
     private DocumentOperationResult createDocumentWithoutId(String indexName, DocumentStoreDataEntity document)
@@ -514,7 +513,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
         DocumentOperationResult response = new DocumentOperationResult();
         // Initialize operation result with a failure codes / fault string
-        response.setResultCode(500);
+        response.setResultCode(Status.INTERNAL_SERVER_ERROR.getStatusCode());
         response.setResult(INTERNAL_SERVER_ERROR_ELASTIC_SEARCH_OPERATION_FAULT);
 
         // Grab the current time so we can use it to generate a metrics log.
@@ -560,7 +559,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         DocumentOperationResult opResult = new DocumentOperationResult();
 
         // Initialize operation result with a failure codes / fault string
-        opResult.setResultCode(500);
+        opResult.setResultCode(Status.INTERNAL_SERVER_ERROR.getStatusCode());
 
         // Grab the current time so we can use it to generate a metrics log.
         MdcOverride override = getStartTime(new MdcOverride());
@@ -611,10 +610,9 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
             // create because it could be configured to implicitly create a non-existent index,
             // which can lead to hard-to-debug behaviour with queries down the road.
             OperationResult indexExistsResult = checkIndexExistence(indexName);
-            if ((indexExistsResult.getResultCode() < 200) || (indexExistsResult.getResultCode() >= 300)) {
-
+            if (!isSuccess(indexExistsResult)) {
                 DocumentOperationResult opResult = new DocumentOperationResult();
-                opResult.setResultCode(HttpStatus.NOT_FOUND.value());
+                opResult.setResultCode(Status.NOT_FOUND.getStatusCode());
                 opResult.setResult("Document Index '" + indexName + "' does not exist.");
                 opResult.setFailureCause("Document Index '" + indexName + "' does not exist.");
                 return opResult;
@@ -624,7 +622,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         DocumentOperationResult opResult = new DocumentOperationResult();
 
         // Initialize operation result with a failure codes / fault string
-        opResult.setResultCode(500);
+        opResult.setResultCode(Status.INTERNAL_SERVER_ERROR.getStatusCode());
         opResult.setResult(INTERNAL_SERVER_ERROR_ELASTIC_SEARCH_OPERATION_FAULT);
 
         // Grab the current time so we can use it to generate a metrics log.
@@ -666,7 +664,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         DocumentOperationResult opResult = new DocumentOperationResult();
 
         // Initialize operation result with a failure codes / fault string
-        opResult.setResultCode(500);
+        opResult.setResultCode(Status.INTERNAL_SERVER_ERROR.getStatusCode());
         opResult.setResult(INTERNAL_SERVER_ERROR_ELASTIC_SEARCH_OPERATION_FAULT);
 
         // Grab the current time so we can use it to generate a metrics log.
@@ -711,7 +709,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         DocumentOperationResult opResult = new DocumentOperationResult();
 
         // Initialize operation result with a failure codes / fault string
-        opResult.setResultCode(500);
+        opResult.setResultCode(Status.INTERNAL_SERVER_ERROR.getStatusCode());
         opResult.setResult(INTERNAL_SERVER_ERROR_ELASTIC_SEARCH_OPERATION_FAULT);
 
         // Grab the current time so we can use it to generate a metrics log.
@@ -748,7 +746,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         SearchOperationResult opResult = new SearchOperationResult();
 
         // Initialize operation result with a failure codes / fault string
-        opResult.setResultCode(500);
+        opResult.setResultCode(Status.INTERNAL_SERVER_ERROR.getStatusCode());
         opResult.setResult(INTERNAL_SERVER_ERROR_ELASTIC_SEARCH_OPERATION_FAULT);
 
         String fullUrl = getFullUrl("/" + indexName + "/_search" + "?" + queryString, false);
@@ -789,7 +787,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         }
 
         // Initialize operation result with a failure codes / fault string
-        opResult.setResultCode(500);
+        opResult.setResultCode(Status.INTERNAL_SERVER_ERROR.getStatusCode());
         opResult.setResult(INTERNAL_SERVER_ERROR_ELASTIC_SEARCH_OPERATION_FAULT);
 
         String fullUrl = getFullUrl("/" + indexName + "/_search", false);
@@ -837,7 +835,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         }
 
         // Initialize operation result with a failure codes / fault string
-        opResult.setResultCode(500);
+        opResult.setResultCode(Status.INTERNAL_SERVER_ERROR.getStatusCode());
         opResult.setResult(INTERNAL_SERVER_ERROR_ELASTIC_SEARCH_OPERATION_FAULT);
 
         String fullUrl = getFullUrl("/" + indexName + "/_suggest", false);
@@ -907,7 +905,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
         try {
             conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setRequestProperty(CONTENT_TYPE, APPLICATION_JSON);
             conn.setDoOutput(true);
         } catch (IOException e) {
             shutdownConnection(conn);
@@ -919,7 +917,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
     private void handleResponse(HttpURLConnection conn, OperationResult opResult)
             throws DocumentStoreOperationException {
-        int resultCode = 200;
+        int resultCode;
 
         try {
             resultCode = conn.getResponseCode();
@@ -932,7 +930,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
         InputStream inputStream = null;
 
-        if (!(resultCode >= 200 && resultCode <= 299)) { // 2xx response indicates success
+        if (!isSuccessCode(resultCode)) {
             inputStream = conn.getErrorStream();
         } else {
             try {
@@ -958,8 +956,8 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
             throw new DocumentStoreOperationException("Failed getting the response body payload.", e);
         }
 
-        if (resultCode == HttpStatus.CONFLICT.value()) {
-            opResult.setResultCode(HttpStatus.PRECONDITION_FAILED.value());
+        if (resultCode == Status.CONFLICT.getStatusCode()) {
+            opResult.setResultCode(Status.PRECONDITION_FAILED.getStatusCode());
         } else {
             opResult.setResultCode(resultCode);
         }
@@ -1015,15 +1013,12 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
     }
 
     private boolean isSuccess(OperationResult result) {
-
         return isSuccessCode(result.getResultCode());
     }
 
-
     private boolean isSuccessCode(int statusCode) {
-        return ((statusCode >= 200) && (statusCode < 300));
+        return Family.familyOf(statusCode).equals(Family.SUCCESSFUL);
     }
-
 
     @Override
     public OperationResult performBulkOperations(BulkRequest[] requests) throws DocumentStoreOperationException {
@@ -1068,7 +1063,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("PUT");
                 conn.setDoOutput(true);
-                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                conn.setRequestProperty(CONTENT_TYPE, APPLICATION_FORM_URLENCODED);
                 conn.setRequestProperty("Connection", "Close");
 
             } catch (IOException e) {
@@ -1149,7 +1144,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         // In the success case we don't want the entire result string to be
         // dumped into the metrics log, so concatenate it.
         String resultStringForMetricsLog = result.getResult();
-        if ((result.getResultCode() >= 200) && (result.getResultCode() < 300)) {
+        if (isSuccess(result)) {
             resultStringForMetricsLog =
                     resultStringForMetricsLog.substring(0, Math.max(resultStringForMetricsLog.length(), 85)) + "...";
         }
@@ -1342,17 +1337,11 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
     }
 
     private boolean indexExists(String index) throws DocumentStoreOperationException {
-
-        OperationResult indexExistsResult = checkIndexExistence(index);
-
-        return ((indexExistsResult.getResultCode() >= 200) && (indexExistsResult.getResultCode() < 300));
+        return isSuccess(checkIndexExistence(index));
     }
 
     private boolean documentExists(String index, String id) throws DocumentStoreOperationException {
-
-        OperationResult docExistsResult = checkDocumentExistence(index, id);
-
-        return ((docExistsResult.getResultCode() >= 200) && (docExistsResult.getResultCode() < 300));
+        return isSuccess(checkDocumentExistence(index, id));
     }
 
     /**
@@ -1486,7 +1475,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
         // Initialize operation result with a failure codes / fault string
         OperationResult opResult = new OperationResult();
-        opResult.setResultCode(500);
+        opResult.setResultCode(Status.INTERNAL_SERVER_ERROR.getStatusCode());
 
         // Grab the current time so we can use it to generate a metrics log.
         MdcOverride override = getStartTime(new MdcOverride());
@@ -1535,8 +1524,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         JSONObject root;
         try {
             root = (JSONObject) parser.parse(result.getResult());
-
-            if (result.getResultCode() >= 200 && result.getResultCode() <= 299) {
+            if (isSuccess(result)) {
                 // Success response object
                 Document doc = new Document();
                 doc.setEtag(result.getResultVersion());
@@ -1571,7 +1559,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
         try {
             root = (JSONObject) parser.parse(result.getResult());
-            if (result.getResultCode() >= 200 && result.getResultCode() <= 299) {
+            if (isSuccess(result)) {
                 JSONObject hits = (JSONObject) root.get("hits");
                 JSONArray hitArray = (JSONArray) hits.get("hits");
                 SearchHits searchHits = new SearchHits();
@@ -1622,7 +1610,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         JSONObject root;
         try {
             root = (JSONObject) parser.parse(result.getResult());
-            if (result.getResultCode() >= 200 && result.getResultCode() <= 299) {
+            if (isSuccess(result)) {
                 JSONArray hitArray = (JSONArray) root.get("suggest-vnf");
                 JSONObject hitdata = (JSONObject) hitArray.get(0);
                 JSONArray optionsArray = (JSONArray) hitdata.get("options");
