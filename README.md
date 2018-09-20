@@ -1,5 +1,7 @@
 # Search Data Service Micro Service
 
+[![alt text](https://bestpractices.coreinfrastructure.org/projects/1737/badge)](https://bestpractices.coreinfrastructure.org/projects/1737)
+
 ## Overview
 The _Search Data Service_ acts as an abstraction layer for clients which have a need to interact with data which is most suitably persisted in a searchable document store.  The purpose of imposing an abstraction service between the client and the document store itself is to decouple clients from any direct knowledge of any specific document store technology, allowing the underlying technology to be swapped out without a direct impact to any clients which interact with search data.
 
