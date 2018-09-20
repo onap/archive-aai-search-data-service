@@ -103,6 +103,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
     private static final String JSON_ATTR_ERROR = "error";
     private static final String JSON_ATTR_REASON = "reason";
 
+    private static final String DEFAULT_TYPE = "default";
     private static final String QUERY_PARAM_VERSION = "?version=";
 
     private static final String MSG_RESOURCE_MISSING = "Specified resource does not exist: ";
@@ -127,9 +128,22 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
     private final ElasticSearchConfig config;
 
-    private static final String DEFAULT_TYPE = "default";
-
     protected AnalysisConfiguration analysisConfig;
+
+
+    public ElasticSearchHttpController(ElasticSearchConfig config) {
+        this.config = config;
+        analysisConfig = new AnalysisConfiguration();
+
+        try {
+            logger.info(SearchDbMsgs.ELASTIC_SEARCH_CONNECTION_ATTEMPT, getFullUrl("", false));
+            checkConnection();
+            logger.info(SearchDbMsgs.ELASTIC_SEARCH_CONNECTION_SUCCESS, getFullUrl("", false));
+        } catch (Exception e) {
+            logger.error(SearchDbMsgs.ELASTIC_SEARCH_CONNECTION_FAILURE, null, e, getFullUrl("", false),
+                    e.getMessage());
+        }
+    }
 
     public static ElasticSearchHttpController getInstance() {
         synchronized (ElasticSearchHttpController.class) {
@@ -151,20 +165,6 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         return instance;
     }
 
-    public ElasticSearchHttpController(ElasticSearchConfig config) {
-        this.config = config;
-        analysisConfig = new AnalysisConfiguration();
-
-        try {
-            logger.info(SearchDbMsgs.ELASTIC_SEARCH_CONNECTION_ATTEMPT, getFullUrl("", false));
-            checkConnection();
-            logger.info(SearchDbMsgs.ELASTIC_SEARCH_CONNECTION_SUCCESS, getFullUrl("", false));
-        } catch (Exception e) {
-            logger.error(SearchDbMsgs.ELASTIC_SEARCH_CONNECTION_FAILURE, null, e, getFullUrl("", false),
-                    e.getMessage());
-        }
-    }
-
     public AnalysisConfiguration getAnalysisConfig() {
         return analysisConfig;
     }
@@ -175,7 +175,6 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         result.setResultCode(Status.INTERNAL_SERVER_ERROR.getStatusCode());
 
         try {
-
             // Submit the request to ElasticSearch to create the index using a
             // default document type.
             result = createTable(index, DEFAULT_TYPE, analysisConfig.getEsIndexSettings(),
@@ -245,12 +244,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
         handleResponse(conn, opResult);
 
-        // Generate a metrics log so we can track how long the operation took.
-        metricsLogger
-                .info(SearchDbMsgs.DELETE_INDEX_TIME,
-                        new LogFields().setField(LogLine.DefinedFields.RESPONSE_CODE, opResult.getResultCode())
-                                .setField(LogLine.DefinedFields.RESPONSE_DESCRIPTION, opResult.getResult()),
-                        override, indexName);
+        logMetricsInfo(override, SearchDbMsgs.DELETE_INDEX_TIME, opResult, indexName);
 
         shutdownConnection(conn);
 
@@ -385,12 +379,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
         shutdownConnection(conn);
 
-        // Generate a metrics log so we can track how long the operation took.
-        metricsLogger
-                .info(SearchDbMsgs.CREATE_INDEX_TIME,
-                        new LogFields().setField(LogLine.DefinedFields.RESPONSE_CODE, opResult.getResultCode())
-                                .setField(LogLine.DefinedFields.RESPONSE_DESCRIPTION, opResult.getResultCode()),
-                        override, indexName);
+        logMetricsInfo(override, SearchDbMsgs.CREATE_INDEX_TIME, opResult, indexName);
 
         return opResult;
     }
@@ -431,12 +420,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         }
         handleResponse(conn, result);
 
-        // Generate a metrics log so we can track how long the operation took.
-        metricsLogger
-                .info(SearchDbMsgs.CREATE_INDEX_TIME,
-                        new LogFields().setField(LogLine.DefinedFields.RESPONSE_CODE, result.getResultCode())
-                                .setField(LogLine.DefinedFields.RESPONSE_DESCRIPTION, result.getResultCode()),
-                        override, indexName);
+        logMetricsInfo(override, SearchDbMsgs.CREATE_INDEX_TIME, result, indexName);
 
         return result;
     }
@@ -483,10 +467,6 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
             return opResult;
         }
 
-        opResult = new DocumentOperationResult();
-        // Initialize operation result with a failure codes / fault string
-        opResult.setResultCode(Status.INTERNAL_SERVER_ERROR.getStatusCode());
-        opResult.setResult(INTERNAL_SERVER_ERROR_ELASTIC_SEARCH_OPERATION_FAULT);
 
         // Grab the current time so we can use it to generate a metrics log.
         MdcOverride override = getStartTime(new MdcOverride());
@@ -505,15 +485,10 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
         logger.debug("Sending 'PUT' request to: " + conn.getURL());
 
-        handleResponse(conn, opResult);
+        opResult = getOperationResult(conn);
         buildDocumentResult(opResult, indexName);
 
-        // Generate a metrics log so we can track how long the operation took.
-        metricsLogger
-                .info(SearchDbMsgs.CREATE_DOCUMENT_TIME,
-                        new LogFields().setField(LogLine.DefinedFields.RESPONSE_CODE, opResult.getResultCode())
-                                .setField(LogLine.DefinedFields.RESPONSE_DESCRIPTION, opResult.getResult()),
-                        override, indexName);
+        logMetricsInfo(override, SearchDbMsgs.CREATE_DOCUMENT_TIME, opResult, indexName);
 
         shutdownConnection(conn);
 
@@ -522,12 +497,6 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
     private DocumentOperationResult createDocumentWithoutId(String indexName, DocumentStoreDataEntity document)
             throws DocumentStoreOperationException {
-
-        DocumentOperationResult response = new DocumentOperationResult();
-        // Initialize operation result with a failure codes / fault string
-        response.setResultCode(Status.INTERNAL_SERVER_ERROR.getStatusCode());
-        response.setResult(INTERNAL_SERVER_ERROR_ELASTIC_SEARCH_OPERATION_FAULT);
-
         // Grab the current time so we can use it to generate a metrics log.
         MdcOverride override = getStartTime(new MdcOverride());
 
@@ -545,15 +514,10 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
         logger.debug("Sending 'POST' request to: " + conn.getURL());
 
-        handleResponse(conn, response);
+        DocumentOperationResult response = getOperationResult(conn);
         buildDocumentResult(response, indexName);
 
-        // Generate a metrics log so we can track how long the operation took.
-        metricsLogger
-                .info(SearchDbMsgs.CREATE_DOCUMENT_TIME,
-                        new LogFields().setField(LogLine.DefinedFields.RESPONSE_CODE, response.getResultCode())
-                                .setField(LogLine.DefinedFields.RESPONSE_DESCRIPTION, response.getResult()),
-                        override, indexName);
+        logMetricsInfo(override, SearchDbMsgs.CREATE_DOCUMENT_TIME, response, indexName);
 
         shutdownConnection(conn);
 
@@ -568,11 +532,6 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
     private DocumentOperationResult checkDocumentExistence(String indexName, String docId)
             throws DocumentStoreOperationException {
-        DocumentOperationResult opResult = new DocumentOperationResult();
-
-        // Initialize operation result with a failure codes / fault string
-        opResult.setResultCode(Status.INTERNAL_SERVER_ERROR.getStatusCode());
-
         // Grab the current time so we can use it to generate a metrics log.
         MdcOverride override = getStartTime(new MdcOverride());
 
@@ -598,14 +557,10 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
         logger.debug(MSG_RESPONSE_CODE + resultCode);
 
+        DocumentOperationResult opResult = createDefaultOperationResult();
         opResult.setResultCode(resultCode);
 
-        // Generate a metrics log so we can track how long the operation took.
-        metricsLogger
-                .info(SearchDbMsgs.GET_DOCUMENT_TIME,
-                        new LogFields().setField(LogLine.DefinedFields.RESPONSE_CODE, opResult.getResultCode())
-                                .setField(LogLine.DefinedFields.RESPONSE_DESCRIPTION, opResult.getResult()),
-                        override, indexName, docId);
+        logMetricsInfo(override, SearchDbMsgs.GET_DOCUMENT_TIME, opResult, indexName, docId);
 
         shutdownConnection(conn);
 
@@ -632,12 +587,6 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
             }
         }
 
-        DocumentOperationResult opResult = new DocumentOperationResult();
-
-        // Initialize operation result with a failure codes / fault string
-        opResult.setResultCode(Status.INTERNAL_SERVER_ERROR.getStatusCode());
-        opResult.setResult(INTERNAL_SERVER_ERROR_ELASTIC_SEARCH_OPERATION_FAULT);
-
         // Grab the current time so we can use it to generate a metrics log.
         MdcOverride override = getStartTime(new MdcOverride());
 
@@ -656,14 +605,10 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
         logger.debug("Sending 'PUT' request to: " + conn.getURL());
 
-        handleResponse(conn, opResult);
+        DocumentOperationResult opResult = getOperationResult(conn);
         buildDocumentResult(opResult, indexName);
 
-        // Generate a metrics log so we can track how long the operation took.
-        metricsLogger.info(SearchDbMsgs.UPDATE_DOCUMENT_TIME,
-                new LogFields().setField(LogLine.DefinedFields.RESPONSE_CODE, opResult.getResultCode())
-                        .setField(LogLine.DefinedFields.RESPONSE_DESCRIPTION, opResult.getResult()),
-                override, indexName, document.getId());
+        logMetricsInfo(override, SearchDbMsgs.UPDATE_DOCUMENT_TIME, opResult, indexName, document.getId());
 
         shutdownConnection(conn);
 
@@ -673,12 +618,6 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
     @Override
     public DocumentOperationResult deleteDocument(String indexName, DocumentStoreDataEntity document)
             throws DocumentStoreOperationException {
-        DocumentOperationResult opResult = new DocumentOperationResult();
-
-        // Initialize operation result with a failure codes / fault string
-        opResult.setResultCode(Status.INTERNAL_SERVER_ERROR.getStatusCode());
-        opResult.setResult(INTERNAL_SERVER_ERROR_ELASTIC_SEARCH_OPERATION_FAULT);
-
         // Grab the current time so we can use it to generate a metrics log.
         MdcOverride override = getStartTime(new MdcOverride());
 
@@ -695,7 +634,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
         logger.debug("\nSending 'DELETE' request to " + conn.getURL());
 
-        handleResponse(conn, opResult);
+        DocumentOperationResult opResult = getOperationResult(conn);
         buildDocumentResult(opResult, indexName);
         // supress the etag and url in response for delete as they are not required
         if (opResult.getDocument() != null) {
@@ -703,11 +642,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
             opResult.getDocument().setUrl(null);
         }
 
-        // Generate a metrics log so we can track how long the operation took.
-        metricsLogger.info(SearchDbMsgs.DELETE_DOCUMENT_TIME,
-                new LogFields().setField(LogLine.DefinedFields.RESPONSE_CODE, opResult.getResult())
-                        .setField(LogLine.DefinedFields.RESPONSE_DESCRIPTION, opResult.getResultCode()),
-                override, indexName, document.getId());
+        logMetricsInfo(override, SearchDbMsgs.DELETE_DOCUMENT_TIME, opResult, indexName, document.getId());
 
         shutdownConnection(conn);
 
@@ -717,12 +652,6 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
     @Override
     public DocumentOperationResult getDocument(String indexName, DocumentStoreDataEntity document)
             throws DocumentStoreOperationException {
-        DocumentOperationResult opResult = new DocumentOperationResult();
-
-        // Initialize operation result with a failure codes / fault string
-        opResult.setResultCode(Status.INTERNAL_SERVER_ERROR.getStatusCode());
-        opResult.setResult(INTERNAL_SERVER_ERROR_ELASTIC_SEARCH_OPERATION_FAULT);
-
         // Grab the current time so we can use it to generate a metrics log.
         MdcOverride override = getStartTime(new MdcOverride());
 
@@ -737,14 +666,10 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
         logger.debug("\nSending 'GET' request to: " + conn.getURL());
 
-        handleResponse(conn, opResult);
+        DocumentOperationResult opResult = getOperationResult(conn);
         buildDocumentResult(opResult, indexName);
 
-        // Generate a metrics log so we can track how long the operation took.
-        metricsLogger.info(SearchDbMsgs.GET_DOCUMENT_TIME,
-                new LogFields().setField(LogLine.DefinedFields.RESPONSE_CODE, opResult.getResultCode())
-                        .setField(LogLine.DefinedFields.RESPONSE_DESCRIPTION, opResult.getResult()),
-                override, indexName, document.getId());
+        logMetricsInfo(override, SearchDbMsgs.GET_DOCUMENT_TIME, opResult, indexName, document.getId());
 
         shutdownConnection(conn);
 
@@ -753,11 +678,6 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
     @Override
     public SearchOperationResult search(String indexName, String queryString) throws DocumentStoreOperationException {
-        SearchOperationResult opResult = new SearchOperationResult();
-
-        // Initialize operation result with a failure codes / fault string
-        opResult.setResultCode(Status.INTERNAL_SERVER_ERROR.getStatusCode());
-        opResult.setResult(INTERNAL_SERVER_ERROR_ELASTIC_SEARCH_OPERATION_FAULT);
 
         String fullUrl = getFullUrl("/" + indexName + "/_search" + "?" + queryString, false);
 
@@ -775,14 +695,10 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
         logger.debug("\nsearch(), Sending 'GET' request to URL : " + conn.getURL());
 
-        handleResponse(conn, opResult);
+        SearchOperationResult opResult = getSearchOperationResult(conn);
         buildSearchResult(opResult, indexName);
 
-
-        metricsLogger.info(SearchDbMsgs.QUERY_DOCUMENT_TIME,
-                new LogFields().setField(LogLine.DefinedFields.RESPONSE_CODE, opResult.getResultCode())
-                        .setField(LogLine.DefinedFields.RESPONSE_DESCRIPTION, opResult.getResult()),
-                override, indexName, queryString);
+        logMetricsInfo(override, SearchDbMsgs.QUERY_DOCUMENT_TIME, opResult, indexName, queryString);
 
         return opResult;
     }
@@ -790,15 +706,9 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
     @Override
     public SearchOperationResult searchWithPayload(String indexName, String query)
             throws DocumentStoreOperationException {
-        SearchOperationResult opResult = new SearchOperationResult();
-
         if (logger.isDebugEnabled()) {
             logger.debug("Querying index: " + indexName + " with query string: " + query);
         }
-
-        // Initialize operation result with a failure codes / fault string
-        opResult.setResultCode(Status.INTERNAL_SERVER_ERROR.getStatusCode());
-        opResult.setResult(INTERNAL_SERVER_ERROR_ELASTIC_SEARCH_OPERATION_FAULT);
 
         String fullUrl = getFullUrl("/" + indexName + "/_search", false);
 
@@ -819,14 +729,11 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         logger.debug("\nsearch(), Sending 'POST' request to URL : " + conn.getURL());
         logger.debug("Request body =  Elasticsearch query = " + query);
 
-        handleResponse(conn, opResult);
+        SearchOperationResult opResult = getSearchOperationResult(conn);
+
         buildSearchResult(opResult, indexName);
 
-        metricsLogger
-                .info(SearchDbMsgs.QUERY_DOCUMENT_TIME,
-                        new LogFields().setField(LogLine.DefinedFields.RESPONSE_CODE, opResult.getResultCode())
-                                .setField(LogLine.DefinedFields.RESPONSE_DESCRIPTION, opResult.getResult()),
-                        override, indexName, query);
+        logMetricsInfo(override, SearchDbMsgs.QUERY_DOCUMENT_TIME, opResult, indexName, query);
 
         shutdownConnection(conn);
 
@@ -837,16 +744,9 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
     @Override
     public SearchOperationResult suggestionQueryWithPayload(String indexName, String query)
             throws DocumentStoreOperationException {
-
-        SearchOperationResult opResult = new SearchOperationResult();
-
         if (logger.isDebugEnabled()) {
             logger.debug("Querying Suggestion index: " + indexName + " with query string: " + query);
         }
-
-        // Initialize operation result with a failure codes / fault string
-        opResult.setResultCode(Status.INTERNAL_SERVER_ERROR.getStatusCode());
-        opResult.setResult(INTERNAL_SERVER_ERROR_ELASTIC_SEARCH_OPERATION_FAULT);
 
         String fullUrl = getFullUrl("/" + indexName + "/_suggest", false);
 
@@ -867,14 +767,10 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         logger.debug("\nsearch(), Sending 'POST' request to URL : " + conn.getURL());
         logger.debug("Request body =  Elasticsearch query = " + query);
 
-        handleResponse(conn, opResult);
+        SearchOperationResult opResult = getSearchOperationResult(conn);
         buildSuggestResult(opResult, indexName);
 
-        metricsLogger
-                .info(SearchDbMsgs.QUERY_DOCUMENT_TIME,
-                        new LogFields().setField(LogLine.DefinedFields.RESPONSE_CODE, opResult.getResultCode())
-                                .setField(LogLine.DefinedFields.RESPONSE_DESCRIPTION, opResult.getResult()),
-                        override, indexName, query);
+        logMetricsInfo(override, SearchDbMsgs.QUERY_DOCUMENT_TIME, opResult, indexName, query);
 
         shutdownConnection(conn);
 
@@ -1032,7 +928,6 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
     @Override
     public OperationResult performBulkOperations(BulkRequest[] requests) throws DocumentStoreOperationException {
-
         if (logger.isDebugEnabled()) {
             StringBuilder dbgString = new StringBuilder("ESController: performBulkOperations - Operations: ");
 
@@ -1160,13 +1055,13 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         }
 
         metricsLogger.info(SearchDbMsgs.BULK_OPERATIONS_TIME,
-                new LogFields().setField(LogLine.DefinedFields.RESPONSE_CODE, result.getResultCode())
+                new LogFields() //
+                        .setField(LogLine.DefinedFields.RESPONSE_CODE, result.getResultCode())
                         .setField(LogLine.DefinedFields.RESPONSE_DESCRIPTION, resultStringForMetricsLog),
                 override);
 
         return result;
     }
-
 
     /**
      * This method converts a {@link BulkRequest} object into a json structure which can be understood by ElasticSearch.
@@ -1482,11 +1377,6 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
      * @throws DocumentStoreOperationException
      */
     public OperationResult checkIndexExistence(String indexName) throws DocumentStoreOperationException {
-
-        // Initialize operation result with a failure codes / fault string
-        OperationResult opResult = new OperationResult();
-        opResult.setResultCode(Status.INTERNAL_SERVER_ERROR.getStatusCode());
-
         // Grab the current time so we can use it to generate a metrics log.
         MdcOverride override = getStartTime(new MdcOverride());
 
@@ -1512,20 +1402,47 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         }
         logger.debug(MSG_RESPONSE_CODE + resultCode);
 
+        // Initialize operation result with a failure codes / fault string
+        OperationResult opResult = new OperationResult();
+        setDefaultOperationResultValues(opResult);
         opResult.setResultCode(resultCode);
 
-        // Generate a metrics log so we can track how long the operation took.
-        metricsLogger
-                .info(SearchDbMsgs.CHECK_INDEX_TIME,
-                        new LogFields().setField(LogLine.DefinedFields.RESPONSE_CODE, opResult.getResultCode())
-                                .setField(LogLine.DefinedFields.RESPONSE_DESCRIPTION, opResult.getResultCode()),
-                        override, indexName);
+        logMetricsInfo(override, SearchDbMsgs.CHECK_INDEX_TIME, opResult, indexName);
 
         shutdownConnection(conn);
 
         return opResult;
     }
 
+    private DocumentOperationResult getOperationResult(HttpURLConnection conn) throws DocumentStoreOperationException {
+        DocumentOperationResult opResult = createDefaultOperationResult();
+        handleResponse(conn, opResult);
+        return opResult;
+    }
+
+    private SearchOperationResult getSearchOperationResult(HttpURLConnection conn)
+            throws DocumentStoreOperationException {
+        SearchOperationResult opResult = createDefaultSearchOperationResult();
+        handleResponse(conn, opResult);
+        return opResult;
+    }
+
+    private DocumentOperationResult createDefaultOperationResult() {
+        DocumentOperationResult opResult = new DocumentOperationResult();
+        setDefaultOperationResultValues(opResult);
+        return opResult;
+    }
+
+    private SearchOperationResult createDefaultSearchOperationResult() {
+        SearchOperationResult opResult = new SearchOperationResult();
+        setDefaultOperationResultValues(opResult);
+        return opResult;
+    }
+
+    private void setDefaultOperationResultValues(OperationResult opResult) {
+        opResult.setResultCode(Status.INTERNAL_SERVER_ERROR.getStatusCode());
+        opResult.setResult(INTERNAL_SERVER_ERROR_ELASTIC_SEARCH_OPERATION_FAULT);
+    }
 
     private void buildDocumentResult(DocumentOperationResult result, String index)
             throws DocumentStoreOperationException {
@@ -1612,7 +1529,6 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         } catch (Exception e) {
             throw new DocumentStoreOperationException(FAILED_TO_PARSE_ELASTIC_SEARCH_RESPONSE + result.getResult());
         }
-
     }
 
     private void buildSuggestResult(SearchOperationResult result, String index) throws DocumentStoreOperationException {
@@ -1668,5 +1584,18 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         } catch (Exception e) {
             throw new DocumentStoreOperationException(FAILED_TO_PARSE_ELASTIC_SEARCH_RESPONSE + result.getResult());
         }
+    }
+
+    /**
+     * Record the timing of the operation in the metrics log.
+     *
+     */
+    private void logMetricsInfo(MdcOverride override, SearchDbMsgs message, OperationResult operationResult,
+            String... args) {
+        metricsLogger.info(message,
+                new LogFields() //
+                        .setField(LogLine.DefinedFields.RESPONSE_CODE, operationResult.getResultCode())
+                        .setField(LogLine.DefinedFields.RESPONSE_DESCRIPTION, operationResult.getResult()),
+                override, args);
     }
 }
