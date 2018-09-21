@@ -20,9 +20,8 @@
  */
 package org.onap.aai.sa.auth;
 
- import org.springframework.http.HttpHeaders;
-
  import javax.servlet.http.Cookie;
+import org.springframework.http.HttpHeaders;
 
 public class SearchDbServiceAuth {
 

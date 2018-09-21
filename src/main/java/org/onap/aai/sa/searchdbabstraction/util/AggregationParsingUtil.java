@@ -21,13 +21,12 @@
 package org.onap.aai.sa.searchdbabstraction.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.Iterator;
+import java.util.Set;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.onap.aai.sa.searchdbabstraction.entity.AggregationBucket;
 import org.onap.aai.sa.searchdbabstraction.entity.AggregationResult;
-
-import java.util.Iterator;
-import java.util.Set;
 
 public class AggregationParsingUtil {
   public static AggregationResult[] parseAggregationResults(JSONObject aggregations)

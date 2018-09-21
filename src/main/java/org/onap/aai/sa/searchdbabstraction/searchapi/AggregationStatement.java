@@ -21,7 +21,6 @@
 package org.onap.aai.sa.searchdbabstraction.searchapi;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Arrays;
 
 public class AggregationStatement {

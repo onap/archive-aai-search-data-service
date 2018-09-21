@@ -20,20 +20,20 @@
  */
 package org.onap.aai.sa.rest;
 
-import org.json.simple.JSONObject;
-import org.onap.aai.sa.rest.AnalysisConfiguration;
-import org.onap.aai.sa.rest.BulkRequest;
-import org.onap.aai.sa.searchdbabstraction.elasticsearch.dao.DocumentStoreDataEntity;
-import org.onap.aai.sa.searchdbabstraction.elasticsearch.dao.DocumentStoreInterface;
-import org.onap.aai.sa.searchdbabstraction.elasticsearch.exception.DocumentStoreOperationException;
-import org.onap.aai.sa.searchdbabstraction.entity.*;
-import org.onap.aai.sa.searchdbabstraction.util.DocumentSchemaUtil;
-import org.onap.aai.sa.searchdbabstraction.entity.Document;
-import org.onap.aai.sa.rest.DocumentSchema;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import org.json.simple.JSONObject;
+import org.onap.aai.sa.searchdbabstraction.elasticsearch.dao.DocumentStoreDataEntity;
+import org.onap.aai.sa.searchdbabstraction.elasticsearch.dao.DocumentStoreInterface;
+import org.onap.aai.sa.searchdbabstraction.elasticsearch.exception.DocumentStoreOperationException;
+import org.onap.aai.sa.searchdbabstraction.entity.Document;
+import org.onap.aai.sa.searchdbabstraction.entity.DocumentOperationResult;
+import org.onap.aai.sa.searchdbabstraction.entity.OperationResult;
+import org.onap.aai.sa.searchdbabstraction.entity.SearchHit;
+import org.onap.aai.sa.searchdbabstraction.entity.SearchHits;
+import org.onap.aai.sa.searchdbabstraction.entity.SearchOperationResult;
+import org.onap.aai.sa.searchdbabstraction.util.DocumentSchemaUtil;
 
 /**
  * This class implements a stubbed version of the document store DAO so

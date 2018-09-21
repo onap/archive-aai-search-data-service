@@ -22,11 +22,11 @@ package org.onap.aai.sa.searchdbabstraction.elasticsearch.dao;
 
 
 import org.onap.aai.sa.rest.BulkRequest;
+import org.onap.aai.sa.rest.DocumentSchema;
 import org.onap.aai.sa.searchdbabstraction.elasticsearch.exception.DocumentStoreOperationException;
 import org.onap.aai.sa.searchdbabstraction.entity.DocumentOperationResult;
 import org.onap.aai.sa.searchdbabstraction.entity.OperationResult;
 import org.onap.aai.sa.searchdbabstraction.entity.SearchOperationResult;
-import org.onap.aai.sa.rest.DocumentSchema;
 
 
 public interface DocumentStoreInterface {

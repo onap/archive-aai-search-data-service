@@ -21,11 +21,10 @@
 package org.onap.aai.sa.searchdbabstraction.searchapi;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.radeox.util.logging.Logger;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.radeox.util.logging.Logger;
 
 /**
  * This class represents the structure of a search statement.

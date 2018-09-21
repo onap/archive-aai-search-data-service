@@ -20,16 +20,14 @@
  */
 package org.onap.aai.sa.searchdbabstraction.util;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
-
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.onap.aai.sa.rest.TestUtils;
 
 public class ElasticSearchPayloadTranslatorTest {
 	

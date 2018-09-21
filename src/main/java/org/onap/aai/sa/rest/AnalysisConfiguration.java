@@ -21,17 +21,13 @@
 package org.onap.aai.sa.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.onap.aai.sa.searchdbabstraction.logging.SearchDbMsgs;
-import org.onap.aai.sa.searchdbabstraction.util.SearchDbConstants;
-import org.onap.aai.cl.api.Logger;
-import org.onap.aai.cl.eelf.LoggerFactory;
-import org.onap.aai.sa.rest.AnalyzerSchema;
-import org.onap.aai.sa.rest.FilterSchema;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.onap.aai.cl.api.Logger;
+import org.onap.aai.cl.eelf.LoggerFactory;
+import org.onap.aai.sa.searchdbabstraction.logging.SearchDbMsgs;
+import org.onap.aai.sa.searchdbabstraction.util.SearchDbConstants;
 
 /**
  * This class encapsulates the configuration of the predefined

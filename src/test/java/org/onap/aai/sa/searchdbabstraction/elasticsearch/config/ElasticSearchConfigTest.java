@@ -20,13 +20,12 @@
  */
 package org.onap.aai.sa.searchdbabstraction.elasticsearch.config;
 
+import java.util.Properties;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Properties;
 public class ElasticSearchConfigTest {
 
     @Autowired

@@ -20,19 +20,19 @@
  */
 package org.onap.aai.sa.searchdbabstraction.searchapi;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Test;
-import org.onap.aai.sa.rest.TestUtils;
-import org.onap.aai.sa.searchdbabstraction.searchapi.Aggregation;
-import org.onap.aai.sa.searchdbabstraction.searchapi.QueryStatement;
-import org.onap.aai.sa.searchdbabstraction.searchapi.SearchStatement;
-
 import java.io.File;
 import java.io.IOException;
-
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.onap.aai.sa.rest.TestUtils;
 
 public class SearchStatementTest {
 

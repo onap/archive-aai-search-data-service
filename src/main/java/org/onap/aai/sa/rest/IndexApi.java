@@ -21,29 +21,23 @@
 package org.onap.aai.sa.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.onap.aai.sa.searchdbabstraction.elasticsearch.dao.DocumentStoreInterface;
-import org.onap.aai.sa.searchdbabstraction.elasticsearch.exception.DocumentStoreOperationException;
-import org.onap.aai.sa.searchdbabstraction.entity.OperationResult;
-import org.onap.aai.sa.searchdbabstraction.logging.SearchDbMsgs;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import javax.servlet.http.HttpServletRequest;
 import org.onap.aai.cl.api.LogFields;
 import org.onap.aai.cl.api.LogLine;
 import org.onap.aai.cl.api.Logger;
 import org.onap.aai.cl.eelf.LoggerFactory;
-import org.onap.aai.sa.rest.DocumentFieldSchema;
-import org.onap.aai.sa.rest.DocumentSchema;
-import org.slf4j.MDC;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import javax.servlet.http.HttpServletRequest;
-
+import org.onap.aai.sa.searchdbabstraction.elasticsearch.dao.DocumentStoreInterface;
+import org.onap.aai.sa.searchdbabstraction.elasticsearch.exception.DocumentStoreOperationException;
+import org.onap.aai.sa.searchdbabstraction.entity.OperationResult;
+import org.onap.aai.sa.searchdbabstraction.logging.SearchDbMsgs;
 // Spring Imports
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 // import org.springframework.http.server.HttpServletRequest;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
 
 /**

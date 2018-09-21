@@ -21,13 +21,11 @@
 package org.onap.aai.sa.searchdbabstraction.searchapi;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
+import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.onap.aai.sa.rest.TestUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
 
 public class RangeQueryTest {
 

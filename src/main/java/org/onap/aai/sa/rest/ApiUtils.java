@@ -20,14 +20,13 @@
  */
 package org.onap.aai.sa.rest;
 
+import java.util.UUID;
+import javax.servlet.http.HttpServletRequest;
 import org.onap.aai.cl.mdc.MdcContext;
 import org.onap.aai.sa.searchdbabstraction.util.SearchDbConstants;
 import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.UUID;
 
 // Spring Imports
 

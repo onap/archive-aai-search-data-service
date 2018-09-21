@@ -20,6 +20,10 @@
  */
 package org.onap.aai.sa.rest;
 
+import java.security.cert.X509Certificate;
+import javax.security.auth.x500.X500Principal;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.onap.aai.sa.auth.SearchDbServiceAuth;
 import org.onap.aai.sa.rest.ApiUtils.Action;
 import org.onap.aai.sa.searchdbabstraction.elasticsearch.dao.DocumentStoreInterface;
@@ -28,12 +32,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.*;
-
-import javax.security.auth.x500.X500Principal;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.security.cert.X509Certificate;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 @Component
 @EnableWebSecurity

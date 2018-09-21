@@ -20,12 +20,11 @@
  */
 package org.onap.aai.sa.searchdbabstraction.searchapi;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Test;
-import org.onap.aai.sa.searchdbabstraction.searchapi.DateRange;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.Test;
 
 public class DateRangeTest {
   private static ObjectMapper mapper = new ObjectMapper();

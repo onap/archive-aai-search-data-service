@@ -23,16 +23,14 @@ package org.onap.aai.sa.searchdbabstraction.util;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.apache.commons.io.IOUtils;
-import org.onap.aai.sa.rest.DocumentFieldSchema;
-import org.onap.aai.sa.rest.DocumentSchema;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.apache.commons.io.IOUtils;
+import org.onap.aai.sa.rest.DocumentFieldSchema;
+import org.onap.aai.sa.rest.DocumentSchema;
 
 public class DocumentSchemaUtil {
 

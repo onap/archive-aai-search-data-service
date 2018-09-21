@@ -20,18 +20,14 @@
  */
 package org.onap.aai.sa.rest;
 
+import static org.junit.Assert.assertTrue;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Test;
-import org.onap.aai.sa.rest.DocumentSchema;
-
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
 
 public class DocumentSchemaTest {

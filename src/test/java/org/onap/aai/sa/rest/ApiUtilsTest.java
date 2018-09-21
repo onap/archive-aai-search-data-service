@@ -20,11 +20,9 @@
  */
 package org.onap.aai.sa.rest;
 
-import org.junit.Test;
-import org.onap.aai.sa.rest.ApiUtils;
-
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+
+import org.junit.Test;
 
 
 public class ApiUtilsTest {

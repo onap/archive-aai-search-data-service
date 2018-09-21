@@ -20,12 +20,11 @@
  */
 package org.onap.aai.sa;
 
+import java.util.HashMap;
 import org.eclipse.jetty.util.security.Password;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
-
-import java.util.HashMap;
 
 @SpringBootApplication
 public class Application extends SpringBootServletInitializer {

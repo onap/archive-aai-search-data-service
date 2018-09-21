@@ -20,9 +20,8 @@
  */
 package org.onap.aai.sa.searchdbabstraction.searchapi;
 
-import org.radeox.util.logging.Logger;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.radeox.util.logging.Logger;
 
 /**
  * This class represents the structure of a search statement.

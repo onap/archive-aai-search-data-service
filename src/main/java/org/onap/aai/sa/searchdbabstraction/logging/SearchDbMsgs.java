@@ -20,8 +20,8 @@
  */
 package org.onap.aai.sa.searchdbabstraction.logging;
 
-import org.onap.aai.cl.eelf.LogMessageEnum;
 import com.att.eelf.i18n.EELFResourceManager;
+import org.onap.aai.cl.eelf.LogMessageEnum;
 
 public enum SearchDbMsgs implements LogMessageEnum {
 

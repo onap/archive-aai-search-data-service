@@ -20,23 +20,19 @@
  */
 package org.onap.aai.sa.rest;
 
-import org.onap.aai.sa.searchdbabstraction.elasticsearch.dao.ElasticSearchHttpController;
-import org.onap.aai.sa.searchdbabstraction.logging.SearchDbMsgs;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.servlet.http.HttpServletRequest;
 import org.onap.aai.cl.api.LogFields;
 import org.onap.aai.cl.api.LogLine;
 import org.onap.aai.cl.api.Logger;
 import org.onap.aai.cl.eelf.LoggerFactory;
-import org.onap.aai.sa.rest.AnalyzerSchema;
-
-import java.util.concurrent.atomic.AtomicBoolean;
-import javax.servlet.http.HttpServletRequest;
-
-
+import org.onap.aai.sa.searchdbabstraction.elasticsearch.dao.ElasticSearchHttpController;
+import org.onap.aai.sa.searchdbabstraction.logging.SearchDbMsgs;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestHeader;

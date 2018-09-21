@@ -23,6 +23,13 @@ package org.onap.aai.sa.rest;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+//import javax.ws.rs.core.HttpHeaders;
+//import javax.ws.rs.core.MediaType;
+//import javax.ws.rs.core.Response;
+//import javax.ws.rs.core.Response.Status;
+// Spring Imports
 import org.onap.aai.cl.api.LogFields;
 import org.onap.aai.cl.api.LogLine;
 import org.onap.aai.cl.api.Logger;
@@ -39,14 +46,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-//import javax.ws.rs.core.HttpHeaders;
-//import javax.ws.rs.core.MediaType;
-//import javax.ws.rs.core.Response;
-//import javax.ws.rs.core.Response.Status;
-// Spring Imports
 
 public class DocumentApi {
   private static final String REQUEST_HEADER_RESOURCE_VERSION = "If-Match";

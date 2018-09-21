@@ -21,7 +21,6 @@
 package org.onap.aai.sa.searchdbabstraction.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Arrays;
 
 public class AggregationBucket {

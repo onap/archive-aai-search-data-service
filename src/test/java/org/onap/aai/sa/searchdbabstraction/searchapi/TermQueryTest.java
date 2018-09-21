@@ -21,10 +21,9 @@
 package org.onap.aai.sa.searchdbabstraction.searchapi;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.io.IOException;
 
 public class TermQueryTest {
 

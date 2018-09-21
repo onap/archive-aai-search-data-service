@@ -20,6 +20,10 @@
  */
 package org.onap.aai.sa.auth;
 
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,11 +31,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.onap.aai.sa.searchdbabstraction.util.SearchDbConstants;
 import org.springframework.http.HttpHeaders;
-
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 
 // import javax.servlet.http.Cookie;
 

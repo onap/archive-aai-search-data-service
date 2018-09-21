@@ -21,6 +21,14 @@
 package org.onap.aai.sa.rest;
 
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import org.junit.Before;
 // import org.glassfish.jersey.server.ResourceConfig;
 // import org.glassfish.jersey.test.JerseyTest;
@@ -36,15 +44,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 //import javax.ws.rs.core.Application;
 //import javax.ws.rs.core.Response;
