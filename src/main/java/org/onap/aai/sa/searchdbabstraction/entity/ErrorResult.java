@@ -25,7 +25,6 @@ public class ErrorResult {
     private String type;
     private String reason;
 
-
     public ErrorResult(String type, String reason) {
         super();
         this.type = type;

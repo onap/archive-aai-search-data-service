@@ -103,6 +103,7 @@ public class DocumentTest {
         Assert.assertTrue(HttpStatus.BAD_REQUEST.value() == response.getStatusCodeValue());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testProcessPost_NotNullContent() throws Exception {
         String transactionId = "transactionId-1";
@@ -117,7 +118,7 @@ public class DocumentTest {
         Mockito.when(searchServiceApi.validateRequest(Mockito.any(HttpHeaders.class),
                 Mockito.any(HttpServletRequest.class), Mockito.any(ApiUtils.Action.class), Mockito.anyString()))
                 .thenThrow(IllegalArgumentException.class);
-        ResponseEntity response =
+        ResponseEntity<?> response =
                 documentApi.processPost(content, request, headers, httpResponse, "index", documentStore);
         Assert.assertNotNull(response);
         Assert.assertTrue(HttpStatus.FORBIDDEN.value() == response.getStatusCodeValue());
@@ -179,7 +180,7 @@ public class DocumentTest {
 
     }
 
-    //
+    @SuppressWarnings("unchecked")
     @Test
     public void testProcessSearchWithGet_ValidateThrowsException() throws Exception {
         String transactionId = "transactionId-1";
@@ -207,7 +208,6 @@ public class DocumentTest {
 
     }
 
-    //
     @Test
     public void testProcessSearchWithGet_ValidateIsFalse() throws Exception {
         String transactionId = "transactionId-1";
@@ -279,6 +279,7 @@ public class DocumentTest {
         Assert.assertTrue(HttpStatus.BAD_REQUEST.value() == response.getStatusCodeValue());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testProcessPut_RequestThrowsException() throws Exception {
         String transactionId = "transactionId-1";
@@ -319,7 +320,6 @@ public class DocumentTest {
         Assert.assertTrue(HttpStatus.FORBIDDEN.value() == response.getStatusCodeValue());
     }
 
-    @Ignore
     @Test
     public void testProcessPut_ResultInvalid() throws Exception {
         String transactionId = "transactionId-1";
@@ -338,7 +338,7 @@ public class DocumentTest {
         Mockito.when(searchServiceApi.validateRequest(Mockito.any(HttpHeaders.class),
                 Mockito.any(HttpServletRequest.class), Mockito.any(ApiUtils.Action.class), Mockito.anyString()))
                 .thenReturn(true);
-        Mockito.when(documentStore.updateDocument(Mockito.anyString(), Mockito.any(DocumentStoreDataEntity.class),
+        Mockito.when(documentStore.createDocument(Mockito.anyString(), Mockito.any(DocumentStoreDataEntity.class),
                 Mockito.anyBoolean())).thenReturn(result);
         ResponseEntity<String> response =
                 documentApi.processPut(content, request, headers, httpResponse, "index", "id-1", documentStore);
@@ -346,6 +346,7 @@ public class DocumentTest {
         Assert.assertTrue(HttpStatus.FOUND.value() == response.getStatusCodeValue());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testProcessDelete_RequestThrowsException() throws Exception {
         String transactionId = "transactionId-1";
@@ -413,6 +414,7 @@ public class DocumentTest {
         Assert.assertTrue(HttpStatus.FOUND.value() == response.getStatusCodeValue());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testProcessGet_RequestThrowsException() throws Exception {
         String transactionId = "transactionId-1";
@@ -496,6 +498,7 @@ public class DocumentTest {
         Assert.assertTrue(HttpStatus.BAD_REQUEST.value() == response.getStatusCodeValue());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testQueryWithGetWithPayload_RequestThrowsException() throws Exception {
         String transactionId = "transactionId-1";
@@ -555,6 +558,7 @@ public class DocumentTest {
         Assert.assertTrue(HttpStatus.FORBIDDEN.value() == response.getStatusCodeValue());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testCreateProcessIndex_IndexApi_RequestThrowsException() throws Exception {
         String transactionId = "transactionId-1";
@@ -612,6 +616,7 @@ public class DocumentTest {
         Assert.assertTrue(HttpStatus.FORBIDDEN.value() == response.getStatusCodeValue());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testProcessDelete_IndexApi_RequestThrowsException() throws Exception {
         String transactionId = "transactionId-1";
@@ -630,6 +635,7 @@ public class DocumentTest {
         Assert.assertTrue(HttpStatus.FORBIDDEN.value() == response.getStatusCodeValue());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testProcessDelete_IndexApi_DeleteIndexException() throws Exception {
         String transactionId = "transactionId-1";

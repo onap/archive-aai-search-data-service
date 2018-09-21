@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -34,7 +34,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 
 
 /**
@@ -78,13 +77,11 @@ public class BulkApiTest {
         this.mockMvc.perform(post(TOP_URI).contentType(MediaType.APPLICATION_JSON).content(validPayloadStr))
                 .andExpect(status().isOk());
 
-
         // Post a request to the bulk operations endpoint with an invalid
         // operations list payload.
         File inValidBulkOpsFile = new File("src/test/resources/json/bulk-ops-invalid.json");
         String inValidPayloadStr = TestUtils.readFileToString(inValidBulkOpsFile);
-        ResultActions invalid =
-                this.mockMvc.perform(post(TOP_URI).contentType(MediaType.APPLICATION_JSON).content(inValidPayloadStr))
-                        .andExpect(status().isBadRequest());
+        this.mockMvc.perform(post(TOP_URI).contentType(MediaType.APPLICATION_JSON).content(inValidPayloadStr))
+                .andExpect(status().isBadRequest());
     }
 }

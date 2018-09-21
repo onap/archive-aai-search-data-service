@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -29,14 +29,18 @@ import org.onap.aai.sa.searchdbabstraction.entity.AggregationBucket;
 import org.onap.aai.sa.searchdbabstraction.entity.AggregationResult;
 
 public class AggregationParsingUtil {
+
+    private AggregationParsingUtil() { // Do not instantiate
+    }
+
     public static AggregationResult[] parseAggregationResults(JSONObject aggregations) throws JsonProcessingException {
 
         // Obtain the set of aggregation names
-        Set keySet = aggregations.keySet();
+        Set<?> keySet = aggregations.keySet();
         AggregationResult[] aggResults = new AggregationResult[keySet.size()];
 
         int index = 0;
-        for (Iterator it = keySet.iterator(); it.hasNext();) {
+        for (Iterator<?> it = keySet.iterator(); it.hasNext();) {
             String key = (String) it.next();
             AggregationResult aggResult = new AggregationResult();
             aggResult.setName(key);

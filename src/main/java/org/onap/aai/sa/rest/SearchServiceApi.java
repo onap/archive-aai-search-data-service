@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -65,11 +65,8 @@ public class SearchServiceApi {
      * Performs all one-time initialization required for the end point.
      */
     public void init() {
-
         // Instantiate our Document Store DAO.
         documentStore = ElasticSearchHttpController.getInstance();
-
-        apiUtils = new ApiUtils();
     }
 
     @RequestMapping(value = "/indexes/{index}", method = RequestMethod.PUT, produces = {"application/json"})
@@ -183,13 +180,11 @@ public class SearchServiceApi {
 
         // Forward the request to our document API to delete the document.
         BulkApi bulkApi = new BulkApi(this);
-        ResponseEntity<String> dbugResp = bulkApi.processPost(requestBody, request, headers, documentStore, apiUtils);
-        return dbugResp;
+        return bulkApi.processPost(requestBody, request, headers, documentStore);
     }
 
     protected boolean validateRequest(HttpHeaders headers, HttpServletRequest req, Action action,
-            String authPolicyFunctionName) throws Exception {
-
+            String authPolicyFunctionName) {
         SearchDbServiceAuth serviceAuth = new SearchDbServiceAuth();
 
         String cipherSuite = (String) req.getAttribute("javax.servlet.request.cipher_suite");
@@ -210,10 +205,6 @@ public class SearchServiceApi {
 
         String status =
                 serviceAuth.authUser(headers, authUser.toLowerCase(), action.toString() + ":" + authPolicyFunctionName);
-        if (!status.equals("OK")) {
-            return false;
-        }
-
-        return true;
+        return status.equals("OK");
     }
 }

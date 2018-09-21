@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -20,6 +20,10 @@
  */
 package org.onap.aai.sa.searchdbabstraction.searchapi;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
@@ -29,9 +33,13 @@ import org.onap.aai.sa.rest.TestUtils;
 
 public class RangeQueryTest {
 
+    static {
+        // Set the location of the payload translation JSON file.
+        System.setProperty("CONFIG_HOME", "src/test/resources/json");
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void testSetGt() {
-
         RangeQuery rq = new RangeQuery();
         rq.setLt(new String("2x"));
         Assert.assertEquals("2x", rq.getLt());
@@ -42,7 +50,6 @@ public class RangeQueryTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testSetGte() {
-
         RangeQuery rq = new RangeQuery();
         rq.setGt(new Integer(1));
         Assert.assertNotNull(rq.toElasticSearch());
@@ -52,11 +59,10 @@ public class RangeQueryTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testSetLt() {
-
         RangeQuery rq = new RangeQuery();
         rq.setLt(new Integer(1));
         rq.setFormat("format-1");
-        Assert.assertEquals(rq.getFormat(), "format-1");
+        assertThat(rq.getFormat(), is(equalTo("format-1")));
         Assert.assertNotNull(rq.toElasticSearch());
         Assert.assertNotNull(rq.toString());
 
@@ -71,7 +77,7 @@ public class RangeQueryTest {
         RangeQuery rq = new RangeQuery();
         rq.setGt(new Integer(1));
         rq.setTimeZone("CT");
-        Assert.assertEquals(rq.getTimeZone(), "CT");
+        assertThat(rq.getTimeZone(), is(equalTo("CT")));
         Assert.assertNotNull(rq.toElasticSearch());
         Assert.assertNotNull(rq.toString());
 
@@ -100,11 +106,11 @@ public class RangeQueryTest {
         DateHistogramAggregation dha = new DateHistogramAggregation();
         dha.setField("field-1");
         dha.setInterval("interval-1");
-        Assert.assertEquals(dha.getInterval(), "interval-1");
+        assertThat(dha.getInterval(), is(equalTo("interval-1")));
         dha.setTimeZone("CT");
-        Assert.assertEquals(dha.getTimeZone(), "CT");
+        assertThat(dha.getTimeZone(), is(equalTo("CT")));
         dha.setFormat("format-1");
-        Assert.assertEquals(dha.getFormat(), "format-1");
+        assertThat(dha.getFormat(), is(equalTo("format-1")));
         dha.setSize(10);
         dha.setMinThreshold(1);
         Assert.assertNotNull(dha.toElasticSearch());
@@ -118,12 +124,12 @@ public class RangeQueryTest {
         dra.setField("field-1");
         dra.setMinThreshold(1);
         dra.setFormat("format-1");
-        Assert.assertEquals(dra.getFormat(), "format-1");
+        assertThat(dra.getFormat(), is(equalTo("format-1")));
         DateRange dr = new DateRange();
         dr.setFromDate("01-12-2017");
-        Assert.assertEquals(dr.getFromDate(), "01-12-2017");
+        assertThat(dr.getFromDate(), is(equalTo("01-12-2017")));
         dr.setToDate("21-12-2017");
-        Assert.assertEquals(dr.getToDate(), "21-12-2017");
+        assertThat(dr.getToDate(), is(equalTo("21-12-2017")));
         DateRange[] drs = {dr};
         dra.setDateRanges(drs);
         Assert.assertTrue(dra.getDateRanges().length == 1);

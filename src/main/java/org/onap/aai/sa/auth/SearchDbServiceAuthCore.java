@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -42,7 +42,7 @@ public class SearchDbServiceAuthCore {
 
     private static Logger logger = LoggerFactory.getInstance().getLogger(SearchDbServiceAuthCore.class.getName());
 
-    private static String GlobalAuthFileName = SearchDbConstants.SDB_AUTH_CONFIG_FILENAME;
+    private static String authFileName = SearchDbConstants.SDB_AUTH_CONFIG_FILENAME;
 
     private enum HTTP_METHODS {
         POST,
@@ -56,39 +56,26 @@ public class SearchDbServiceAuthCore {
 
     private static boolean usersInitialized = false;
     private static HashMap<String, SearchDbAuthUser> users;
-    private static boolean timerSet = false;
     private static Timer timer = null;
 
-    public synchronized static void init() {
-
-
-        SearchDbServiceAuthCore.getConfigFile();
+    public static synchronized void init() {
+        if (SearchDbServiceAuthCore.authFileName == null) {
+            SearchDbServiceAuthCore.authFileName = "/home/aaiadmin/etc/aaipolicy.json";
+        }
         SearchDbServiceAuthCore.reloadUsers();
-
     }
 
     public static void cleanup() {
         timer.cancel();
     }
 
-    public static String getConfigFile() {
-        if (GlobalAuthFileName == null) {
-            String nc = GlobalAuthFileName;
-            if (nc == null) {
-                nc = "/home/aaiadmin/etc/aaipolicy.json";
-            }
-            GlobalAuthFileName = nc;
-        }
-        return GlobalAuthFileName;
-    }
-
-    public synchronized static void reloadUsers() {
+    public static synchronized void reloadUsers() {
         users = new HashMap<>();
         ObjectMapper mapper = new ObjectMapper(); // can reuse, share globally
         JSONParser parser = new JSONParser();
         try {
-            parser.parse(new FileReader(GlobalAuthFileName));
-            JsonNode rootNode = mapper.readTree(new File(GlobalAuthFileName));
+            parser.parse(new FileReader(authFileName));
+            JsonNode rootNode = mapper.readTree(new File(authFileName));
             JsonNode rolesNode = rootNode.path("roles");
 
             for (JsonNode roleNode : rolesNode) {
@@ -109,18 +96,16 @@ public class SearchDbServiceAuthCore {
                         authRole.addAllowedFunction(thisFunction);
                     }
 
-                    if (hasMethods == false) {
+                    if (!hasMethods) {
                         // iterate the list from HTTP_METHODS
                         for (HTTP_METHODS meth : HTTP_METHODS.values()) {
                             String thisFunction = meth.toString() + ":" + function;
-
                             authRole.addAllowedFunction(thisFunction);
                         }
                     }
 
                 }
                 for (JsonNode userNode : usersNode) {
-                    // make the user lower case
                     String username = userNode.path("username").asText().toLowerCase();
                     SearchDbAuthUser authUser = null;
                     if (users.containsKey(username)) {
@@ -128,7 +113,6 @@ public class SearchDbServiceAuthCore {
                     } else {
                         authUser = new SearchDbAuthUser();
                     }
-
 
                     authUser.setUser(username);
                     authUser.addRole(roleName, authRole);
@@ -164,7 +148,7 @@ public class SearchDbServiceAuthCore {
             return this.username;
         }
 
-        public HashMap<String, TabularAuthRole> getRoles() {
+        public Map<String, TabularAuthRole> getRoles() {
             return this.roles;
         }
 
@@ -208,15 +192,11 @@ public class SearchDbServiceAuthCore {
         }
 
         public boolean hasAllowedFunction(String afunc) {
-            if (this.allowedFunctions.contains(afunc)) {
-                return true;
-            } else {
-                return false;
-            }
+            return this.allowedFunctions.contains(afunc);
         }
     }
 
-    public static HashMap<String, SearchDbAuthUser> getUsers(String key) {
+    public static Map<String, SearchDbAuthUser> getUsers() {
         if (!usersInitialized || (users == null)) {
             reloadUsers();
         }
@@ -224,21 +204,12 @@ public class SearchDbServiceAuthCore {
     }
 
     public static boolean authorize(String username, String authFunction) {
-
         if (!usersInitialized || (users == null)) {
             init();
         }
         if (users.containsKey(username)) {
-            if (users.get(username).checkAllowed(authFunction) == true) {
-
-                return true;
-            } else {
-
-
-                return false;
-            }
+            return users.get(username).checkAllowed(authFunction);
         } else {
-
             return false;
         }
     }

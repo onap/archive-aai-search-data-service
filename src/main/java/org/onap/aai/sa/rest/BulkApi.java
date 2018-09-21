@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -88,33 +88,28 @@ public class BulkApi {
      * @return - A standard REST response structure.
      */
     public ResponseEntity<String> processPost(String operations, HttpServletRequest request, HttpHeaders headers,
-            DocumentStoreInterface documentStore, ApiUtils apiUtils) {
-
-
+            DocumentStoreInterface documentStore) {
         // Initialize the MDC Context for logging purposes.
         ApiUtils.initMdcContext(request, headers);
 
         // Set a default result code and entity string for the request.
         int resultCode = 500;
-        String resultString = "Unexpected error";
+        String resultString;
 
         if (logger.isDebugEnabled()) {
             logger.debug("SEARCH: Process Bulk Request - operations = [" + operations.replaceAll("\n", "") + " ]");
         }
 
         try {
-
             // Validate that the request is correctly authenticated before going
             // any further.
             if (!searchService.validateRequest(headers, request, ApiUtils.Action.POST,
                     ApiUtils.SEARCH_AUTH_POLICY_NAME)) {
                 logger.warn(SearchDbMsgs.BULK_OPERATION_FAILURE, "Authentication failure.");
 
-                return buildResponse(HttpStatus.FORBIDDEN.value(), "Authentication failure.", request, apiUtils);
+                return buildResponse(HttpStatus.FORBIDDEN.value(), "Authentication failure.", request);
             }
-
         } catch (Exception e) {
-
             // This is a catch all for any unexpected failure trying to perform
             // the authentication.
             logger.warn(SearchDbMsgs.BULK_OPERATION_FAILURE,
@@ -124,35 +119,30 @@ public class BulkApi {
             }
 
             return buildResponse(HttpStatus.FORBIDDEN.value(), "Authentication failure - cause " + e.getMessage(),
-                    request, apiUtils);
+                    request);
         }
 
         // We expect a payload containing a JSON structure enumerating the
         // operations to be performed.
         if (operations == null) {
             logger.warn(SearchDbMsgs.BULK_OPERATION_FAILURE, "Missing operations list payload");
-
-            return buildResponse(resultCode, "Missing payload", request, apiUtils);
+            return buildResponse(resultCode, "Missing payload", request);
         }
-
 
         // Marshal the supplied json string into a Java object.
         ObjectMapper mapper = new ObjectMapper();
         BulkRequest[] requests = null;
         try {
             requests = mapper.readValue(operations, BulkRequest[].class);
-
         } catch (IOException e) {
-
             logger.warn(SearchDbMsgs.BULK_OPERATION_FAILURE, "Failed to marshal operations list: " + e.getMessage());
             if (logger.isDebugEnabled()) {
                 logger.debug("Stack Trace:\n" + e.getStackTrace());
             }
-
             // Populate the result code and entity string for our HTTP response
             // and return the response to the client..
             return buildResponse(HttpStatus.BAD_REQUEST.value(), "Unable to marshal operations: " + e.getMessage(),
-                    request, apiUtils);
+                    request);
         }
 
         // Verify that our parsed operations list actually contains some valid
@@ -163,8 +153,7 @@ public class BulkApi {
 
             // Populate the result code and entity string for our HTTP response
             // and return the response to the client..
-            return buildResponse(HttpStatus.BAD_REQUEST.value(), "Empty operations list in bulk request", request,
-                    apiUtils);
+            return buildResponse(HttpStatus.BAD_REQUEST.value(), "Empty operations list in bulk request", request);
         }
         try {
 
@@ -189,18 +178,18 @@ public class BulkApi {
         }
 
         // Build our HTTP response.
-        ResponseEntity response =
+        ResponseEntity<String> response =
                 ResponseEntity.status(resultCode).contentType(MediaType.APPLICATION_JSON).body(resultString);
 
         // Log the result.
         if ((response.getStatusCodeValue() >= 200) && (response.getStatusCodeValue() < 300)) {
             logger.info(SearchDbMsgs.PROCESSED_BULK_OPERATIONS);
         } else {
-            logger.warn(SearchDbMsgs.BULK_OPERATION_FAILURE, (String) response.getBody());
+            logger.warn(SearchDbMsgs.BULK_OPERATION_FAILURE, response.getBody());
         }
 
         // Finally, return the HTTP response to the client.
-        return buildResponse(resultCode, resultString, request, apiUtils);
+        return buildResponse(resultCode, resultString, request);
     }
 
 
@@ -212,9 +201,7 @@ public class BulkApi {
      * @param request - The HTTP request to extract data from for the audit log.
      * @return - An HTTP response object.
      */
-    private ResponseEntity<String> buildResponse(int resultCode, String resultString, HttpServletRequest request,
-            ApiUtils apiUtils) {
-
+    private ResponseEntity<String> buildResponse(int resultCode, String resultString, HttpServletRequest request) {
         ResponseEntity<String> response =
                 ResponseEntity.status(resultCode).contentType(MediaType.APPLICATION_JSON).body(resultString);
 
@@ -222,7 +209,7 @@ public class BulkApi {
         auditLogger.info(SearchDbMsgs.PROCESS_REST_REQUEST,
                 new LogFields().setField(LogLine.DefinedFields.RESPONSE_CODE, resultCode)
                         .setField(LogLine.DefinedFields.RESPONSE_DESCRIPTION, ApiUtils.getHttpStatusString(resultCode)),
-                (request != null) ? request.getMethod().toString() : "Unknown",
+                (request != null) ? request.getMethod() : "Unknown",
                 (request != null) ? request.getRequestURL().toString() : "Unknown",
                 (request != null) ? request.getRemoteHost() : "Unknown",
                 Integer.toString(response.getStatusCodeValue()));

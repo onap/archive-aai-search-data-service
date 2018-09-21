@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -20,8 +20,6 @@
  */
 package org.onap.aai.sa.searchdbabstraction.util;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,12 +32,14 @@ import org.onap.aai.sa.rest.DocumentSchema;
 
 public class DocumentSchemaUtil {
 
+    private DocumentSchemaUtil() { // Do not instantiate
+    }
+
     private static String dynamicCustomMapping = null;
     private static final String DYNAMIC_CUSTOM_TEMPALTE_FILE =
             System.getProperty("CONFIG_HOME") + File.separator + "dynamic-custom-template.json";
 
-    public static String generateDocumentMappings(String documentSchema)
-            throws JsonParseException, JsonMappingException, IOException {
+    public static String generateDocumentMappings(String documentSchema) throws IOException {
 
         // Unmarshal the json content into a document schema object.
         ObjectMapper mapper = new ObjectMapper();
@@ -103,10 +103,8 @@ public class DocumentSchemaUtil {
         sb.append("\"type\": \"").append(fieldSchema.getDataType()).append("\"");
 
         // For date type fields we may optionally supply a format specifier.
-        if (fieldSchema.getDataType().equals("date")) {
-            if (fieldSchema.getFormat() != null) {
-                sb.append(", \"format\": \"").append(fieldSchema.getFormat()).append("\"");
-            }
+        if (fieldSchema.getDataType().equals("date") && fieldSchema.getFormat() != null) {
+            sb.append(", \"format\": \"").append(fieldSchema.getFormat()).append("\"");
         }
 
         // If the index field was specified, then append it.

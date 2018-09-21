@@ -29,7 +29,6 @@ import java.io.File;
 import java.io.IOException;
 import org.junit.Test;
 
-
 public class DocumentSchemaTest {
 
     private final String SIMPLE_DOC_SCHEMA_JSON = "src/test/resources/json/simpleDocument.json";

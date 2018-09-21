@@ -29,9 +29,7 @@ import org.springframework.boot.web.support.SpringBootServletInitializer;
 @SpringBootApplication
 public class Application extends SpringBootServletInitializer {
 
-
     public static void main(String[] args) {
-
         String keyStorePassword = System.getProperty("KEY_STORE_PASSWORD");
         if (keyStorePassword == null || keyStorePassword.isEmpty()) {
             throw new RuntimeException("Env property KEY_STORE_PASSWORD not set");

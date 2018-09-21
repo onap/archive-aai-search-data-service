@@ -29,11 +29,9 @@ public class TermQueryTest {
 
     @Test
     public void testAllMethods() throws IOException {
-
         String field = "searchTags.nested";
         String stringValue = "theValue.nested";
         String termQueryWithStringValueJson = "{\"field\": \"" + field + "\", \"value\": \"" + stringValue + "\"}";
-        String termQueryWithStringValueExpectedES = "{\"term\": {\"" + field + "\" : \"" + stringValue + "\"}}";
 
         ObjectMapper mapper = new ObjectMapper();
         TermQuery stringTermQuery = mapper.readValue(termQueryWithStringValueJson, TermQuery.class);

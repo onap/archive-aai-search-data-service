@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -20,23 +20,18 @@
  */
 package org.onap.aai.sa.rest;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
-
 
 public class ApiUtilsTest {
 
     @Test
     public void testHTTPStatusConversion() {
-        String statusString;
-        statusString = ApiUtils.getHttpStatusString(201);
-        assertEquals(0, statusString.compareToIgnoreCase("Created"));
-
-        statusString = ApiUtils.getHttpStatusString(207);
-        assertEquals(0, statusString.compareToIgnoreCase("Multi-Status"));
-
-        statusString = ApiUtils.getHttpStatusString(9999);
-        assertEquals(0, statusString.compareToIgnoreCase("Unknown"));
+        assertThat(ApiUtils.getHttpStatusString(201), is(equalTo("Created")));
+        assertThat(ApiUtils.getHttpStatusString(207), is(equalTo("Multi-Status")));
+        assertThat(ApiUtils.getHttpStatusString(9999), is(equalTo("Unknown")));
     }
 }

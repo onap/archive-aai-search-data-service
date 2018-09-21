@@ -111,10 +111,6 @@ public class StubEsController implements DocumentStoreInterface {
             opResult.setResultCode(404);
         } else {
             opResult.setResultCode(200);
-            String id = "dummy";
-            if (document.getId() != null) {
-                id = document.getId();
-            }
             opResult.setResultVersion("1");
         }
 
@@ -253,7 +249,7 @@ public class StubEsController implements DocumentStoreInterface {
         SearchHit searchHit = new SearchHit();
         Document doc = new Document();
         doc.setEtag("etag1");
-        Map<String, Object> content = new HashMap<String, Object>();
+        Map<String, Object> content = new HashMap<>();
         content.put("key1", "value1");
         doc.setContent(new JSONObject());
         searchHit.setDocument(doc);

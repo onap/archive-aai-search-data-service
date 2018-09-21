@@ -158,8 +158,7 @@ public class SearchServiceApiHarness extends SearchServiceApi {
 
     @Override
     protected boolean validateRequest(HttpHeaders headers, HttpServletRequest req, ApiUtils.Action action,
-            String authPolicyFunctionName) throws Exception {
-
+            String authPolicyFunctionName) {
         return authenticationShouldSucceed;
     }
 }

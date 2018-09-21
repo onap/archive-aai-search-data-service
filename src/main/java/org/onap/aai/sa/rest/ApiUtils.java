@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -28,8 +28,10 @@ import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
-// Spring Imports
-
+/**
+ * Spring Imports.
+ *
+ */
 public class ApiUtils {
 
     public static final String SEARCH_AUTH_POLICY_NAME = "search";
@@ -40,7 +42,7 @@ public class ApiUtils {
         GET,
         PUT,
         DELETE
-    };
+    }
 
     /**
      * This method uses the contents of the supplied HTTP headers and request structures to populate the MDC Context
@@ -50,7 +52,6 @@ public class ApiUtils {
      * @param headers - HTTP headers
      */
     protected static void initMdcContext(HttpServletRequest httpReq, HttpHeaders headers) {
-
         // Auto generate a transaction if we were not provided one.
         String transId = null;
         if (headers != null) {
@@ -60,7 +61,6 @@ public class ApiUtils {
                 transId = UUID.randomUUID().toString();
             }
         }
-
 
         String fromIp = (httpReq != null) ? httpReq.getRemoteHost() : "";
         String fromApp = (headers != null) ? headers.getFirst("X-FromAppId") : "";
@@ -95,8 +95,6 @@ public class ApiUtils {
     }
 
     public static boolean validateDocumentUri(String uri, boolean requireId) {
-
-        // If the URI starts with a leading '/' character, remove it.
         uri = uri.startsWith("/") ? uri.substring(1) : uri;
 
         // Now, tokenize the URI string.
@@ -111,19 +109,14 @@ public class ApiUtils {
     }
 
     public static String extractIndexFromUri(String uri) {
-
-        // If the URI starts with a leading '/' character, remove it.
         uri = uri.startsWith("/") ? uri.substring(1) : uri;
 
-        // Now, tokenize the URI string.
         String[] tokens = uri.split("/");
 
         int i = 0;
         for (String token : tokens) {
-            if (token.equals("indexes")) {
-                if (i + 1 < tokens.length) {
-                    return tokens[i + 1];
-                }
+            if (token.equals("indexes") && i + 1 < tokens.length) {
+                return tokens[i + 1];
             }
             i++;
         }
@@ -132,19 +125,14 @@ public class ApiUtils {
     }
 
     public static String extractIdFromUri(String uri) {
-
-        // If the URI starts with a leading '/' character, remove it.
         uri = uri.startsWith("/") ? uri.substring(1) : uri;
 
-        // Now, tokenize the URI string.
         String[] tokens = uri.split("/");
 
         int i = 0;
         for (String token : tokens) {
-            if (token.equals("documents")) {
-                if (i + 1 < tokens.length) {
-                    return tokens[i + 1];
-                }
+            if (token.equals("documents") && i + 1 < tokens.length) {
+                return tokens[i + 1];
             }
             i++;
         }
@@ -153,29 +141,14 @@ public class ApiUtils {
     }
 
     public static String getHttpStatusString(int httpStatusCode) {
-        // Some of the status codes we use are still in draft state in the standards, and are not
-        // recognized in the javax library. We need to manually translate these to human-readable
-        // strings.
-        String statusString = "Unknown";
-        HttpStatus status = null;
-
         try {
-            status = HttpStatus.valueOf(httpStatusCode);
+            return HttpStatus.valueOf(httpStatusCode).getReasonPhrase();
         } catch (IllegalArgumentException e) {
-        }
-
-
-        if (status == null) {
-            switch (httpStatusCode) {
-                case 207:
-                    statusString = "Multi Status";
-                    break;
-                default:
+            if (httpStatusCode == 207) {
+                return "Multi-Status";
+            } else {
+                return "Unknown";
             }
-        } else {
-            statusString = status.getReasonPhrase();
         }
-
-        return statusString;
     }
 }

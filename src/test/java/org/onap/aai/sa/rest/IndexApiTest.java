@@ -135,7 +135,7 @@ public class IndexApiTest {
         successResult.setResult(SUCCESS_RESULT_STRING);
 
         // Convert our success OperationResult to a standard REST Response...
-        ResponseEntity successResponse = indexApi.responseFromOperationResult(successResult);
+        ResponseEntity<?> successResponse = indexApi.responseFromOperationResult(successResult);
 
         // ...and validate that the Response is correctly populated.
         assertEquals("Unexpected result code", SUCCESS_RESULT_CODE, successResponse.getStatusCodeValue());
@@ -148,7 +148,7 @@ public class IndexApiTest {
         failureResult.setFailureCause(FAILURE_CAUSE_STRING);
 
         // Convert our failure OperationResult to a standard REST Response...
-        ResponseEntity failureResponse = indexApi.responseFromOperationResult(failureResult);
+        ResponseEntity<?> failureResponse = indexApi.responseFromOperationResult(failureResult);
 
         // ...and validate that the Response is correctly populated.
         assertEquals("Unexpected result code", FAILURE_RESULT_CODE, failureResponse.getStatusCodeValue());

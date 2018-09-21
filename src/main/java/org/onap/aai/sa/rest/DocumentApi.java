@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -99,7 +99,7 @@ public class DocumentApi {
             if (httpResponse != null) {
                 httpResponse.setHeader(RESPONSE_HEADER_RESOURCE_VERSION, result.getResultVersion());
             }
-            ResponseEntity response =
+            ResponseEntity<String> response =
                     ResponseEntity.status(result.getResultCode()).contentType(MediaType.APPLICATION_JSON).body(output);
             logResult(request, HttpStatus.valueOf(response.getStatusCodeValue()));
             logResult(request, HttpStatus.valueOf(response.getStatusCodeValue()));
@@ -165,7 +165,7 @@ public class DocumentApi {
             if (httpResponse != null) {
                 httpResponse.setHeader(RESPONSE_HEADER_RESOURCE_VERSION, result.getResultVersion());
             }
-            ResponseEntity response =
+            ResponseEntity<String> response =
                     ResponseEntity.status(result.getResultCode()).contentType(MediaType.APPLICATION_JSON).body(output);
             logResult(request, HttpStatus.valueOf(response.getStatusCodeValue()));
 
@@ -221,7 +221,7 @@ public class DocumentApi {
             if (httpResponse != null) {
                 httpResponse.setHeader(RESPONSE_HEADER_RESOURCE_VERSION, result.getResultVersion());
             }
-            ResponseEntity response;
+            ResponseEntity<String> response;
             if (output == null) {
                 response = ResponseEntity.status(result.getResultCode()).build();
             } else {
@@ -281,7 +281,7 @@ public class DocumentApi {
             if (httpResponse != null) {
                 httpResponse.setHeader(RESPONSE_HEADER_RESOURCE_VERSION, result.getResultVersion());
             }
-            ResponseEntity response =
+            ResponseEntity<String> response =
                     ResponseEntity.status(result.getResultCode()).contentType(MediaType.APPLICATION_JSON).body(output);
             logResult(request, HttpStatus.valueOf(response.getStatusCodeValue()));
 
@@ -327,7 +327,7 @@ public class DocumentApi {
                         ? mapper.writerWithDefaultPrettyPrinter().writeValueAsString(result.getError())
                         : result.getFailureCause();
             }
-            ResponseEntity response =
+            ResponseEntity<String> response =
                     ResponseEntity.status(result.getResultCode()).contentType(MediaType.APPLICATION_JSON).body(output);
 
             // Clear the MDC context so that no other transaction inadvertently
@@ -395,8 +395,8 @@ public class DocumentApi {
      * @param headers - The HTTP headers.
      * @return - A standard HTTP response.
      */
-    private ResponseEntity processQuery(String index, String content, HttpServletRequest request, HttpHeaders headers,
-            DocumentStoreInterface documentStore) {
+    private ResponseEntity<String> processQuery(String index, String content, HttpServletRequest request,
+            HttpHeaders headers, DocumentStoreInterface documentStore) {
 
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -444,7 +444,7 @@ public class DocumentApi {
                         ? mapper.writerWithDefaultPrettyPrinter().writeValueAsString(result.getError())
                         : result.getFailureCause();
             }
-            ResponseEntity response =
+            ResponseEntity<String> response =
                     ResponseEntity.status(result.getResultCode()).contentType(MediaType.APPLICATION_JSON).body(output);
 
             // Clear the MDC context so that no other transaction inadvertently
@@ -581,26 +581,25 @@ public class DocumentApi {
         return output.toString();
     }
 
-    private ResponseEntity handleError(HttpServletRequest request, String message, HttpStatus status) {
+    private ResponseEntity<String> handleError(HttpServletRequest request, String message, HttpStatus status) {
         logResult(request, status);
         return ResponseEntity.status(status).contentType(MediaType.APPLICATION_JSON).body(message);
     }
 
     void logResult(HttpServletRequest request, HttpStatus status) {
 
-        logger.info(SearchDbMsgs.PROCESS_REST_REQUEST, (request != null) ? request.getMethod().toString() : "",
+        logger.info(SearchDbMsgs.PROCESS_REST_REQUEST, (request != null) ? request.getMethod() : "",
                 (request != null) ? request.getRequestURL().toString() : "",
                 (request != null) ? request.getRemoteHost() : "", Integer.toString(status.value()));
 
         auditLogger.info(SearchDbMsgs.PROCESS_REST_REQUEST,
                 new LogFields().setField(LogLine.DefinedFields.RESPONSE_CODE, status.value())
                         .setField(LogLine.DefinedFields.RESPONSE_DESCRIPTION, status.getReasonPhrase()),
-                (request != null) ? request.getMethod().toString() : "",
+                (request != null) ? request.getMethod() : "",
                 (request != null) ? request.getRequestURL().toString() : "",
                 (request != null) ? request.getRemoteHost() : "", Integer.toString(status.value()));
 
-        // Clear the MDC context so that no other transaction inadvertently
-        // uses our transaction id.
+        // Clear the MDC context so that no other transaction inadvertently uses our transaction id.
         ApiUtils.clearMdcContext();
     }
 }

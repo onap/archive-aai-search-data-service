@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * <p>
  * The expected JSON structure for a ranges is as follows:
  * <p>
- * 
+ *
  * <pre>
  * {
  *  "from": <from-date>
@@ -36,7 +36,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * <p>
  * or
  * <p>
- * 
+ *
  * <pre>
  * {
  *  "to": <to-date>
@@ -45,7 +45,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * <p>
  * or
  * <p>
- * 
+ *
  * <pre>
  * {
  *  "from": <from-date>,
@@ -86,18 +86,18 @@ public class DateRange {
 
         if (fromDate != null) {
             sb.append("\"from\": \"");
-            sb.append(fromDate.toString());
+            sb.append(fromDate);
             sb.append("\"");
         }
 
         if (toDate != null) {
             if (fromDate != null) {
                 sb.append(", \"to\": \"");
-                sb.append(toDate.toString());
+                sb.append(toDate);
                 sb.append("\"");
             } else {
                 sb.append("\"to\": \"");
-                sb.append(toDate.toString());
+                sb.append(toDate);
                 sb.append("\"");
             }
         }
@@ -107,6 +107,7 @@ public class DateRange {
         return sb.toString();
     }
 
+    @Override
     public String toString() {
         return "{from: " + fromDate + ", to: " + toDate + "}";
     }

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -27,8 +27,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 import java.io.IOException;
-//import org.glassfish.jersey.server.ResourceConfig;
-//import org.glassfish.jersey.test.JerseyTest;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -168,37 +166,25 @@ public class DocumentApiTest {
 
     }
 
-    //
-    // /**
-    // * This test validates the behaviour of the 'Search Documents' GET request
-    // * endpoint.
-    // *
-    // * @throws IOException
-    // * @throws ParseException
-    // */
-    @Ignore
-    @Test
-    public void searchDocumentTest1() throws Exception {
-        // String result = target(INDEXES_URI + INDEX_NAME + "/" + SEARCH_URI +
-        // SIMPLE_QUERY).request().get(String.class);
 
+    /**
+     * This test validates the behaviour of the 'Search Documents' GET request endpoint.
+     *
+     * @throws Exception
+     */
+    @Ignore
+    public void searchDocumentTest1() throws Exception {
         MvcResult result = this.mockMvc
                 .perform(get(INDEXES_URI + INDEX_NAME + "/" + SEARCH_URI + SIMPLE_QUERY)
                         .contentType(MediaType.APPLICATION_JSON).header("If-Match", "1").content(CREATE_JSON_CONTENT))
                 .andReturn();
 
-        // Our stub document store DAO returns the parameters that it was
-        // passed as the result string, so now we can validate that our
-        // endpoint invoked it with the correct parameters.
         JSONParser parser = new JSONParser();
         JSONObject json = (JSONObject) parser.parse(result.getResponse().getContentAsString());
 
         assertTrue("Unexpected Result ", json.get("totalHits").toString().equals("1"));
-
-
     }
 
-    //
     /**
      * This test validates the behaviour of the 'Search Documents' GET request endpoint.
      *
@@ -207,21 +193,14 @@ public class DocumentApiTest {
      */
     @Test
     public void searchDocumentTest2() throws Exception {
-        // String result = target(INDEXES_URI + INDEX_NAME + "/" +
-        // SEARCH_URI).request().post(Entity.json(COMPLEX_QUERY), String.class);
-
         MvcResult result = this.mockMvc.perform(get(INDEXES_URI + INDEX_NAME + "/" + SEARCH_URI)
                 .contentType(MediaType.APPLICATION_JSON).content(COMPLEX_QUERY)).andReturn();
 
-        // Our stub document store DAO returns the parameters that it was
-        // passed as the result string, so now we can validate that our
-        // endpoint invoked it with the correct parameters.
         JSONParser parser = new JSONParser();
         JSONObject json = (JSONObject) parser.parse(result.getResponse().getContentAsString());
         JSONObject resultJson = (JSONObject) json.get("searchResult");
 
         assertTrue("Unexpected Result ", resultJson.get("totalHits").toString().equals("1"));
-
     }
 
 }
