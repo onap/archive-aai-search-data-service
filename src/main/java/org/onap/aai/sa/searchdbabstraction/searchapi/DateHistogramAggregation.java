@@ -25,7 +25,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * An example of elasticsearch date_histogram aggregation:
  *
- * <p><pre>
+ * <p>
+ * 
+ * <pre>
  * {
  *    "aggs": {
  *        "my_group": {
@@ -41,75 +43,75 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class DateHistogramAggregation extends AbstractAggregation {
 
-  private String interval;
+    private String interval;
 
-  private String format;
+    private String format;
 
-  @JsonProperty("time-zone")
-  private String timeZone;
+    @JsonProperty("time-zone")
+    private String timeZone;
 
 
-  public String getInterval() {
-    return interval;
-  }
-
-  public void setInterval(String interval) {
-    this.interval = interval;
-  }
-
-  public String getTimeZone() {
-    return timeZone;
-  }
-
-  public String getFormat() {
-    return format;
-  }
-
-  public void setFormat(String format) {
-    this.format = format;
-  }
-
-  public void setTimeZone(String timeZone) {
-    this.timeZone = timeZone;
-  }
-
-  @Override
-  public String toElasticSearch() {
-    StringBuilder sb = new StringBuilder();
-
-    sb.append("\"date_histogram\": {\"field\": \"");
-    sb.append(field);
-    sb.append("\"");
-    if (interval != null) {
-      sb.append(", \"interval\": \"");
-      sb.append(interval);
-      sb.append("\"");
+    public String getInterval() {
+        return interval;
     }
-    if (format != null) {
-      sb.append(", \"format\": \"");
-      sb.append(format);
-      sb.append("\"");
-    }
-    if (timeZone != null) {
-      sb.append(", \"time_zone\": \"");
-      sb.append(timeZone);
-      sb.append("\"");
-    }
-    if (size != null) {
-      sb.append(", \"size\": ");
-      sb.append(size);
-    }
-    if (minThreshold != null) {
-      sb.append(", \"min_doc_count\": ").append(minThreshold);
-    }
-    sb.append("}");
 
-    return sb.toString();
-  }
+    public void setInterval(String interval) {
+        this.interval = interval;
+    }
 
-  @Override
-  public String toString() {
-    return "DateHistogramAggregation: [field=" + field + ", interval=" + interval + ", format="
-        + format + ", timeZone=" + timeZone + ", size=" + size + " minThreshold=" + minThreshold;
-  }
+    public String getTimeZone() {
+        return timeZone;
+    }
+
+    public String getFormat() {
+        return format;
+    }
+
+    public void setFormat(String format) {
+        this.format = format;
+    }
+
+    public void setTimeZone(String timeZone) {
+        this.timeZone = timeZone;
+    }
+
+    @Override
+    public String toElasticSearch() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("\"date_histogram\": {\"field\": \"");
+        sb.append(field);
+        sb.append("\"");
+        if (interval != null) {
+            sb.append(", \"interval\": \"");
+            sb.append(interval);
+            sb.append("\"");
+        }
+        if (format != null) {
+            sb.append(", \"format\": \"");
+            sb.append(format);
+            sb.append("\"");
+        }
+        if (timeZone != null) {
+            sb.append(", \"time_zone\": \"");
+            sb.append(timeZone);
+            sb.append("\"");
+        }
+        if (size != null) {
+            sb.append(", \"size\": ");
+            sb.append(size);
+        }
+        if (minThreshold != null) {
+            sb.append(", \"min_doc_count\": ").append(minThreshold);
+        }
+        sb.append("}");
+
+        return sb.toString();
+    }
+
+    @Override
+    public String toString() {
+        return "DateHistogramAggregation: [field=" + field + ", interval=" + interval + ", format=" + format
+                + ", timeZone=" + timeZone + ", size=" + size + " minThreshold=" + minThreshold;
+    }
 }

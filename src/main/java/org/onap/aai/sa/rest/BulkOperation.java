@@ -21,41 +21,39 @@
 package org.onap.aai.sa.rest;
 
 /**
- * This class represents a single instance of an operation to be performed
- * as part of a bulk request.
+ * This class represents a single instance of an operation to be performed as part of a bulk request.
  */
 public class BulkOperation {
 
-  /**
-   * Contains meta data to be passed to the document store for it
-   * to perform the operation.
-   */
-  private BulkMetaData metaData;
+    /**
+     * Contains meta data to be passed to the document store for it to perform the operation.
+     */
+    private BulkMetaData metaData;
 
-  /**
-   * Contains the contents of the document to be acted on.
-   */
-  private Document document;
+    /**
+     * Contains the contents of the document to be acted on.
+     */
+    private Document document;
 
 
-  public void setMetaData(BulkMetaData metaData) {
-    this.metaData = metaData;
-  }
+    public void setMetaData(BulkMetaData metaData) {
+        this.metaData = metaData;
+    }
 
-  public BulkMetaData getMetaData() {
-    return metaData;
-  }
+    public BulkMetaData getMetaData() {
+        return metaData;
+    }
 
-  public Document getDocument() {
-    return document;
-  }
+    public Document getDocument() {
+        return document;
+    }
 
-  public void setDocument(Document document) {
-    this.document = document;
-  }
+    public void setDocument(Document document) {
+        this.document = document;
+    }
 
-  @Override
-  public String toString() {
-    return "Operation: [" + metaData.toString() + ", " + document + "]";
-  }
+    @Override
+    public String toString() {
+        return "Operation: [" + metaData.toString() + ", " + document + "]";
+    }
 }

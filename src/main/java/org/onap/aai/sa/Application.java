@@ -33,11 +33,11 @@ public class Application extends SpringBootServletInitializer {
     public static void main(String[] args) {
 
         String keyStorePassword = System.getProperty("KEY_STORE_PASSWORD");
-        if(keyStorePassword==null || keyStorePassword.isEmpty()){
+        if (keyStorePassword == null || keyStorePassword.isEmpty()) {
             throw new RuntimeException("Env property KEY_STORE_PASSWORD not set");
         }
         HashMap<String, Object> props = new HashMap<>();
         props.put("server.ssl.key-store-password", Password.deobfuscate(keyStorePassword));
-        new Application().configure(new SpringApplicationBuilder (Application.class).properties(props)).run(args);
+        new Application().configure(new SpringApplicationBuilder(Application.class).properties(props)).run(args);
     }
 }

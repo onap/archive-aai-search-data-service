@@ -22,35 +22,35 @@ package org.onap.aai.sa.searchdbabstraction.entity;
 
 public class ErrorResult {
 
-  private String type;
-  private String reason;
+    private String type;
+    private String reason;
 
 
-  public ErrorResult(String type, String reason) {
-    super();
-    this.type = type;
-    this.reason = reason;
-  }
+    public ErrorResult(String type, String reason) {
+        super();
+        this.type = type;
+        this.reason = reason;
+    }
 
-  public String getType() {
-    return type;
-  }
+    public String getType() {
+        return type;
+    }
 
-  public void setType(String type) {
-    this.type = type;
-  }
+    public void setType(String type) {
+        this.type = type;
+    }
 
-  public String getReason() {
-    return reason;
-  }
+    public String getReason() {
+        return reason;
+    }
 
-  public void setReason(String reason) {
-    this.reason = reason;
-  }
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
 
-  @Override
-  public String toString() {
-    return "ErrorResponse [type=" + type + ", reason=" + reason + "]";
-  }
+    @Override
+    public String toString() {
+        return "ErrorResponse [type=" + type + ", reason=" + reason + "]";
+    }
 
 }

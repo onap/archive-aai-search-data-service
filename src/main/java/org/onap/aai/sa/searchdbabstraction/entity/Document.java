@@ -23,39 +23,39 @@ package org.onap.aai.sa.searchdbabstraction.entity;
 import org.json.simple.JSONObject;
 
 public class Document {
-  private String etag;
-  private String url;
+    private String etag;
+    private String url;
 
-  private JSONObject content;
+    private JSONObject content;
 
-  public String getEtag() {
-    return etag;
-  }
+    public String getEtag() {
+        return etag;
+    }
 
-  public void setEtag(String etag) {
-    this.etag = etag;
-  }
+    public void setEtag(String etag) {
+        this.etag = etag;
+    }
 
-  public String getUrl() {
-    return url;
-  }
+    public String getUrl() {
+        return url;
+    }
 
-  public void setUrl(String url) {
-    this.url = url;
-  }
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
-  public JSONObject getContent() {
-    return content;
-  }
+    public JSONObject getContent() {
+        return content;
+    }
 
-  public void setContent(JSONObject content) {
-    this.content = content;
-  }
+    public void setContent(JSONObject content) {
+        this.content = content;
+    }
 
-  @Override
-  public String toString() {
-    return "Document [etag=" + etag + ", url=" + url + "]";
-  }
+    @Override
+    public String toString() {
+        return "Document [etag=" + etag + ", url=" + url + "]";
+    }
 
 
 }

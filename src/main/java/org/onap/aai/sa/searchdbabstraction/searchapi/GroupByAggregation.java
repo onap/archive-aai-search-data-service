@@ -23,7 +23,9 @@ package org.onap.aai.sa.searchdbabstraction.searchapi;
 /**
  * An example of a date_range aggregation:
  *
- * <p><pre>
+ * <p>
+ * 
+ * <pre>
  * {
  *    "aggs": {
  *        "my_group": {
@@ -39,31 +41,30 @@ package org.onap.aai.sa.searchdbabstraction.searchapi;
  */
 public class GroupByAggregation extends AbstractAggregation {
 
-  @Override
-  public String toElasticSearch() {
-    StringBuilder sb = new StringBuilder();
+    @Override
+    public String toElasticSearch() {
+        StringBuilder sb = new StringBuilder();
 
-    sb.append("\"terms\": {\"field\": \"");
-    sb.append(field);
-    sb.append("\"");
-    if (size != null) {
-      sb.append(", \"size\": ");
-      sb.append(size);
+        sb.append("\"terms\": {\"field\": \"");
+        sb.append(field);
+        sb.append("\"");
+        if (size != null) {
+            sb.append(", \"size\": ");
+            sb.append(size);
+        }
+
+        if (minThreshold != null) {
+            sb.append(", \"min_doc_count\": ").append(minThreshold);
+        }
+
+        sb.append("}");
+
+        return sb.toString();
     }
 
-    if (minThreshold != null) {
-      sb.append(", \"min_doc_count\": ").append(minThreshold);
+    @Override
+    public String toString() {
+        return "{group-by: {field: " + field + ", size: " + size + " minThreshold: " + minThreshold + "}}";
     }
-
-    sb.append("}");
-
-    return sb.toString();
-  }
-
-  @Override
-  public String toString() {
-    return "{group-by: {field: " + field + ", size: " + size
-        + " minThreshold: " + minThreshold + "}}";
-  }
 
 }

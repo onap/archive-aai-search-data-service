@@ -40,207 +40,206 @@ import org.onap.aai.sa.searchdbabstraction.util.SearchDbConstants;
 
 public class SearchDbServiceAuthCore {
 
-  private static Logger logger = LoggerFactory.getInstance()
-    .getLogger(SearchDbServiceAuthCore.class.getName());
+    private static Logger logger = LoggerFactory.getInstance().getLogger(SearchDbServiceAuthCore.class.getName());
 
-  private static String GlobalAuthFileName = SearchDbConstants.SDB_AUTH_CONFIG_FILENAME;
+    private static String GlobalAuthFileName = SearchDbConstants.SDB_AUTH_CONFIG_FILENAME;
 
-  private static enum HTTP_METHODS {
-    POST, GET, PUT, DELETE
-  }
-
-  ;
-
-  // Don't instantiate
-  private SearchDbServiceAuthCore() {
-  }
-
-  private static boolean usersInitialized = false;
-  private static HashMap<String, SearchDbAuthUser> users;
-  private static boolean timerSet = false;
-  private static Timer timer = null;
-
-  public synchronized static void init() {
-
-
-    SearchDbServiceAuthCore.getConfigFile();
-    SearchDbServiceAuthCore.reloadUsers();
-
-  }
-
-  public static void cleanup() {
-    timer.cancel();
-  }
-
-  public static String getConfigFile() {
-    if (GlobalAuthFileName == null) {
-      String nc = GlobalAuthFileName;
-      if (nc == null) {
-        nc = "/home/aaiadmin/etc/aaipolicy.json";
-      }
-      GlobalAuthFileName = nc;
+    private enum HTTP_METHODS {
+        POST,
+        GET,
+        PUT,
+        DELETE
     }
-    return GlobalAuthFileName;
-  }
 
-  public synchronized static void reloadUsers() {
-    users = new HashMap<String, SearchDbAuthUser>();
-    ObjectMapper mapper = new ObjectMapper(); // can reuse, share globally
-    JSONParser parser = new JSONParser();
-    try {
-      Object obj = parser.parse(new FileReader(GlobalAuthFileName));
-      JsonNode rootNode = mapper.readTree(new File(GlobalAuthFileName));
-      JsonNode rolesNode = rootNode.path("roles");
+    // Don't instantiate
+    private SearchDbServiceAuthCore() {}
 
-      for (JsonNode roleNode : rolesNode) {
-        String roleName = roleNode.path("name").asText();
+    private static boolean usersInitialized = false;
+    private static HashMap<String, SearchDbAuthUser> users;
+    private static boolean timerSet = false;
+    private static Timer timer = null;
 
-        TabularAuthRole authRole = new TabularAuthRole();
-        JsonNode usersNode = roleNode.path("users");
-        JsonNode functionsNode = roleNode.path("functions");
-        for (JsonNode functionNode : functionsNode) {
-          String function = functionNode.path("name").asText();
-          JsonNode methodsNode = functionNode.path("methods");
-          boolean hasMethods = false;
-          for (JsonNode methodNode : methodsNode) {
-            String methodName = methodNode.path("name").asText();
-            hasMethods = true;
-            String thisFunction = methodName + ":" + function;
+    public synchronized static void init() {
 
-            authRole.addAllowedFunction(thisFunction);
-          }
 
-          if (hasMethods == false) {
-            // iterate the list from HTTP_METHODS
-            for (HTTP_METHODS meth : HTTP_METHODS.values()) {
-              String thisFunction = meth.toString() + ":" + function;
+        SearchDbServiceAuthCore.getConfigFile();
+        SearchDbServiceAuthCore.reloadUsers();
 
-              authRole.addAllowedFunction(thisFunction);
+    }
+
+    public static void cleanup() {
+        timer.cancel();
+    }
+
+    public static String getConfigFile() {
+        if (GlobalAuthFileName == null) {
+            String nc = GlobalAuthFileName;
+            if (nc == null) {
+                nc = "/home/aaiadmin/etc/aaipolicy.json";
             }
-          }
-
+            GlobalAuthFileName = nc;
         }
-        for (JsonNode userNode : usersNode) {
-          // make the user lower case
-          String username = userNode.path("username").asText().toLowerCase();
-          SearchDbAuthUser authUser = null;
-          if (users.containsKey(username)) {
-            authUser = users.get(username);
-          } else {
-            authUser = new SearchDbAuthUser();
-          }
+        return GlobalAuthFileName;
+    }
+
+    public synchronized static void reloadUsers() {
+        users = new HashMap<>();
+        ObjectMapper mapper = new ObjectMapper(); // can reuse, share globally
+        JSONParser parser = new JSONParser();
+        try {
+            parser.parse(new FileReader(GlobalAuthFileName));
+            JsonNode rootNode = mapper.readTree(new File(GlobalAuthFileName));
+            JsonNode rolesNode = rootNode.path("roles");
+
+            for (JsonNode roleNode : rolesNode) {
+                String roleName = roleNode.path("name").asText();
+
+                TabularAuthRole authRole = new TabularAuthRole();
+                JsonNode usersNode = roleNode.path("users");
+                JsonNode functionsNode = roleNode.path("functions");
+                for (JsonNode functionNode : functionsNode) {
+                    String function = functionNode.path("name").asText();
+                    JsonNode methodsNode = functionNode.path("methods");
+                    boolean hasMethods = false;
+                    for (JsonNode methodNode : methodsNode) {
+                        String methodName = methodNode.path("name").asText();
+                        hasMethods = true;
+                        String thisFunction = methodName + ":" + function;
+
+                        authRole.addAllowedFunction(thisFunction);
+                    }
+
+                    if (hasMethods == false) {
+                        // iterate the list from HTTP_METHODS
+                        for (HTTP_METHODS meth : HTTP_METHODS.values()) {
+                            String thisFunction = meth.toString() + ":" + function;
+
+                            authRole.addAllowedFunction(thisFunction);
+                        }
+                    }
+
+                }
+                for (JsonNode userNode : usersNode) {
+                    // make the user lower case
+                    String username = userNode.path("username").asText().toLowerCase();
+                    SearchDbAuthUser authUser = null;
+                    if (users.containsKey(username)) {
+                        authUser = users.get(username);
+                    } else {
+                        authUser = new SearchDbAuthUser();
+                    }
 
 
-          authUser.setUser(username);
-          authUser.addRole(roleName, authRole);
-          users.put(username, authUser);
+                    authUser.setUser(username);
+                    authUser.addRole(roleName, authRole);
+                    users.put(username, authUser);
+                }
+            }
+        } catch (FileNotFoundException fnfe) {
+            logger.debug("Failed to load the policy file ");
+
+        } catch (ParseException e) {
+            logger.debug("Failed to Parse the policy file ");
+
+        } catch (JsonProcessingException e) {
+            logger.debug("JSON processing error while parsing policy file: " + e.getMessage());
+
+        } catch (IOException e) {
+            logger.debug("IO Exception while parsing policy file: " + e.getMessage());
         }
-      }
-    } catch (FileNotFoundException fnfe) {
-      logger.debug("Failed to load the policy file ");
 
-    } catch (ParseException e) {
-      logger.debug("Failed to Parse the policy file ");
+        usersInitialized = true;
 
-    } catch (JsonProcessingException e) {
-      logger.debug("JSON processing error while parsing policy file: " + e.getMessage());
-
-    } catch (IOException e) {
-      logger.debug("IO Exception while parsing policy file: " + e.getMessage());
     }
 
-    usersInitialized = true;
-
-  }
-
-  public static class SearchDbAuthUser {
-    public SearchDbAuthUser() {
-      this.roles = new HashMap<String, TabularAuthRole>();
-    }
-
-    private String username;
-    private HashMap<String, TabularAuthRole> roles;
-
-    public String getUser() {
-      return this.username;
-    }
-
-    public HashMap<String, TabularAuthRole> getRoles() {
-      return this.roles;
-    }
-
-    public void addRole(String roleName, TabularAuthRole authRole) {
-      this.roles.put(roleName, authRole);
-    }
-
-    public boolean checkAllowed(String checkFunc) {
-      for (Map.Entry<String, TabularAuthRole> roleEntry : this.roles.entrySet()) {
-        TabularAuthRole role = roleEntry.getValue();
-        if (role.hasAllowedFunction(checkFunc)) {
-          // break out as soon as we find it
-          return true;
+    public static class SearchDbAuthUser {
+        public SearchDbAuthUser() {
+            this.roles = new HashMap<>();
         }
-      }
-      // we would have got positive confirmation had it been there
-      return false;
+
+        private String username;
+        private HashMap<String, TabularAuthRole> roles;
+
+        public String getUser() {
+            return this.username;
+        }
+
+        public HashMap<String, TabularAuthRole> getRoles() {
+            return this.roles;
+        }
+
+        public void addRole(String roleName, TabularAuthRole authRole) {
+            this.roles.put(roleName, authRole);
+        }
+
+        public boolean checkAllowed(String checkFunc) {
+            for (Map.Entry<String, TabularAuthRole> roleEntry : this.roles.entrySet()) {
+                TabularAuthRole role = roleEntry.getValue();
+                if (role.hasAllowedFunction(checkFunc)) {
+                    // break out as soon as we find it
+                    return true;
+                }
+            }
+            // we would have got positive confirmation had it been there
+            return false;
+        }
+
+        public void setUser(String myuser) {
+            this.username = myuser;
+        }
+
     }
 
-    public void setUser(String myuser) {
-      this.username = myuser;
+    public static class TabularAuthRole {
+        public TabularAuthRole() {
+            this.allowedFunctions = new ArrayList<>();
+        }
+
+        private List<String> allowedFunctions;
+
+        public void addAllowedFunction(String func) {
+            this.allowedFunctions.add(func);
+        }
+
+        public void delAllowedFunction(String delFunc) {
+            if (this.allowedFunctions.contains(delFunc)) {
+                this.allowedFunctions.remove(delFunc);
+            }
+        }
+
+        public boolean hasAllowedFunction(String afunc) {
+            if (this.allowedFunctions.contains(afunc)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 
-  }
-
-  public static class TabularAuthRole {
-    public TabularAuthRole() {
-      this.allowedFunctions = new ArrayList<String>();
+    public static HashMap<String, SearchDbAuthUser> getUsers(String key) {
+        if (!usersInitialized || (users == null)) {
+            reloadUsers();
+        }
+        return users;
     }
 
-    private List<String> allowedFunctions;
+    public static boolean authorize(String username, String authFunction) {
 
-    public void addAllowedFunction(String func) {
-      this.allowedFunctions.add(func);
+        if (!usersInitialized || (users == null)) {
+            init();
+        }
+        if (users.containsKey(username)) {
+            if (users.get(username).checkAllowed(authFunction) == true) {
+
+                return true;
+            } else {
+
+
+                return false;
+            }
+        } else {
+
+            return false;
+        }
     }
-
-    public void delAllowedFunction(String delFunc) {
-      if (this.allowedFunctions.contains(delFunc)) {
-        this.allowedFunctions.remove(delFunc);
-      }
-    }
-
-    public boolean hasAllowedFunction(String afunc) {
-      if (this.allowedFunctions.contains(afunc)) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-  }
-
-  public static HashMap<String, SearchDbAuthUser> getUsers(String key) {
-    if (!usersInitialized || (users == null)) {
-      reloadUsers();
-    }
-    return users;
-  }
-
-  public static boolean authorize(String username, String authFunction) {
-
-    if (!usersInitialized || (users == null)) {
-      init();
-    }
-    if (users.containsKey(username)) {
-      if (users.get(username).checkAllowed(authFunction) == true) {
-
-        return true;
-      } else {
-
-
-        return false;
-      }
-    } else {
-
-      return false;
-    }
-  }
 }

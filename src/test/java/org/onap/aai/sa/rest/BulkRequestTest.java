@@ -33,7 +33,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class BulkRequestTest {
 
     @Test
-    public void testBulkRequest_Delete(){
+    public void testBulkRequest_Delete() {
         BulkRequest request = new BulkRequest();
         BulkOperation operation = new BulkOperation();
         Document document = new Document();
@@ -54,7 +54,7 @@ public class BulkRequestTest {
     }
 
     @Test
-    public void testBulkRequest_Update(){
+    public void testBulkRequest_Update() {
         BulkRequest request = new BulkRequest();
         BulkOperation operation = new BulkOperation();
         Document document = new Document();
@@ -74,7 +74,7 @@ public class BulkRequestTest {
     }
 
     @Test
-    public void testBulkRequest_Create(){
+    public void testBulkRequest_Create() {
         BulkRequest request = new BulkRequest();
         BulkOperation operation = new BulkOperation();
         Document document = new Document();
@@ -94,7 +94,7 @@ public class BulkRequestTest {
     }
 
     @Test
-    public void testBulkRequest_Undefined(){
+    public void testBulkRequest_Undefined() {
         BulkRequest request = new BulkRequest();
         Assert.assertNull(request.getOperation());
         Assert.assertNull(request.getOperationType());
@@ -102,7 +102,7 @@ public class BulkRequestTest {
     }
 
     @Test
-    public void testGetIndex(){
+    public void testGetIndex() {
         BulkRequest request = new BulkRequest();
         BulkOperation operation = new BulkOperation();
         BulkMetaData metaData = new BulkMetaData();
@@ -114,7 +114,7 @@ public class BulkRequestTest {
     }
 
     @Test
-    public void testGetId(){
+    public void testGetId() {
         BulkRequest request = new BulkRequest();
         BulkOperation operation = new BulkOperation();
         BulkMetaData metaData = new BulkMetaData();
@@ -126,16 +126,15 @@ public class BulkRequestTest {
     }
 
     @Test
-    public void testApiUtils(){
-        Assert.assertEquals("services/search-data-service/v1/search/indexes/index1",
-                ApiUtils.buildIndexUri("index1"));
+    public void testApiUtils() {
+        Assert.assertEquals("services/search-data-service/v1/search/indexes/index1", ApiUtils.buildIndexUri("index1"));
         Assert.assertEquals("services/search-data-service/v1/search/indexes/index1/documents/document1",
                 ApiUtils.buildDocumentUri("index1", "document1"));
         Assert.assertTrue(ApiUtils.validateIndexUri("services/search-data-service/v1/search/indexes/index1"));
-        Assert.assertTrue(ApiUtils.validateDocumentUri
-                ("services/search-data-service/v1/search/indexes/index1/documents/document1", true));
-        Assert.assertTrue(ApiUtils.validateDocumentUri
-                ("services/search-data-service/v1/search/indexes/index1/documents/document1", false));
+        Assert.assertTrue(ApiUtils.validateDocumentUri(
+                "services/search-data-service/v1/search/indexes/index1/documents/document1", true));
+        Assert.assertTrue(ApiUtils.validateDocumentUri(
+                "services/search-data-service/v1/search/indexes/index1/documents/document1", false));
     }
 
     private BulkMetaData getMetaData() {

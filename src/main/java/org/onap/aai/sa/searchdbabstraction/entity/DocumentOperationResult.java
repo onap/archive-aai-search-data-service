@@ -21,20 +21,20 @@
 package org.onap.aai.sa.searchdbabstraction.entity;
 
 public class DocumentOperationResult extends OperationResult {
-  private Document document;
+    private Document document;
 
-  public Document getDocument() {
-    return document;
-  }
+    public Document getDocument() {
+        return document;
+    }
 
-  public void setDocument(Document document) {
-    this.document = document;
-  }
+    public void setDocument(Document document) {
+        this.document = document;
+    }
 
-  @Override
-  public String toString() {
-    return "DocumentOperationResult [document=" + document + "]";
-  }
+    @Override
+    public String toString() {
+        return "DocumentOperationResult [document=" + document + "]";
+    }
 
 
 }

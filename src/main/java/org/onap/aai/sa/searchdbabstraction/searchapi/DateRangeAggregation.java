@@ -25,7 +25,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * An example of a date_range aggregation:
  *
- * <p><pre>
+ * <p>
+ * 
+ * <pre>
  * {
  *    "aggs": {
  *        "range": {
@@ -47,83 +49,83 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class DateRangeAggregation extends AbstractAggregation {
 
 
-  private String format;
+    private String format;
 
-  @JsonProperty("ranges")
-  private DateRange[] dateRanges;
+    @JsonProperty("ranges")
+    private DateRange[] dateRanges;
 
 
-  public String getFormat() {
-    return format;
-  }
-
-  public void setFormat(String format) {
-    this.format = format;
-  }
-
-  public DateRange[] getDateRanges() {
-    return dateRanges;
-  }
-
-  public void setDateRanges(DateRange[] dateRanges) {
-    this.dateRanges = dateRanges;
-  }
-
-  @Override
-  public String toElasticSearch() {
-    StringBuilder sb = new StringBuilder();
-
-    sb.append("\"date_range\": {\"field\": \"");
-    sb.append(field);
-    sb.append("\"");
-
-    if (format != null) {
-      sb.append(", \"format\": \"");
-      sb.append(format);
-      sb.append("\"");
+    public String getFormat() {
+        return format;
     }
 
-    if (dateRanges != null && dateRanges.length > 0) {
-      sb.append(", \"ranges\": [");
+    public void setFormat(String format) {
+        this.format = format;
+    }
 
-      for (int i = 0; i < dateRanges.length; i++) {
-        if (i > 0) {
-          sb.append(",");
+    public DateRange[] getDateRanges() {
+        return dateRanges;
+    }
+
+    public void setDateRanges(DateRange[] dateRanges) {
+        this.dateRanges = dateRanges;
+    }
+
+    @Override
+    public String toElasticSearch() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("\"date_range\": {\"field\": \"");
+        sb.append(field);
+        sb.append("\"");
+
+        if (format != null) {
+            sb.append(", \"format\": \"");
+            sb.append(format);
+            sb.append("\"");
         }
-        sb.append(dateRanges[i].toElasticSearch());
-      }
 
-      sb.append("]");
+        if (dateRanges != null && dateRanges.length > 0) {
+            sb.append(", \"ranges\": [");
+
+            for (int i = 0; i < dateRanges.length; i++) {
+                if (i > 0) {
+                    sb.append(",");
+                }
+                sb.append(dateRanges[i].toElasticSearch());
+            }
+
+            sb.append("]");
+        }
+
+        if (size != null) {
+            sb.append(", \"size\": ");
+            sb.append(size);
+        }
+
+        if (minThreshold != null) {
+            sb.append(", \"min_doc_count\": ").append(minThreshold);
+        }
+
+        sb.append("}");
+
+        return sb.toString();
     }
 
-    if (size != null) {
-      sb.append(", \"size\": ");
-      sb.append(size);
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append("date-range: {field: " + field + ", format: " + format + ", size: " + size + ", minThreshold: "
+                + minThreshold + "ranges: [");
+        for (int i = 0; i < dateRanges.length; i++) {
+            if (i > 0) {
+                sb.append(",");
+            }
+            sb.append(dateRanges[i].toString());
+        }
+        sb.append("]");
+
+        return sb.toString();
     }
-
-    if (minThreshold != null) {
-      sb.append(", \"min_doc_count\": ").append(minThreshold);
-    }
-
-    sb.append("}");
-
-    return sb.toString();
-  }
-
-  @Override
-  public String toString() {
-    StringBuffer sb = new StringBuffer();
-    sb.append("date-range: {field: " + field + ", format: " + format + ", size: " + size
-        + ", minThreshold: " + minThreshold + "ranges: [");
-    for (int i = 0; i < dateRanges.length; i++) {
-      if (i > 0) {
-        sb.append(",");
-      }
-      sb.append(dateRanges[i].toString());
-    }
-    sb.append("]");
-
-    return sb.toString();
-  }
 
 }

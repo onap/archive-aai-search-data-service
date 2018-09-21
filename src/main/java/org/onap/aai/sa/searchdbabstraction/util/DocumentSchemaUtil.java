@@ -34,104 +34,106 @@ import org.onap.aai.sa.rest.DocumentSchema;
 
 public class DocumentSchemaUtil {
 
-  private static String dynamicCustomMapping = null;
-  private static final String DYNAMIC_CUSTOM_TEMPALTE_FILE = System.getProperty("CONFIG_HOME") + File.separator 
-		  + "dynamic-custom-template.json";
-  
-  public static String generateDocumentMappings(String documentSchema)
-      throws JsonParseException, JsonMappingException, IOException {
+    private static String dynamicCustomMapping = null;
+    private static final String DYNAMIC_CUSTOM_TEMPALTE_FILE =
+            System.getProperty("CONFIG_HOME") + File.separator + "dynamic-custom-template.json";
 
-    // Unmarshal the json content into a document schema object.
-    ObjectMapper mapper = new ObjectMapper();
-    DocumentSchema schema = mapper.readValue(documentSchema, DocumentSchema.class);
+    public static String generateDocumentMappings(String documentSchema)
+            throws JsonParseException, JsonMappingException, IOException {
 
-    return generateDocumentMappings(schema);
-  }
+        // Unmarshal the json content into a document schema object.
+        ObjectMapper mapper = new ObjectMapper();
+        DocumentSchema schema = mapper.readValue(documentSchema, DocumentSchema.class);
 
-  public static String generateDocumentMappings(DocumentSchema schema) throws IOException {
-	  
-	// Adding dynamic template to add fielddata=true to dynamic fields of type "string"  
-	// in order to avoid aggregation queries breaking in ESv6.1.2
-	if(dynamicCustomMapping == null) {
-		try {
-			dynamicCustomMapping = IOUtils.toString(new FileInputStream(DYNAMIC_CUSTOM_TEMPALTE_FILE), "UTF-8").replaceAll("\\s+", "");
-		} catch (IOException e) {
-			throw new IOException("Dynamic Custom template configuration went wrong! Please check for the correct template file.", e);
-		}
-	}
-
-    // Now, generate the Elastic Search mapping json and return it.
-    StringBuilder sb = new StringBuilder();
-    sb.append("{");
-    // Adding custom mapping which adds fielddata=true to dynamic fields of type "string"
-    sb.append(dynamicCustomMapping != null ? dynamicCustomMapping : "");
-    sb.append("\"properties\": {");
-
-    generateFieldMappings(schema.getFields(), sb);
-
-    sb.append("}");
-    sb.append("}");
-
-    return sb.toString();
-  }
-
-
-  private static void generateFieldMappings(List<DocumentFieldSchema> fields, StringBuilder sb) {
-
-    AtomicBoolean firstField = new AtomicBoolean(true);
-
-    for (DocumentFieldSchema field : fields) {
-
-      // If this isn't the first field in the list, prepend it with a ','
-      if (!firstField.compareAndSet(true, false)) {
-        sb.append(", ");
-      }
-
-      // Now, append the translated field contents.
-      generateFieldMapping(field, sb);
-    }
-  }
-
-  private static void generateFieldMapping(DocumentFieldSchema fieldSchema, StringBuilder sb) {
-
-    sb.append("\"").append(fieldSchema.getName()).append("\": {");
-
-    // The field type is mandatory.
-    sb.append("\"type\": \"").append(fieldSchema.getDataType()).append("\"");
-
-    // For date type fields we may optionally supply a format specifier.
-    if (fieldSchema.getDataType().equals("date")) {
-      if (fieldSchema.getFormat() != null) {
-        sb.append(", \"format\": \"").append(fieldSchema.getFormat()).append("\"");
-      }
+        return generateDocumentMappings(schema);
     }
 
-    // If the index field was specified, then append it.
-    if (fieldSchema.getSearchable() != null) {
-      sb.append(", \"index\": \"").append(fieldSchema.getSearchable()
-          ? "analyzed" : "not_analyzed").append("\"");
-    }
+    public static String generateDocumentMappings(DocumentSchema schema) throws IOException {
 
-    // If a search analyzer was specified, then append it.
-    if (fieldSchema.getSearchAnalyzer() != null) {
-      sb.append(", \"search_analyzer\": \"").append(fieldSchema.getSearchAnalyzer()).append("\"");
-    }
+        // Adding dynamic template to add fielddata=true to dynamic fields of type "string"
+        // in order to avoid aggregation queries breaking in ESv6.1.2
+        if (dynamicCustomMapping == null) {
+            try {
+                dynamicCustomMapping = IOUtils.toString(new FileInputStream(DYNAMIC_CUSTOM_TEMPALTE_FILE), "UTF-8")
+                        .replaceAll("\\s+", "");
+            } catch (IOException e) {
+                throw new IOException(
+                        "Dynamic Custom template configuration went wrong! Please check for the correct template file.",
+                        e);
+            }
+        }
 
-    // If an indexing analyzer was specified, then append it.
-    if (fieldSchema.getIndexAnalyzer() != null) {
-      sb.append(", \"analyzer\": \"").append(fieldSchema.getIndexAnalyzer()).append("\"");
+        // Now, generate the Elastic Search mapping json and return it.
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        // Adding custom mapping which adds fielddata=true to dynamic fields of type "string"
+        sb.append(dynamicCustomMapping != null ? dynamicCustomMapping : "");
+        sb.append("\"properties\": {");
+
+        generateFieldMappings(schema.getFields(), sb);
+
+        sb.append("}");
+        sb.append("}");
+
+        return sb.toString();
     }
 
 
-    if (fieldSchema.getDataType().equals("nested")) {
+    private static void generateFieldMappings(List<DocumentFieldSchema> fields, StringBuilder sb) {
 
-      sb.append(", \"properties\": {");
-      generateFieldMappings(fieldSchema.getSubFields(), sb);
-      sb.append("}");
+        AtomicBoolean firstField = new AtomicBoolean(true);
+
+        for (DocumentFieldSchema field : fields) {
+
+            // If this isn't the first field in the list, prepend it with a ','
+            if (!firstField.compareAndSet(true, false)) {
+                sb.append(", ");
+            }
+
+            // Now, append the translated field contents.
+            generateFieldMapping(field, sb);
+        }
     }
 
-    sb.append("}");
-  }
+    private static void generateFieldMapping(DocumentFieldSchema fieldSchema, StringBuilder sb) {
+
+        sb.append("\"").append(fieldSchema.getName()).append("\": {");
+
+        // The field type is mandatory.
+        sb.append("\"type\": \"").append(fieldSchema.getDataType()).append("\"");
+
+        // For date type fields we may optionally supply a format specifier.
+        if (fieldSchema.getDataType().equals("date")) {
+            if (fieldSchema.getFormat() != null) {
+                sb.append(", \"format\": \"").append(fieldSchema.getFormat()).append("\"");
+            }
+        }
+
+        // If the index field was specified, then append it.
+        if (fieldSchema.getSearchable() != null) {
+            sb.append(", \"index\": \"").append(fieldSchema.getSearchable() ? "analyzed" : "not_analyzed").append("\"");
+        }
+
+        // If a search analyzer was specified, then append it.
+        if (fieldSchema.getSearchAnalyzer() != null) {
+            sb.append(", \"search_analyzer\": \"").append(fieldSchema.getSearchAnalyzer()).append("\"");
+        }
+
+        // If an indexing analyzer was specified, then append it.
+        if (fieldSchema.getIndexAnalyzer() != null) {
+            sb.append(", \"analyzer\": \"").append(fieldSchema.getIndexAnalyzer()).append("\"");
+        }
+
+
+        if (fieldSchema.getDataType().equals("nested")) {
+
+            sb.append(", \"properties\": {");
+            generateFieldMappings(fieldSchema.getSubFields(), sb);
+            sb.append("}");
+        }
+
+        sb.append("}");
+    }
 
 }
 

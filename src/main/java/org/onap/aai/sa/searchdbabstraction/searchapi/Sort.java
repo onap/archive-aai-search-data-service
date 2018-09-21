@@ -22,51 +22,51 @@ package org.onap.aai.sa.searchdbabstraction.searchapi;
 
 public class Sort {
 
-  private String field;
-  private SortDirection order = null;
+    private String field;
+    private SortDirection order = null;
 
-  public enum SortDirection {
-    ascending,
-    descending
-  }
-
-  public String getField() {
-    return field;
-  }
-
-  public void setField(String field) {
-    this.field = field;
-  }
-
-  public SortDirection getOrder() {
-    return order;
-  }
-
-  public void setOrder(SortDirection order) {
-    this.order = order;
-  }
-
-  public String toElasticSearch() {
-
-    StringBuilder sb = new StringBuilder();
-
-    sb.append("{ \"").append(field).append("\": { \"order\": ");
-
-    // If a sort order wasn't explicitly supplied, default to 'ascending'.
-    if (order != null) {
-      switch (order) {
-        case ascending:
-          sb.append("\"asc\"}}");
-          break;
-        case descending:
-          sb.append("\"desc\"}}");
-          break;
-        default:
-      }
-    } else {
-      sb.append("\"asc\"}}");
+    public enum SortDirection {
+        ascending,
+        descending
     }
 
-    return sb.toString();
-  }
+    public String getField() {
+        return field;
+    }
+
+    public void setField(String field) {
+        this.field = field;
+    }
+
+    public SortDirection getOrder() {
+        return order;
+    }
+
+    public void setOrder(SortDirection order) {
+        this.order = order;
+    }
+
+    public String toElasticSearch() {
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("{ \"").append(field).append("\": { \"order\": ");
+
+        // If a sort order wasn't explicitly supplied, default to 'ascending'.
+        if (order != null) {
+            switch (order) {
+                case ascending:
+                    sb.append("\"asc\"}}");
+                    break;
+                case descending:
+                    sb.append("\"desc\"}}");
+                    break;
+                default:
+            }
+        } else {
+            sb.append("\"asc\"}}");
+        }
+
+        return sb.toString();
+    }
 }

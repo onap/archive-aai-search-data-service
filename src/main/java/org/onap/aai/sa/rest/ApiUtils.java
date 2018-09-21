@@ -32,167 +32,150 @@ import org.springframework.http.HttpStatus;
 
 public class ApiUtils {
 
-  public static final String SEARCH_AUTH_POLICY_NAME = "search";
-  public static final String URL_PREFIX = "services/search-data-service/v1/search";
+    public static final String SEARCH_AUTH_POLICY_NAME = "search";
+    public static final String URL_PREFIX = "services/search-data-service/v1/search";
 
-  public enum Action {
-    POST, GET, PUT, DELETE
-  };
+    public enum Action {
+        POST,
+        GET,
+        PUT,
+        DELETE
+    };
 
-  /**
-   * This method uses the contents of the supplied HTTP headers and request
-   * structures to populate the MDC Context used for logging purposes.
-   *
-   * @param httpReq - HTTP request structure.
-   * @param headers - HTTP headers
-   */
-//  protected static void initMdcContext(HttpServletRequest httpReq, HttpHeaders headers) {
-//
-//    // Auto generate a transaction if we were not provided one.
-//    String transId = null;
-//    if (headers != null) {
-//      // transId = headers.getRequestHeaders().getFirst("X-TransactionId");
-//      transId = headers.getFirst("X-TransactionId");
-//
-//      if ((transId == null) || (transId.equals(""))) {
-//        transId = UUID.randomUUID().toString();
-//      }
-//    }
-//
-//    String fromIp = (httpReq != null) ? httpReq.getRemoteAddr() : "";
-//    String fromApp = (headers != null) ? headers.getFirst("X-FromAppId") : "";
-//
-//    MdcContext.initialize(transId, SearchDbConstants.SDB_SERVICE_NAME, "", fromApp, fromIp);
-//  }
+    /**
+     * This method uses the contents of the supplied HTTP headers and request structures to populate the MDC Context
+     * used for logging purposes.
+     *
+     * @param httpReq - HTTP request structure.
+     * @param headers - HTTP headers
+     */
+    protected static void initMdcContext(HttpServletRequest httpReq, HttpHeaders headers) {
 
-  protected static void initMdcContext ( HttpServletRequest httpReq, HttpHeaders headers) {
+        // Auto generate a transaction if we were not provided one.
+        String transId = null;
+        if (headers != null) {
+            transId = headers.getFirst("X-TransactionId");
 
-    // Auto generate a transaction if we were not provided one.
-    String transId = null;
-    if (headers != null) {
-      // transId = headers.getRequestHeaders().getFirst("X-TransactionId");
-      transId = headers.getFirst("X-TransactionId");
-
-      if ((transId == null) || (transId.equals(""))) {
-        transId = UUID.randomUUID().toString();
-      }
-    }
-
-
-    String fromIp = (httpReq != null) ? httpReq.getRemoteHost () : "";
-    String fromApp = (headers != null) ? headers.getFirst("X-FromAppId") : "";
-
-    MdcContext.initialize(transId, SearchDbConstants.SDB_SERVICE_NAME, "", fromApp, fromIp);
-  }
-
-  protected static void clearMdcContext() {
-    MDC.clear();
-  }
-
-  public static String buildIndexUri(String index) {
-
-    return (URL_PREFIX + "/indexes/") + index;
-  }
-
-  public static String buildDocumentUri(String index, String documentId) {
-
-    return buildIndexUri(index) + "/documents/" + documentId;
-  }
-
-  public static boolean validateIndexUri(String uri) {
-
-    // If the URI starts with a leading '/' character, remove it.
-    uri = uri.startsWith("/") ? uri.substring(1) : uri;
-
-    // Now, tokenize the URI string.
-    String[] tokens = uri.split("/");
-
-    return (tokens.length == 6) && (tokens[4].equals("indexes"));
-
-  }
-
-  public static boolean validateDocumentUri(String uri, boolean requireId) {
-
-    // If the URI starts with a leading '/' character, remove it.
-    uri = uri.startsWith("/") ? uri.substring(1) : uri;
-
-    // Now, tokenize the URI string.
-    String[] tokens = uri.split("/");
-
-    if (requireId) {
-      return (tokens.length == 8) && (tokens[4].equals("indexes")
-                                      && (tokens[6].equals("documents")));
-    } else {
-      return ((tokens.length == 8) || (tokens.length == 7))
-        && (tokens[4].equals("indexes") && (tokens[6].equals("documents")));
-    }
-  }
-
-  public static String extractIndexFromUri(String uri) {
-
-    // If the URI starts with a leading '/' character, remove it.
-    uri = uri.startsWith("/") ? uri.substring(1) : uri;
-
-    // Now, tokenize the URI string.
-    String[] tokens = uri.split("/");
-
-    int i = 0;
-    for (String token : tokens) {
-      if (token.equals("indexes")) {
-        if (i + 1 < tokens.length) {
-          return tokens[i + 1];
+            if ((transId == null) || (transId.equals(""))) {
+                transId = UUID.randomUUID().toString();
+            }
         }
-      }
-      i++;
+
+
+        String fromIp = (httpReq != null) ? httpReq.getRemoteHost() : "";
+        String fromApp = (headers != null) ? headers.getFirst("X-FromAppId") : "";
+
+        MdcContext.initialize(transId, SearchDbConstants.SDB_SERVICE_NAME, "", fromApp, fromIp);
     }
 
-    return null;
-  }
+    protected static void clearMdcContext() {
+        MDC.clear();
+    }
 
-  public static String extractIdFromUri(String uri) {
+    public static String buildIndexUri(String index) {
 
-    // If the URI starts with a leading '/' character, remove it.
-    uri = uri.startsWith("/") ? uri.substring(1) : uri;
+        return (URL_PREFIX + "/indexes/") + index;
+    }
 
-    // Now, tokenize the URI string.
-    String[] tokens = uri.split("/");
+    public static String buildDocumentUri(String index, String documentId) {
 
-    int i = 0;
-    for (String token : tokens) {
-      if (token.equals("documents")) {
-        if (i + 1 < tokens.length) {
-          return tokens[i + 1];
+        return buildIndexUri(index) + "/documents/" + documentId;
+    }
+
+    public static boolean validateIndexUri(String uri) {
+
+        // If the URI starts with a leading '/' character, remove it.
+        uri = uri.startsWith("/") ? uri.substring(1) : uri;
+
+        // Now, tokenize the URI string.
+        String[] tokens = uri.split("/");
+
+        return (tokens.length == 6) && (tokens[4].equals("indexes"));
+
+    }
+
+    public static boolean validateDocumentUri(String uri, boolean requireId) {
+
+        // If the URI starts with a leading '/' character, remove it.
+        uri = uri.startsWith("/") ? uri.substring(1) : uri;
+
+        // Now, tokenize the URI string.
+        String[] tokens = uri.split("/");
+
+        if (requireId) {
+            return (tokens.length == 8) && (tokens[4].equals("indexes") && (tokens[6].equals("documents")));
+        } else {
+            return ((tokens.length == 8) || (tokens.length == 7))
+                    && (tokens[4].equals("indexes") && (tokens[6].equals("documents")));
         }
-      }
-      i++;
     }
 
-    return null;
-  }
+    public static String extractIndexFromUri(String uri) {
 
-  public static String getHttpStatusString(int httpStatusCode) {
-    // Some of the status codes we use are still in draft state in the standards, and are not
-    // recognized in the javax library.  We need to manually translate these to human-readable
-    // strings.
-    String statusString = "Unknown";
-    HttpStatus status = null;
+        // If the URI starts with a leading '/' character, remove it.
+        uri = uri.startsWith("/") ? uri.substring(1) : uri;
 
-    try {
-      status = HttpStatus.valueOf ( httpStatusCode );
-    } catch (IllegalArgumentException e) {}
+        // Now, tokenize the URI string.
+        String[] tokens = uri.split("/");
 
+        int i = 0;
+        for (String token : tokens) {
+            if (token.equals("indexes")) {
+                if (i + 1 < tokens.length) {
+                    return tokens[i + 1];
+                }
+            }
+            i++;
+        }
 
-    if (status == null) {
-      switch (httpStatusCode) {
-      case 207:
-        statusString = "Multi Status";
-        break;
-      default:
-      }
-    } else {
-      statusString = status.getReasonPhrase ();
+        return null;
     }
 
-    return statusString;
-  }
+    public static String extractIdFromUri(String uri) {
+
+        // If the URI starts with a leading '/' character, remove it.
+        uri = uri.startsWith("/") ? uri.substring(1) : uri;
+
+        // Now, tokenize the URI string.
+        String[] tokens = uri.split("/");
+
+        int i = 0;
+        for (String token : tokens) {
+            if (token.equals("documents")) {
+                if (i + 1 < tokens.length) {
+                    return tokens[i + 1];
+                }
+            }
+            i++;
+        }
+
+        return null;
+    }
+
+    public static String getHttpStatusString(int httpStatusCode) {
+        // Some of the status codes we use are still in draft state in the standards, and are not
+        // recognized in the javax library. We need to manually translate these to human-readable
+        // strings.
+        String statusString = "Unknown";
+        HttpStatus status = null;
+
+        try {
+            status = HttpStatus.valueOf(httpStatusCode);
+        } catch (IllegalArgumentException e) {
+        }
+
+
+        if (status == null) {
+            switch (httpStatusCode) {
+                case 207:
+                    statusString = "Multi Status";
+                    break;
+                default:
+            }
+        } else {
+            statusString = status.getReasonPhrase();
+        }
+
+        return statusString;
+    }
 }

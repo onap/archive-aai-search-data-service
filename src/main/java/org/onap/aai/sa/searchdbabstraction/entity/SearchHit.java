@@ -21,28 +21,28 @@
 package org.onap.aai.sa.searchdbabstraction.entity;
 
 public class SearchHit {
-  private String score;
-  Document document;
+    private String score;
+    Document document;
 
-  public String getScore() {
-    return score;
-  }
+    public String getScore() {
+        return score;
+    }
 
-  public void setScore(String score) {
-    this.score = score;
-  }
+    public void setScore(String score) {
+        this.score = score;
+    }
 
-  public Document getDocument() {
-    return document;
-  }
+    public Document getDocument() {
+        return document;
+    }
 
-  public void setDocument(Document document) {
-    this.document = document;
-  }
+    public void setDocument(Document document) {
+        this.document = document;
+    }
 
-  @Override
-  public String toString() {
-    return "SearchHit [score=" + score + ", document=" + document + "]";
-  }
+    @Override
+    public String toString() {
+        return "SearchHit [score=" + score + ", document=" + document + "]";
+    }
 
 }

@@ -22,69 +22,69 @@ package org.onap.aai.sa.searchdbabstraction.searchapi;
 
 public class Query {
 
-  private QueryStatement may;
-  private QueryStatement must;
+    private QueryStatement may;
+    private QueryStatement must;
 
-  public QueryStatement getMay() {
-    return may;
-  }
-
-  public void setMay(QueryStatement may) {
-    this.may = may;
-  }
-
-  public QueryStatement getMust() {
-    return must;
-  }
-
-  public void setMust(QueryStatement must) {
-    this.must = must;
-  }
-
-  public QueryStatement getQueryStatement() {
-    if (isMust()) {
-      return must;
-    } else if (isMay()) {
-      return may;
-    } else {
-      return null;
+    public QueryStatement getMay() {
+        return may;
     }
-  }
 
-  public boolean isMust() {
-    return must != null;
-  }
-
-  public boolean isMay() {
-    return may != null;
-  }
-
-  public String toElasticSearch() {
-
-    if (isMust()) {
-      return must.toElasticSearch();
-    } else if (isMay()) {
-      return may.toElasticSearch();
-    } else {
-      return ""; // throw an exception?
+    public void setMay(QueryStatement may) {
+        this.may = may;
     }
-  }
 
-  @Override
-  public String toString() {
-
-    StringBuilder sb = new StringBuilder();
-
-    sb.append("Query:[");
-    if (isMust()) {
-      sb.append("must: ").append(must.toString());
-    } else if (isMay()) {
-      sb.append("may: ").append(may.toString());
-    } else {
-      sb.append("INVALID");
+    public QueryStatement getMust() {
+        return must;
     }
-    sb.append("]");
 
-    return sb.toString();
-  }
+    public void setMust(QueryStatement must) {
+        this.must = must;
+    }
+
+    public QueryStatement getQueryStatement() {
+        if (isMust()) {
+            return must;
+        } else if (isMay()) {
+            return may;
+        } else {
+            return null;
+        }
+    }
+
+    public boolean isMust() {
+        return must != null;
+    }
+
+    public boolean isMay() {
+        return may != null;
+    }
+
+    public String toElasticSearch() {
+
+        if (isMust()) {
+            return must.toElasticSearch();
+        } else if (isMay()) {
+            return may.toElasticSearch();
+        } else {
+            return ""; // throw an exception?
+        }
+    }
+
+    @Override
+    public String toString() {
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Query:[");
+        if (isMust()) {
+            sb.append("must: ").append(must.toString());
+        } else if (isMay()) {
+            sb.append("may: ").append(may.toString());
+        } else {
+            sb.append("INVALID");
+        }
+        sb.append("]");
+
+        return sb.toString();
+    }
 }

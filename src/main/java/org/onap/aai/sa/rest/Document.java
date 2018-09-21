@@ -28,33 +28,33 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Document {
-  private Map<String, Object> fields = new HashMap<String, Object>();
+    private Map<String, Object> fields = new HashMap<String, Object>();
 
-  @JsonAnyGetter
-  public Map<String, Object> getFields() {
-    return fields;
-  }
-
-  @JsonAnySetter
-  public void setField(String name, Object value) {
-    fields.put(name, value);
-  }
-
-  public String toJson() throws JsonProcessingException {
-
-    ObjectMapper mapper = new ObjectMapper();
-    return mapper.writeValueAsString(this);
-  }
-
-
-  @Override
-  public String toString() {
-    String str = "Document: [";
-    for (String key : fields.keySet()) {
-      str += key + ": " + fields.get(key);
+    @JsonAnyGetter
+    public Map<String, Object> getFields() {
+        return fields;
     }
-    str += "]";
 
-    return str;
-  }
+    @JsonAnySetter
+    public void setField(String name, Object value) {
+        fields.put(name, value);
+    }
+
+    public String toJson() throws JsonProcessingException {
+
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(this);
+    }
+
+
+    @Override
+    public String toString() {
+        String str = "Document: [";
+        for (String key : fields.keySet()) {
+            str += key + ": " + fields.get(key);
+        }
+        str += "]";
+
+        return str;
+    }
 }

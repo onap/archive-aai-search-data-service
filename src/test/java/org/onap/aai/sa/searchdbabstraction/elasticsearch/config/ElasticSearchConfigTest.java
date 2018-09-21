@@ -26,23 +26,24 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
 public class ElasticSearchConfigTest {
 
     @Autowired
     ElasticSearchConfig elasticSearchConfig;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         Properties prop = new Properties();
         prop.put("es.cluster-name", "cluster-1");
         prop.put("es.ip-address", "127.0.0.1");
         prop.put("es.http-port", "9001");
-//        elasticSearchConfig = new ElasticSearchConfig(prop);
+        // elasticSearchConfig = new ElasticSearchConfig(prop);
     }
 
     @Ignore
     @Test
-    public void testAllGetMethods(){
+    public void testAllGetMethods() {
         Assert.assertEquals(elasticSearchConfig.getClusterName(), "cluster-1");
         Assert.assertEquals(elasticSearchConfig.getIpAddress(), "127.0.0.1");
         Assert.assertEquals(elasticSearchConfig.getHttpPort(), "9001");

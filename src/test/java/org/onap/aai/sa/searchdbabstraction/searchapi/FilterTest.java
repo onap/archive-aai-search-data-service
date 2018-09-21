@@ -28,21 +28,16 @@ import org.junit.Test;
 
 public class FilterTest {
 
-  @Test
-  public void test() throws JsonParseException, JsonMappingException, IOException {
+    @Test
+    public void test() throws JsonParseException, JsonMappingException, IOException {
 
 
-    String json = "{ \"any\": [ "
-        + "{\"match\": {\"field\": \"searchTags\", \"value\": \"a\"}},"
-        + "{\"match\": {\"field\": \"searchTags\", \"value\": \"b\"}}"
-        + "],"
-        + "\"all\": ["
-        + "{\"parsed-query\": {\"field\": \"fieldname\", \"query-string\": \"string\"}}"
-        + "]"
-        + "}";
+        String json = "{ \"any\": [ " + "{\"match\": {\"field\": \"searchTags\", \"value\": \"a\"}},"
+                + "{\"match\": {\"field\": \"searchTags\", \"value\": \"b\"}}" + "]," + "\"all\": ["
+                + "{\"parsed-query\": {\"field\": \"fieldname\", \"query-string\": \"string\"}}" + "]" + "}";
 
-    ObjectMapper mapper = new ObjectMapper();
-    Filter filter = mapper.readValue(json, Filter.class);
-    System.out.println("GDF: filter = " + filter);
-  }
+        ObjectMapper mapper = new ObjectMapper();
+        Filter filter = mapper.readValue(json, Filter.class);
+        System.out.println("GDF: filter = " + filter);
+    }
 }

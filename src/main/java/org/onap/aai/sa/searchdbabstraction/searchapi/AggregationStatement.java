@@ -25,149 +25,149 @@ import java.util.Arrays;
 
 public class AggregationStatement {
 
-  @JsonProperty("group-by")
-  private GroupByAggregation groupBy;
+    @JsonProperty("group-by")
+    private GroupByAggregation groupBy;
 
-  @JsonProperty("date-range")
-  private DateRangeAggregation dateRange;
+    @JsonProperty("date-range")
+    private DateRangeAggregation dateRange;
 
-  @JsonProperty("date-histogram")
-  private DateHistogramAggregation dateHist;
+    @JsonProperty("date-histogram")
+    private DateHistogramAggregation dateHist;
 
-  @JsonProperty("nested")
-  private Aggregation[] nested;
+    @JsonProperty("nested")
+    private Aggregation[] nested;
 
-  @JsonProperty("sub-aggregations")
-  private Aggregation[] subAggregations;
+    @JsonProperty("sub-aggregations")
+    private Aggregation[] subAggregations;
 
-  public GroupByAggregation getGroupBy() {
-    return groupBy;
-  }
+    public GroupByAggregation getGroupBy() {
+        return groupBy;
+    }
 
-  public void setGroupBy(GroupByAggregation groupBy) {
-    this.groupBy = groupBy;
-  }
+    public void setGroupBy(GroupByAggregation groupBy) {
+        this.groupBy = groupBy;
+    }
 
-  public DateRangeAggregation getDateRange() {
-    return dateRange;
-  }
+    public DateRangeAggregation getDateRange() {
+        return dateRange;
+    }
 
-  public void setDateRange(DateRangeAggregation dateRange) {
-    this.dateRange = dateRange;
-  }
+    public void setDateRange(DateRangeAggregation dateRange) {
+        this.dateRange = dateRange;
+    }
 
-  public DateHistogramAggregation getDateHist() {
-    return dateHist;
-  }
+    public DateHistogramAggregation getDateHist() {
+        return dateHist;
+    }
 
-  public void setDateHist(DateHistogramAggregation dateHist) {
-    this.dateHist = dateHist;
-  }
+    public void setDateHist(DateHistogramAggregation dateHist) {
+        this.dateHist = dateHist;
+    }
 
-  public Aggregation[] getNested() {
-    return nested;
-  }
+    public Aggregation[] getNested() {
+        return nested;
+    }
 
-  public void setNested(Aggregation[] nested) {
-    this.nested = nested;
-  }
+    public void setNested(Aggregation[] nested) {
+        this.nested = nested;
+    }
 
-  public Aggregation[] getSubAggregations() {
-    return subAggregations;
-  }
+    public Aggregation[] getSubAggregations() {
+        return subAggregations;
+    }
 
-  public void setSubAggregations(Aggregation[] subAggregations) {
-    this.subAggregations = subAggregations;
-  }
+    public void setSubAggregations(Aggregation[] subAggregations) {
+        this.subAggregations = subAggregations;
+    }
 
-  public String toElasticSearch() {
-    StringBuffer sb = new StringBuffer();
+    public String toElasticSearch() {
+        StringBuffer sb = new StringBuffer();
 
-    sb.append("{");
+        sb.append("{");
 
-    if (nested != null && nested.length > 0) {
-      sb.append("\"nested\": {\"path\": \"");
-      if (nested[0].getStatement() != null) {
-        sb.append(nested[0].getStatement().getNestedPath());
-      }
-      sb.append("\"}, \"aggs\": {");
-      for (int i = 0; i < nested.length; i++) {
-        if (i > 0) {
-          sb.append(",");
+        if (nested != null && nested.length > 0) {
+            sb.append("\"nested\": {\"path\": \"");
+            if (nested[0].getStatement() != null) {
+                sb.append(nested[0].getStatement().getNestedPath());
+            }
+            sb.append("\"}, \"aggs\": {");
+            for (int i = 0; i < nested.length; i++) {
+                if (i > 0) {
+                    sb.append(",");
+                }
+                sb.append(nested[i].toElasticSearch());
+            }
+
+            sb.append("}");
+        } else {
+            if (groupBy != null) {
+                sb.append(groupBy.toElasticSearch());
+            } else if (dateRange != null) {
+                sb.append(dateRange.toElasticSearch());
+            } else if (dateHist != null) {
+                sb.append(dateHist.toElasticSearch());
+            }
+
+            if (subAggregations != null && subAggregations.length > 0) {
+                sb.append(", \"aggs\": {");
+                for (int i = 0; i < subAggregations.length; i++) {
+                    if (i > 0) {
+                        sb.append(",");
+                    }
+                    sb.append(subAggregations[i].toElasticSearch());
+                }
+                sb.append("}");
+            }
         }
-        sb.append(nested[i].toElasticSearch());
-      }
 
-      sb.append("}");
-    } else {
-      if (groupBy != null) {
-        sb.append(groupBy.toElasticSearch());
-      } else if (dateRange != null) {
-        sb.append(dateRange.toElasticSearch());
-      } else if (dateHist != null) {
-        sb.append(dateHist.toElasticSearch());
-      }
-
-      if (subAggregations != null && subAggregations.length > 0) {
-        sb.append(", \"aggs\": {");
-        for (int i = 0; i < subAggregations.length; i++) {
-          if (i > 0) {
-            sb.append(",");
-          }
-          sb.append(subAggregations[i].toElasticSearch());
-        }
         sb.append("}");
-      }
+
+        return sb.toString();
     }
 
-    sb.append("}");
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
 
-    return sb.toString();
-  }
+        if (nested != null) {
+            sb.append("{nested: ");
+            sb.append(Arrays.toString(nested));
+        } else if (groupBy != null) {
+            sb.append(groupBy.toString());
+        } else if (dateHist != null) {
+            sb.append(dateHist.toString());
+        } else if (dateRange != null) {
+            sb.append(dateRange.toString());
+        }
 
-  @Override
-  public String toString() {
-    StringBuffer sb = new StringBuffer();
+        if (subAggregations != null) {
+            sb.append(", sub-aggregations: ");
+            sb.append(Arrays.toString(subAggregations));
+        }
 
-    if (nested != null) {
-      sb.append("{nested: ");
-      sb.append(Arrays.toString(nested));
-    } else if (groupBy != null) {
-      sb.append(groupBy.toString());
-    } else if (dateHist != null) {
-      sb.append(dateHist.toString());
-    } else if (dateRange != null) {
-      sb.append(dateRange.toString());
+        sb.append("}");
+
+        return sb.toString();
     }
 
-    if (subAggregations != null) {
-      sb.append(", sub-aggregations: ");
-      sb.append(Arrays.toString(subAggregations));
+    public String getNestedPath() {
+        String path = null;
+        String fieldName = null;
+
+        if (groupBy != null) {
+            fieldName = groupBy.getField();
+        } else if (dateRange != null) {
+            fieldName = dateRange.getField();
+        } else if (dateHist != null) {
+            fieldName = dateHist.getField();
+        }
+
+        if (fieldName != null && fieldName.contains(".")) {
+            // we have nested field
+            path = fieldName.substring(0, fieldName.indexOf("."));
+        }
+
+        return path;
     }
-
-    sb.append("}");
-
-    return sb.toString();
-  }
-
-  public String getNestedPath() {
-    String path = null;
-    String fieldName = null;
-
-    if (groupBy != null) {
-      fieldName = groupBy.getField();
-    } else if (dateRange != null) {
-      fieldName = dateRange.getField();
-    } else if (dateHist != null) {
-      fieldName = dateHist.getField();
-    }
-
-    if (fieldName != null && fieldName.contains(".")) {
-      // we have nested field
-      path = fieldName.substring(0, fieldName.indexOf("."));
-    }
-
-    return path;
-  }
 
 }

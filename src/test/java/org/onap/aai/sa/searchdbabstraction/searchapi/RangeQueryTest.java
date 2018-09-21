@@ -29,8 +29,8 @@ import org.onap.aai.sa.rest.TestUtils;
 
 public class RangeQueryTest {
 
-    @Test(expected=IllegalArgumentException.class)
-    public void testSetGt(){
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetGt() {
 
         RangeQuery rq = new RangeQuery();
         rq.setLt(new String("2x"));
@@ -40,8 +40,8 @@ public class RangeQueryTest {
         rq.setGt(new Integer(1));
     }
 
-    @Test(expected=IllegalArgumentException.class)
-    public void testSetGte(){
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetGte() {
 
         RangeQuery rq = new RangeQuery();
         rq.setGt(new Integer(1));
@@ -50,8 +50,8 @@ public class RangeQueryTest {
         rq.setGte(new Integer(1));
     }
 
-    @Test(expected=IllegalArgumentException.class)
-    public void testSetLt(){
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetLt() {
 
         RangeQuery rq = new RangeQuery();
         rq.setLt(new Integer(1));
@@ -66,8 +66,8 @@ public class RangeQueryTest {
         rq.setLt(new String("10"));
     }
 
-    @Test(expected=IllegalArgumentException.class)
-    public void testSetLte(){
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetLte() {
         RangeQuery rq = new RangeQuery();
         rq.setGt(new Integer(1));
         rq.setTimeZone("CT");
@@ -88,12 +88,12 @@ public class RangeQueryTest {
 
         Aggregation a1 = getAggregationObject();
         Aggregation a2 = getAggregationObject();
-        Aggregation[] aggs= new Aggregation[] {a1, a2};
+        Aggregation[] aggs = new Aggregation[] {a1, a2};
         ss.setAggregations(aggs);
         Assert.assertNotNull(ss.toString());
     }
 
-    private Aggregation getAggregationObject(){
+    private Aggregation getAggregationObject() {
         Aggregation a = new Aggregation();
 
         AggregationStatement as = new AggregationStatement();
@@ -126,7 +126,7 @@ public class RangeQueryTest {
         Assert.assertEquals(dr.getToDate(), "21-12-2017");
         DateRange[] drs = {dr};
         dra.setDateRanges(drs);
-        Assert.assertTrue(dra.getDateRanges().length==1);
+        Assert.assertTrue(dra.getDateRanges().length == 1);
         Assert.assertNotNull(dra.toElasticSearch());
         Assert.assertNotNull(dra.toString());
         as.setDateRange(dra);

@@ -67,8 +67,8 @@ public class SuggestionStatement {
     }
 
     /**
-     * This method returns a string which represents this statement in syntax that is understandable
-     * by ElasticSearch and is suitable for inclusion in an ElasticSearch query string.
+     * This method returns a string which represents this statement in syntax that is understandable by ElasticSearch
+     * and is suitable for inclusion in an ElasticSearch query string.
      *
      * @return - ElasticSearch syntax string.
      */

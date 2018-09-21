@@ -27,44 +27,44 @@ import java.util.Map;
 
 public class ElasticSearchError {
 
-  private String type;
-  private String reason;
-  private ElasticSearchCause causedBy;
+    private String type;
+    private String reason;
+    private ElasticSearchCause causedBy;
 
-  private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
 
-  public String getType() {
-    return type;
-  }
+    public String getType() {
+        return type;
+    }
 
-  public void setType(String type) {
-    this.type = type;
-  }
+    public void setType(String type) {
+        this.type = type;
+    }
 
-  public String getReason() {
-    return reason;
-  }
+    public String getReason() {
+        return reason;
+    }
 
-  public void setReason(String reason) {
-    this.reason = reason;
-  }
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
 
-  public ElasticSearchCause getCausedBy() {
-    return causedBy;
-  }
+    public ElasticSearchCause getCausedBy() {
+        return causedBy;
+    }
 
-  public void setCausedBy(ElasticSearchCause causedBy) {
-    this.causedBy = causedBy;
-  }
+    public void setCausedBy(ElasticSearchCause causedBy) {
+        this.causedBy = causedBy;
+    }
 
-  @JsonAnyGetter
-  public Map<String, Object> getAdditionalProperties() {
-    return additionalProperties;
-  }
+    @JsonAnyGetter
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
 
-  @JsonAnySetter
-  public void setAdditionalProperties(String name, Object value) {
-    additionalProperties.put(name, value);
-  }
+    @JsonAnySetter
+    public void setAdditionalProperties(String name, Object value) {
+        additionalProperties.put(name, value);
+    }
 }

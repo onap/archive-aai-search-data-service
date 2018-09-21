@@ -20,38 +20,37 @@
  */
 package org.onap.aai.sa.auth;
 
- import javax.servlet.http.Cookie;
+import javax.servlet.http.Cookie;
 import org.springframework.http.HttpHeaders;
 
 public class SearchDbServiceAuth {
 
-  public SearchDbServiceAuth() {
-  }
+    public SearchDbServiceAuth() {}
 
-  public boolean authBasic(String username, String authFunction) {
-    return SearchDbServiceAuthCore.authorize(username, authFunction);
-  }
-
-  public String authUser(HttpHeaders headers, String authUser, String authFunction) {
-
-
-    SearchDbServiceAuth aaiAuth = new SearchDbServiceAuth();
-
-    StringBuilder username = new StringBuilder();
-
-    username.append(authUser);
-    if (aaiAuth.authBasic(username.toString(), authFunction) == false) {
-      return "AAI_9101";
-
+    public boolean authBasic(String username, String authFunction) {
+        return SearchDbServiceAuthCore.authorize(username, authFunction);
     }
-    return "OK";
-  }
 
-  public boolean authCookie(Cookie cookie, String authFunction, StringBuilder username) {
+    public String authUser(HttpHeaders headers, String authUser, String authFunction) {
 
-    if (cookie == null) {
-      return false;
+
+        SearchDbServiceAuth aaiAuth = new SearchDbServiceAuth();
+
+        StringBuilder username = new StringBuilder();
+
+        username.append(authUser);
+        if (aaiAuth.authBasic(username.toString(), authFunction) == false) {
+            return "AAI_9101";
+
+        }
+        return "OK";
     }
-    return SearchDbServiceAuthCore.authorize(username.toString(), authFunction);
-  }
+
+    public boolean authCookie(Cookie cookie, String authFunction, StringBuilder username) {
+
+        if (cookie == null) {
+            return false;
+        }
+        return SearchDbServiceAuthCore.authorize(username.toString(), authFunction);
+    }
 }

@@ -28,116 +28,127 @@ import org.junit.Test;
 
 public class AggregationStatementTest {
 
-  private static ObjectMapper mapper = new ObjectMapper();
+    private static ObjectMapper mapper = new ObjectMapper();
 
-  @Test
-  public void testGroupBy() {
-    String input = "{\r\n    \"group-by\": {\r\n      \"field\": \"entityType\"\r\n    }\r\n  }";
+    @Test
+    public void testGroupBy() {
+        String input = "{\r\n    \"group-by\": {\r\n      \"field\": \"entityType\"\r\n    }\r\n  }";
 
-    String expected = "{\"terms\": {\"field\": \"entityType\"}}";
+        String expected = "{\"terms\": {\"field\": \"entityType\"}}";
 
-    AggregationStatement actual;
-    try {
-      actual = mapper.readValue(input, AggregationStatement.class);
-      assertEquals(expected, actual.toElasticSearch());
-    } catch (Exception e) {
-      fail("Exception occurred: " + e.getMessage());
+        AggregationStatement actual;
+        try {
+            actual = mapper.readValue(input, AggregationStatement.class);
+            assertEquals(expected, actual.toElasticSearch());
+        } catch (Exception e) {
+            fail("Exception occurred: " + e.getMessage());
+        }
+
     }
 
-  }
+    @Test
+    public void testDateRange() {
+        String input =
+                "{\r\n  \"date-range\": {\r\n    \"field\": \"mydate\",\r\n    \"ranges\": [\r\n      {\r\n        \"from\": \"2016-12-19T00:00:00.738-05:00\",\r\n        \"to\": \"2016-12-23T23:59:59.738-05:00\"\r\n      }\r\n    ],\r\n    \"format\": \"MM-yyy\",\r\n    \"size\": \"5\"\r\n  }\r\n}";
 
-  @Test
-  public void testDateRange() {
-    String input = "{\r\n  \"date-range\": {\r\n    \"field\": \"mydate\",\r\n    \"ranges\": [\r\n      {\r\n        \"from\": \"2016-12-19T00:00:00.738-05:00\",\r\n        \"to\": \"2016-12-23T23:59:59.738-05:00\"\r\n      }\r\n    ],\r\n    \"format\": \"MM-yyy\",\r\n    \"size\": \"5\"\r\n  }\r\n}";
+        String expected =
+                "{\"date_range\": {\"field\": \"mydate\", \"format\": \"MM-yyy\", \"ranges\": [{\"from\": \"2016-12-19T00:00:00.738-05:00\", \"to\": \"2016-12-23T23:59:59.738-05:00\"}], \"size\": 5}}";
 
-    String expected = "{\"date_range\": {\"field\": \"mydate\", \"format\": \"MM-yyy\", \"ranges\": [{\"from\": \"2016-12-19T00:00:00.738-05:00\", \"to\": \"2016-12-23T23:59:59.738-05:00\"}], \"size\": 5}}";
+        AggregationStatement actual;
+        try {
+            actual = mapper.readValue(input, AggregationStatement.class);
+            assertEquals(expected, actual.toElasticSearch());
+        } catch (Exception e) {
+            fail("Exception occurred: " + e.getMessage());
+        }
 
-    AggregationStatement actual;
-    try {
-      actual = mapper.readValue(input, AggregationStatement.class);
-      assertEquals(expected, actual.toElasticSearch());
-    } catch (Exception e) {
-      fail("Exception occurred: " + e.getMessage());
     }
 
-  }
+    @Test
+    public void testDateHistogram() {
+        String input =
+                "{\r\n  \"date-histogram\": {\r\n    \"field\": \"mydate\",\r\n    \"interval\": \"day\"\r\n  }\r\n}";
 
-  @Test
-  public void testDateHistogram() {
-    String input = "{\r\n  \"date-histogram\": {\r\n    \"field\": \"mydate\",\r\n    \"interval\": \"day\"\r\n  }\r\n}";
+        String expected = "{\"date_histogram\": {\"field\": \"mydate\", \"interval\": \"day\"}}";
 
-    String expected = "{\"date_histogram\": {\"field\": \"mydate\", \"interval\": \"day\"}}";
+        AggregationStatement actual;
+        try {
+            actual = mapper.readValue(input, AggregationStatement.class);
+            assertEquals(expected, actual.toElasticSearch());
+        } catch (Exception e) {
+            fail("Exception occurred: " + e.getMessage());
+        }
 
-    AggregationStatement actual;
-    try {
-      actual = mapper.readValue(input, AggregationStatement.class);
-      assertEquals(expected, actual.toElasticSearch());
-    } catch (Exception e) {
-      fail("Exception occurred: " + e.getMessage());
     }
 
-  }
+    @Test
+    public void testSubAggregation1() {
+        String input =
+                "{\r\n  \"group-by\": {\r\n    \"field\": \"severity\"\r\n  },\r\n  \"sub-aggregations\": [\r\n    {\r\n      \"name\": \"byType\",\r\n      \"aggregation\": {\r\n        \"group-by\": {\r\n          \"field\": \"entityType\"\r\n        }\r\n      }\r\n    }\r\n  ]\r\n}";
+        String expected =
+                "{\"terms\": {\"field\": \"severity\"}, \"aggs\": {\"byType\": {\"terms\": {\"field\": \"entityType\"}}}}";
 
-  @Test
-  public void testSubAggregation1() {
-    String input = "{\r\n  \"group-by\": {\r\n    \"field\": \"severity\"\r\n  },\r\n  \"sub-aggregations\": [\r\n    {\r\n      \"name\": \"byType\",\r\n      \"aggregation\": {\r\n        \"group-by\": {\r\n          \"field\": \"entityType\"\r\n        }\r\n      }\r\n    }\r\n  ]\r\n}";
-    String expected = "{\"terms\": {\"field\": \"severity\"}, \"aggs\": {\"byType\": {\"terms\": {\"field\": \"entityType\"}}}}";
+        AggregationStatement actual;
+        try {
+            actual = mapper.readValue(input, AggregationStatement.class);
+            assertEquals(expected, actual.toElasticSearch());
+        } catch (Exception e) {
+            fail("Exception occurred: " + e.getMessage());
+        }
 
-    AggregationStatement actual;
-    try {
-      actual = mapper.readValue(input, AggregationStatement.class);
-      assertEquals(expected, actual.toElasticSearch());
-    } catch (Exception e) {
-      fail("Exception occurred: " + e.getMessage());
     }
 
-  }
+    @Test
+    public void testSubAggregation2() {
+        String input =
+                "{\r\n  \"group-by\": {\r\n    \"field\": \"severity\"\r\n  },\r\n  \"sub-aggregations\": [\r\n    {\r\n      \"name\": \"byType\",\r\n      \"aggregation\": {\r\n        \"group-by\": {\r\n          \"field\": \"violationType\"\r\n        }\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"byRule\",\r\n      \"aggregation\": {\r\n        \"group-by\": {\r\n          \"field\": \"validationRule\"\r\n        }\r\n      }\r\n    }\r\n  ]\r\n}";
+        String expected =
+                "{\"terms\": {\"field\": \"severity\"}, \"aggs\": {\"byType\": {\"terms\": {\"field\": \"violationType\"}},\"byRule\": {\"terms\": {\"field\": \"validationRule\"}}}}";
 
-  @Test
-  public void testSubAggregation2() {
-    String input = "{\r\n  \"group-by\": {\r\n    \"field\": \"severity\"\r\n  },\r\n  \"sub-aggregations\": [\r\n    {\r\n      \"name\": \"byType\",\r\n      \"aggregation\": {\r\n        \"group-by\": {\r\n          \"field\": \"violationType\"\r\n        }\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"byRule\",\r\n      \"aggregation\": {\r\n        \"group-by\": {\r\n          \"field\": \"validationRule\"\r\n        }\r\n      }\r\n    }\r\n  ]\r\n}";
-    String expected = "{\"terms\": {\"field\": \"severity\"}, \"aggs\": {\"byType\": {\"terms\": {\"field\": \"violationType\"}},\"byRule\": {\"terms\": {\"field\": \"validationRule\"}}}}";
+        AggregationStatement actual;
+        try {
+            actual = mapper.readValue(input, AggregationStatement.class);
+            assertEquals(expected, actual.toElasticSearch());
+        } catch (Exception e) {
+            fail("Exception occurred: " + e.getMessage());
+        }
 
-    AggregationStatement actual;
-    try {
-      actual = mapper.readValue(input, AggregationStatement.class);
-      assertEquals(expected, actual.toElasticSearch());
-    } catch (Exception e) {
-      fail("Exception occurred: " + e.getMessage());
     }
 
-  }
 
+    @Test
+    public void testNestedAggregation1() {
+        String input =
+                "{\r\n  \"nested\": [{\r\n    \"name\": \"by_severity\",\r\n    \"aggregation\": {\r\n      \"group-by\": {\r\n        \"field\": \"violations.severity\"\r\n      }\r\n    }\r\n  }]\r\n}";
+        String expected =
+                "{\"nested\": {\"path\": \"violations\"}, \"aggs\": {\"by_severity\": {\"terms\": {\"field\": \"violations.severity\"}}}}";
 
-  @Test
-  public void testNestedAggregation1() {
-    String input = "{\r\n  \"nested\": [{\r\n    \"name\": \"by_severity\",\r\n    \"aggregation\": {\r\n      \"group-by\": {\r\n        \"field\": \"violations.severity\"\r\n      }\r\n    }\r\n  }]\r\n}";
-    String expected = "{\"nested\": {\"path\": \"violations\"}, \"aggs\": {\"by_severity\": {\"terms\": {\"field\": \"violations.severity\"}}}}";
+        AggregationStatement actual;
+        try {
+            actual = mapper.readValue(input, AggregationStatement.class);
+            assertEquals(expected, actual.toElasticSearch());
+        } catch (Exception e) {
+            fail("Exception occurred: " + e.getMessage());
+        }
 
-    AggregationStatement actual;
-    try {
-      actual = mapper.readValue(input, AggregationStatement.class);
-      assertEquals(expected, actual.toElasticSearch());
-    } catch (Exception e) {
-      fail("Exception occurred: " + e.getMessage());
     }
 
-  }
+    @Test
+    public void testNestedAggregation2() {
+        String input =
+                "{\r\n  \"nested\": [\r\n    {\r\n      \"name\": \"by_severity\",\r\n      \"aggregation\": {\r\n        \"group-by\": {\r\n          \"field\": \"violations.severity\"\r\n        }\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"by_type\",\r\n      \"aggregation\": {\r\n        \"group-by\": {\r\n          \"field\": \"violations.violationType\"\r\n        }\r\n      }\r\n    }\r\n  ]\r\n}";
+        String expected =
+                "{\"nested\": {\"path\": \"violations\"}, \"aggs\": {\"by_severity\": {\"terms\": {\"field\": \"violations.severity\"}},\"by_type\": {\"terms\": {\"field\": \"violations.violationType\"}}}}";
 
-  @Test
-  public void testNestedAggregation2() {
-    String input = "{\r\n  \"nested\": [\r\n    {\r\n      \"name\": \"by_severity\",\r\n      \"aggregation\": {\r\n        \"group-by\": {\r\n          \"field\": \"violations.severity\"\r\n        }\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"by_type\",\r\n      \"aggregation\": {\r\n        \"group-by\": {\r\n          \"field\": \"violations.violationType\"\r\n        }\r\n      }\r\n    }\r\n  ]\r\n}";
-    String expected = "{\"nested\": {\"path\": \"violations\"}, \"aggs\": {\"by_severity\": {\"terms\": {\"field\": \"violations.severity\"}},\"by_type\": {\"terms\": {\"field\": \"violations.violationType\"}}}}";
+        AggregationStatement actual;
+        try {
+            actual = mapper.readValue(input, AggregationStatement.class);
+            assertEquals(expected, actual.toElasticSearch());
+        } catch (Exception e) {
+            fail("Exception occurred: " + e.getMessage());
+        }
 
-    AggregationStatement actual;
-    try {
-      actual = mapper.readValue(input, AggregationStatement.class);
-      assertEquals(expected, actual.toElasticSearch());
-    } catch (Exception e) {
-      fail("Exception occurred: " + e.getMessage());
     }
-
-  }
 
 
 }

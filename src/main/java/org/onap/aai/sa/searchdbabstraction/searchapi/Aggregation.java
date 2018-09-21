@@ -23,41 +23,41 @@ package org.onap.aai.sa.searchdbabstraction.searchapi;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Aggregation {
-  private String name;
+    private String name;
 
-  @JsonProperty("aggregation")
-  private AggregationStatement aggregation;
+    @JsonProperty("aggregation")
+    private AggregationStatement aggregation;
 
-  public String getName() {
-    return name;
-  }
+    public String getName() {
+        return name;
+    }
 
-  public void setName(String name) {
-    this.name = name;
-  }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-  public AggregationStatement getStatement() {
-    return aggregation;
-  }
+    public AggregationStatement getStatement() {
+        return aggregation;
+    }
 
-  public void setStatement(AggregationStatement aggregation) {
-    this.aggregation = aggregation;
-  }
+    public void setStatement(AggregationStatement aggregation) {
+        this.aggregation = aggregation;
+    }
 
-  public String toElasticSearch() {
-    StringBuffer sb = new StringBuffer();
+    public String toElasticSearch() {
+        StringBuffer sb = new StringBuffer();
 
-    sb.append("\"");
-    sb.append(name);
-    sb.append("\": ");
-    sb.append(aggregation.toElasticSearch());
+        sb.append("\"");
+        sb.append(name);
+        sb.append("\": ");
+        sb.append(aggregation.toElasticSearch());
 
-    return sb.toString();
-  }
+        return sb.toString();
+    }
 
-  @Override
-  public String toString() {
-    return "{name: " + name + ", aggregation: " + aggregation.toString();
-  }
+    @Override
+    public String toString() {
+        return "{name: " + name + ", aggregation: " + aggregation.toString();
+    }
 
 }

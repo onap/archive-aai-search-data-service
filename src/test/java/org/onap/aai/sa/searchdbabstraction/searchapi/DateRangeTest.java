@@ -27,48 +27,49 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 
 public class DateRangeTest {
-  private static ObjectMapper mapper = new ObjectMapper();
+    private static ObjectMapper mapper = new ObjectMapper();
 
-  @Test
-  public void testBoth() {
-    String input = "{\r\n  \"from\": \"2016-12-19T00:00:00.738-05:00\",\r\n  \"to\": \"2016-12-23T23:59:59.738-05:00\"\r\n}";
-    String expected = "{\"from\": \"2016-12-19T00:00:00.738-05:00\", \"to\": \"2016-12-23T23:59:59.738-05:00\"}";
+    @Test
+    public void testBoth() {
+        String input =
+                "{\r\n  \"from\": \"2016-12-19T00:00:00.738-05:00\",\r\n  \"to\": \"2016-12-23T23:59:59.738-05:00\"\r\n}";
+        String expected = "{\"from\": \"2016-12-19T00:00:00.738-05:00\", \"to\": \"2016-12-23T23:59:59.738-05:00\"}";
 
-    DateRange actual;
-    try {
-      actual = mapper.readValue(input, DateRange.class);
-      assertEquals(expected, actual.toElasticSearch());
-    } catch (Exception e) {
-      fail("Exception occurred: " + e.getMessage());
+        DateRange actual;
+        try {
+            actual = mapper.readValue(input, DateRange.class);
+            assertEquals(expected, actual.toElasticSearch());
+        } catch (Exception e) {
+            fail("Exception occurred: " + e.getMessage());
+        }
     }
-  }
 
-  @Test
-  public void testFrom() {
-    String input = "{\"from\": \"2016-12-19T00:00:00.738-05:00\"}";
-    String expected = "{\"from\": \"2016-12-19T00:00:00.738-05:00\"}";
+    @Test
+    public void testFrom() {
+        String input = "{\"from\": \"2016-12-19T00:00:00.738-05:00\"}";
+        String expected = "{\"from\": \"2016-12-19T00:00:00.738-05:00\"}";
 
-    DateRange actual;
-    try {
-      actual = mapper.readValue(input, DateRange.class);
-      assertEquals(expected, actual.toElasticSearch());
-    } catch (Exception e) {
-      fail("Exception occurred: " + e.getMessage());
+        DateRange actual;
+        try {
+            actual = mapper.readValue(input, DateRange.class);
+            assertEquals(expected, actual.toElasticSearch());
+        } catch (Exception e) {
+            fail("Exception occurred: " + e.getMessage());
+        }
     }
-  }
 
-  @Test
-  public void testTo() {
-    String input = "{\r\n  \"to\": \"2016-12-23T23:59:59.738-05:00\"\r\n}";
-    String expected = "{\"to\": \"2016-12-23T23:59:59.738-05:00\"}";
+    @Test
+    public void testTo() {
+        String input = "{\r\n  \"to\": \"2016-12-23T23:59:59.738-05:00\"\r\n}";
+        String expected = "{\"to\": \"2016-12-23T23:59:59.738-05:00\"}";
 
-    DateRange actual;
-    try {
-      actual = mapper.readValue(input, DateRange.class);
-      assertEquals(expected, actual.toElasticSearch());
-    } catch (Exception e) {
-      fail("Exception occurred: " + e.getMessage());
+        DateRange actual;
+        try {
+            actual = mapper.readValue(input, DateRange.class);
+            assertEquals(expected, actual.toElasticSearch());
+        } catch (Exception e) {
+            fail("Exception occurred: " + e.getMessage());
+        }
     }
-  }
 
 }

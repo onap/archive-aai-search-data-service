@@ -24,52 +24,52 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Arrays;
 
 public class AggregationBucket {
-  private Object key;
+    private Object key;
 
-  @JsonProperty("formatted-key")
-  private String formattedKey;
+    @JsonProperty("formatted-key")
+    private String formattedKey;
 
-  private Number count;
+    private Number count;
 
-  @JsonProperty("sub-aggregations")
-  private AggregationResult[] subAggregationResult;
+    @JsonProperty("sub-aggregations")
+    private AggregationResult[] subAggregationResult;
 
-  public Object getKey() {
-    return key;
-  }
+    public Object getKey() {
+        return key;
+    }
 
-  public void setKey(Object key) {
-    this.key = key;
-  }
+    public void setKey(Object key) {
+        this.key = key;
+    }
 
-  public String getFormattedKey() {
-    return formattedKey;
-  }
+    public String getFormattedKey() {
+        return formattedKey;
+    }
 
-  public void setFormattedKey(String formattedKey) {
-    this.formattedKey = formattedKey;
-  }
+    public void setFormattedKey(String formattedKey) {
+        this.formattedKey = formattedKey;
+    }
 
-  public Number getCount() {
-    return count;
-  }
+    public Number getCount() {
+        return count;
+    }
 
-  public void setCount(Number count) {
-    this.count = count;
-  }
+    public void setCount(Number count) {
+        this.count = count;
+    }
 
-  public AggregationResult[] getSubAggregationResult() {
-    return subAggregationResult;
-  }
+    public AggregationResult[] getSubAggregationResult() {
+        return subAggregationResult;
+    }
 
-  public void setSubAggregationResult(AggregationResult[] subAggregationResult) {
-    this.subAggregationResult = subAggregationResult;
-  }
+    public void setSubAggregationResult(AggregationResult[] subAggregationResult) {
+        this.subAggregationResult = subAggregationResult;
+    }
 
-  @Override
-  public String toString() {
-    return "AggregationBucket [key=" + key + ", formattedKey=" + formattedKey + ", count=" + count
-        + ", subAggregationResult=" + Arrays.toString(subAggregationResult) + "]";
-  }
+    @Override
+    public String toString() {
+        return "AggregationBucket [key=" + key + ", formattedKey=" + formattedKey + ", count=" + count
+                + ", subAggregationResult=" + Arrays.toString(subAggregationResult) + "]";
+    }
 
 }

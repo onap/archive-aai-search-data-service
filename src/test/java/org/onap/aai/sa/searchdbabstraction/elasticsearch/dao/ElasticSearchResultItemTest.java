@@ -26,7 +26,7 @@ import org.junit.Test;
 public class ElasticSearchResultItemTest {
 
     @Test
-    public void testAllMethods(){
+    public void testAllMethods() {
         ElasticSearchShardStatus shardStatus = new ElasticSearchShardStatus();
         shardStatus.setTotal(10);
         shardStatus.setSuccessful(0);
@@ -51,7 +51,7 @@ public class ElasticSearchResultItemTest {
         error.setAdditionalProperties("name-1", "value-1");
         Assert.assertNotNull(error.getAdditionalProperties());
 
-        //Create Status
+        // Create Status
         ElasticSearchResultItem resultItem1 = new ElasticSearchResultItem();
         resultItem1.setCreate(getStatus(shardStatus, error));
         Assert.assertNotNull(resultItem1.getCreate());
@@ -60,7 +60,7 @@ public class ElasticSearchResultItemTest {
         Assert.assertTrue(resultItem1.toString().contains("create"));
         Assert.assertNotNull(resultItem1.toJson());
 
-        //Index Status
+        // Index Status
         ElasticSearchResultItem resultItem2 = new ElasticSearchResultItem();
         resultItem2.setIndex(getStatus(shardStatus, error));
         Assert.assertNotNull(resultItem2.getIndex());
@@ -69,7 +69,7 @@ public class ElasticSearchResultItemTest {
         Assert.assertTrue(resultItem2.toString().contains("index"));
         Assert.assertNotNull(resultItem2.toJson());
 
-        //Delete Status
+        // Delete Status
         ElasticSearchResultItem resultItem3 = new ElasticSearchResultItem();
         resultItem3.setDelete(getStatus(shardStatus, error));
         Assert.assertNotNull(resultItem3.getDelete());
@@ -78,12 +78,12 @@ public class ElasticSearchResultItemTest {
         Assert.assertTrue(resultItem3.toString().contains("delete"));
         Assert.assertNotNull(resultItem3.toJson());
 
-        //Unknown Status
+        // Unknown Status
         ElasticSearchResultItem resultItem4 = new ElasticSearchResultItem();
         Assert.assertEquals(resultItem4.operationType(), "unknown");
         Assert.assertNull(resultItem4.operationStatus());
 
-        //ElasticSearchBulkOperationResult
+        // ElasticSearchBulkOperationResult
         ElasticSearchResultItem[] resultItems = {resultItem1, resultItem2, resultItem3};
         ElasticSearchBulkOperationResult result = new ElasticSearchBulkOperationResult();
         result.setErrors(true);

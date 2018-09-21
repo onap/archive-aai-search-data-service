@@ -31,45 +31,40 @@ import org.onap.aai.sa.searchdbabstraction.entity.SearchOperationResult;
 
 public interface DocumentStoreInterface {
 
-  public OperationResult createIndex(String index, DocumentSchema documentSchema);
+    public OperationResult createIndex(String index, DocumentSchema documentSchema);
 
-  public OperationResult createDynamicIndex(String index, String dynamicSchema);
+    public OperationResult createDynamicIndex(String index, String dynamicSchema);
 
-  public OperationResult deleteIndex(String indexName) throws DocumentStoreOperationException;
+    public OperationResult deleteIndex(String indexName) throws DocumentStoreOperationException;
 
-  public DocumentOperationResult createDocument(String indexName, 
-                                                DocumentStoreDataEntity document, 
-                                                boolean allowImplicitIndexCreation) throws DocumentStoreOperationException;
+    public DocumentOperationResult createDocument(String indexName, DocumentStoreDataEntity document,
+            boolean allowImplicitIndexCreation) throws DocumentStoreOperationException;
 
-  public DocumentOperationResult updateDocument(String indexName, 
-                                                DocumentStoreDataEntity document,
-                                                boolean allowImplicitIndexCreation) throws DocumentStoreOperationException;
+    public DocumentOperationResult updateDocument(String indexName, DocumentStoreDataEntity document,
+            boolean allowImplicitIndexCreation) throws DocumentStoreOperationException;
 
-  public SearchOperationResult suggestionQueryWithPayload(String indexName, String query) throws DocumentStoreOperationException;
+    public SearchOperationResult suggestionQueryWithPayload(String indexName, String query)
+            throws DocumentStoreOperationException;
 
-  public DocumentOperationResult deleteDocument(String indexName, DocumentStoreDataEntity document)
-      throws DocumentStoreOperationException;
+    public DocumentOperationResult deleteDocument(String indexName, DocumentStoreDataEntity document)
+            throws DocumentStoreOperationException;
 
-  public DocumentOperationResult getDocument(String indexName, DocumentStoreDataEntity document)
-      throws DocumentStoreOperationException;
+    public DocumentOperationResult getDocument(String indexName, DocumentStoreDataEntity document)
+            throws DocumentStoreOperationException;
 
-  public SearchOperationResult search(String indexName, String queryText)
-      throws DocumentStoreOperationException;
+    public SearchOperationResult search(String indexName, String queryText) throws DocumentStoreOperationException;
 
-  public SearchOperationResult searchWithPayload(String indexName, String query)
-      throws DocumentStoreOperationException;
+    public SearchOperationResult searchWithPayload(String indexName, String query)
+            throws DocumentStoreOperationException;
 
 
-  /**
-   * Forwards a set of operations to the document store as a single, bulk
-   * request.
-   *
-   * @param anIndex    - The index to apply the operations to.
-   * @param operations - A java object containing the set of operations to
-   *                   be performed.
-   * @return - An operation result.
-   * @throws DocumentStoreOperationException
-   */
-  public OperationResult performBulkOperations(BulkRequest[] request)
-      throws DocumentStoreOperationException;
+    /**
+     * Forwards a set of operations to the document store as a single, bulk request.
+     *
+     * @param anIndex - The index to apply the operations to.
+     * @param operations - A java object containing the set of operations to be performed.
+     * @return - An operation result.
+     * @throws DocumentStoreOperationException
+     */
+    public OperationResult performBulkOperations(BulkRequest[] request) throws DocumentStoreOperationException;
 }

@@ -30,26 +30,26 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class ElasticSearchPayloadTranslatorTest {
-	
-	private final String SIMPLE_DOC_SCHEMA_JSON = "src/test/resources/json/index-mapping.json";
 
-	@Before
-	public void setup() throws Exception {
-		System.setProperty("CONFIG_HOME", System.getProperty("user.dir")+ File.separator + "src/test/resources/json");
-	}
-	
-	@Test
-	public void testPayloadTranslation() throws Exception {
-		String expectedErrMsg = "Sample error message for whitespace check";
-		File schemaFile = new File(SIMPLE_DOC_SCHEMA_JSON);
-	    String documentJson = IOUtils.toString(new FileInputStream(schemaFile), "UTF-8");
-	    assertTrue(documentJson.contains("\"type\": \"string\""));
-		assertTrue(documentJson.contains("\"index\": \"analyzed\""));
-		String translatedPayload = ElasticSearchPayloadTranslator.translateESPayload(documentJson);
-		assertTrue(translatedPayload.contains("\"type\":\"text\""));
-		assertTrue(translatedPayload.contains("\"index\":true"));
-		assertTrue(translatedPayload.contains("\"fielddata\":true"));
-		assertFalse(documentJson.contains("\"index\":\"analyzed\""));
-		assertTrue(translatedPayload.contains("\"errMsg\":\""+expectedErrMsg+"\""));
-	}
+    private final String SIMPLE_DOC_SCHEMA_JSON = "src/test/resources/json/index-mapping.json";
+
+    @Before
+    public void setup() throws Exception {
+        System.setProperty("CONFIG_HOME", System.getProperty("user.dir") + File.separator + "src/test/resources/json");
+    }
+
+    @Test
+    public void testPayloadTranslation() throws Exception {
+        String expectedErrMsg = "Sample error message for whitespace check";
+        File schemaFile = new File(SIMPLE_DOC_SCHEMA_JSON);
+        String documentJson = IOUtils.toString(new FileInputStream(schemaFile), "UTF-8");
+        assertTrue(documentJson.contains("\"type\": \"string\""));
+        assertTrue(documentJson.contains("\"index\": \"analyzed\""));
+        String translatedPayload = ElasticSearchPayloadTranslator.translateESPayload(documentJson);
+        assertTrue(translatedPayload.contains("\"type\":\"text\""));
+        assertTrue(translatedPayload.contains("\"index\":true"));
+        assertTrue(translatedPayload.contains("\"fielddata\":true"));
+        assertFalse(documentJson.contains("\"index\":\"analyzed\""));
+        assertTrue(translatedPayload.contains("\"errMsg\":\"" + expectedErrMsg + "\""));
+    }
 }

@@ -23,28 +23,28 @@ package org.onap.aai.sa.searchdbabstraction.entity;
 import java.util.Arrays;
 
 public class SearchHits {
-  private String totalHits;
-  private SearchHit[] hits;
+    private String totalHits;
+    private SearchHit[] hits;
 
-  public String getTotalHits() {
-    return totalHits;
-  }
+    public String getTotalHits() {
+        return totalHits;
+    }
 
-  public void setTotalHits(String totalHits) {
-    this.totalHits = totalHits;
-  }
+    public void setTotalHits(String totalHits) {
+        this.totalHits = totalHits;
+    }
 
-  public SearchHit[] getHits() {
-    return hits;
-  }
+    public SearchHit[] getHits() {
+        return hits;
+    }
 
-  public void setHits(SearchHit[] hits) {
-    this.hits = hits;
-  }
+    public void setHits(SearchHit[] hits) {
+        this.hits = hits;
+    }
 
-  @Override
-  public String toString() {
-    return "SearchHits [totalHits=" + totalHits + ", hits=" + Arrays.toString(hits) + "]";
-  }
+    @Override
+    public String toString() {
+        return "SearchHits [totalHits=" + totalHits + ", hits=" + Arrays.toString(hits) + "]";
+    }
 
 }

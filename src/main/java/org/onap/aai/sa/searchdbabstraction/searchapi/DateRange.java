@@ -27,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * <p>
  * The expected JSON structure for a ranges is as follows:
  * <p>
+ * 
  * <pre>
  * {
  *  "from": <from-date>
@@ -35,6 +36,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * <p>
  * or
  * <p>
+ * 
  * <pre>
  * {
  *  "to": <to-date>
@@ -43,6 +45,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * <p>
  * or
  * <p>
+ * 
  * <pre>
  * {
  *  "from": <from-date>,
@@ -54,58 +57,58 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class DateRange {
 
-  @JsonProperty("from")
-  private String fromDate;
+    @JsonProperty("from")
+    private String fromDate;
 
-  @JsonProperty("to")
-  private String toDate;
+    @JsonProperty("to")
+    private String toDate;
 
-  public String getFromDate() {
-    return fromDate;
-  }
-
-  public void setFromDate(String fromDate) {
-    this.fromDate = fromDate;
-  }
-
-  public String getToDate() {
-    return toDate;
-  }
-
-  public void setToDate(String toDate) {
-    this.toDate = toDate;
-  }
-
-  public String toElasticSearch() {
-    StringBuilder sb = new StringBuilder();
-
-    sb.append("{");
-
-    if (fromDate != null) {
-      sb.append("\"from\": \"");
-      sb.append(fromDate.toString());
-      sb.append("\"");
+    public String getFromDate() {
+        return fromDate;
     }
 
-    if (toDate != null) {
-      if (fromDate != null) {
-        sb.append(", \"to\": \"");
-        sb.append(toDate.toString());
-        sb.append("\"");
-      } else {
-        sb.append("\"to\": \"");
-        sb.append(toDate.toString());
-        sb.append("\"");
-      }
+    public void setFromDate(String fromDate) {
+        this.fromDate = fromDate;
     }
 
-    sb.append("}");
+    public String getToDate() {
+        return toDate;
+    }
 
-    return sb.toString();
-  }
+    public void setToDate(String toDate) {
+        this.toDate = toDate;
+    }
 
-  public String toString() {
-    return "{from: " + fromDate + ", to: " + toDate + "}";
-  }
+    public String toElasticSearch() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("{");
+
+        if (fromDate != null) {
+            sb.append("\"from\": \"");
+            sb.append(fromDate.toString());
+            sb.append("\"");
+        }
+
+        if (toDate != null) {
+            if (fromDate != null) {
+                sb.append(", \"to\": \"");
+                sb.append(toDate.toString());
+                sb.append("\"");
+            } else {
+                sb.append("\"to\": \"");
+                sb.append(toDate.toString());
+                sb.append("\"");
+            }
+        }
+
+        sb.append("}");
+
+        return sb.toString();
+    }
+
+    public String toString() {
+        return "{from: " + fromDate + ", to: " + toDate + "}";
+    }
 
 }

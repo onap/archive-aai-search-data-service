@@ -22,39 +22,39 @@ package org.onap.aai.sa.searchdbabstraction.elasticsearch.dao;
 
 public class DocumentStoreDataEntityImpl implements DocumentStoreDataEntity {
 
-  private String id;
-  private String content;
-  private String version;
+    private String id;
+    private String content;
+    private String version;
 
-  public String getContent() {
-    return content;
-  }
+    public String getContent() {
+        return content;
+    }
 
-  public void setContent(String content) {
-    this.content = content;
-  }
+    public void setContent(String content) {
+        this.content = content;
+    }
 
-  public void setId(String id) {
-    this.id = id;
-  }
+    public void setId(String id) {
+        this.id = id;
+    }
 
-  @Override
-  public String getId() {
-    return id;
-  }
+    @Override
+    public String getId() {
+        return id;
+    }
 
-  @Override
-  public String getContentInJson() {
-    return content;
-  }
+    @Override
+    public String getContentInJson() {
+        return content;
+    }
 
-  @Override
-  public String getVersion() {
-    return version;
-  }
+    @Override
+    public String getVersion() {
+        return version;
+    }
 
-  public void setVersion(String version) {
-    this.version = version;
-  }
+    public void setVersion(String version) {
+        this.version = version;
+    }
 
 }

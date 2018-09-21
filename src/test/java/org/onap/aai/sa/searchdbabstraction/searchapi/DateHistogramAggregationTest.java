@@ -27,57 +27,52 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 
 public class DateHistogramAggregationTest {
-  ObjectMapper mapper = new ObjectMapper();
+    ObjectMapper mapper = new ObjectMapper();
 
-  @Test
-  public void testFullSet() {
-    String input =
-        "{\r\n  \"field\": \"mydate\",\r\n  \"interval\": \"day\",\r\n  \"time-zone\": \"-01:00\"\r\n}";
+    @Test
+    public void testFullSet() {
+        String input = "{\r\n  \"field\": \"mydate\",\r\n  \"interval\": \"day\",\r\n  \"time-zone\": \"-01:00\"\r\n}";
 
-    String expected =
-        "\"date_histogram\": {\"field\": \"mydate\", \"interval\": \"day\", \"time_zone\": \"-01:00\"}";
+        String expected =
+                "\"date_histogram\": {\"field\": \"mydate\", \"interval\": \"day\", \"time_zone\": \"-01:00\"}";
 
-    DateHistogramAggregation actual;
-    try {
-      actual = mapper.readValue(input, DateHistogramAggregation.class);
-      assertEquals(expected, actual.toElasticSearch());
-    } catch (Exception e) {
-      fail("Exception occurred: " + e.getMessage());
+        DateHistogramAggregation actual;
+        try {
+            actual = mapper.readValue(input, DateHistogramAggregation.class);
+            assertEquals(expected, actual.toElasticSearch());
+        } catch (Exception e) {
+            fail("Exception occurred: " + e.getMessage());
+        }
     }
-  }
 
-  @Test
-  public void test2() {
-    String input =
-        "{\r\n  \"field\": \"mydate\",\r\n  \"interval\": \"day\"\r\n}";
+    @Test
+    public void test2() {
+        String input = "{\r\n  \"field\": \"mydate\",\r\n  \"interval\": \"day\"\r\n}";
 
-    String expected =
-        "\"date_histogram\": {\"field\": \"mydate\", \"interval\": \"day\"}";
+        String expected = "\"date_histogram\": {\"field\": \"mydate\", \"interval\": \"day\"}";
 
-    DateHistogramAggregation actual;
-    try {
-      actual = mapper.readValue(input, DateHistogramAggregation.class);
-      assertEquals(expected, actual.toElasticSearch());
-    } catch (Exception e) {
-      fail("Exception occurred: " + e.getMessage());
+        DateHistogramAggregation actual;
+        try {
+            actual = mapper.readValue(input, DateHistogramAggregation.class);
+            assertEquals(expected, actual.toElasticSearch());
+        } catch (Exception e) {
+            fail("Exception occurred: " + e.getMessage());
+        }
     }
-  }
 
-  @Test
-  public void test3() {
-    String input =
-        "{\r\n  \"field\": \"mydate\"\r\n}";
+    @Test
+    public void test3() {
+        String input = "{\r\n  \"field\": \"mydate\"\r\n}";
 
-    String expected =
-        "\"date_histogram\": {\"field\": \"mydate\"}";
+        String expected = "\"date_histogram\": {\"field\": \"mydate\"}";
 
-    DateHistogramAggregation actual;
-    try {
-      actual = mapper.readValue(input, DateHistogramAggregation.class);
-      assertEquals(expected, actual.toElasticSearch());
-    } catch (Exception e) {
-      fail("Exception occurred: " + e.getMessage());
+        DateHistogramAggregation actual;
+        try {
+            actual = mapper.readValue(input, DateHistogramAggregation.class);
+            assertEquals(expected, actual.toElasticSearch());
+        } catch (Exception e) {
+            fail("Exception occurred: " + e.getMessage());
+        }
     }
-  }
 
 }

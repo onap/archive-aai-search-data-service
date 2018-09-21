@@ -46,186 +46,182 @@ import org.springframework.test.web.servlet.MvcResult;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class DocumentApiTest  {
+public class DocumentApiTest {
 
-  private static final String INDEXES_URI = "/test/indexes/";
-  private static final String DOCUMENT_URI = "documents/";
+    private static final String INDEXES_URI = "/test/indexes/";
+    private static final String DOCUMENT_URI = "documents/";
 
-  private static final String SEARCH_URI = "query/";
-  private static final String INDEX_NAME = "test-index";
-  private static final String DOC_ID = "test-1";
-  private static final String SIMPLE_QUERY = "\"parsed-query\": {\"my-field\": \"something\", \"query-string\": \"string\"}";
-  private static final String COMPLEX_QUERY =
-      "{"
-          + "\"filter\": {"
-          + "\"all\": ["
-          + "{\"match\": {\"field\": \"searchTags\", \"value\": \"a\"}}"
-          + "]"
-          + "},"
-          + "\"queries\": ["
-          + "{\"may\": {\"parsed-query\": {\"field\": \"searchTags\", \"query-string\": \"b\"}}}"
-          + "]"
-          + "}";
+    private static final String SEARCH_URI = "query/";
+    private static final String INDEX_NAME = "test-index";
+    private static final String DOC_ID = "test-1";
+    private static final String SIMPLE_QUERY =
+            "\"parsed-query\": {\"my-field\": \"something\", \"query-string\": \"string\"}";
+    private static final String COMPLEX_QUERY = "{" + "\"filter\": {" + "\"all\": ["
+            + "{\"match\": {\"field\": \"searchTags\", \"value\": \"a\"}}" + "]" + "}," + "\"queries\": ["
+            + "{\"may\": {\"parsed-query\": {\"field\": \"searchTags\", \"query-string\": \"b\"}}}" + "]" + "}";
 
-  private static final String CREATE_JSON_CONTENT = "creation content";
+    private static final String CREATE_JSON_CONTENT = "creation content";
 
     @Autowired
     private MockMvc mockMvc;
 
-  /**
-   * This test validates the behaviour of the 'Create Document' POST request
-   * endpoint.
-   *
-   * @throws IOException
-   * @throws ParseException
-   */
-  @Test
-  public void createDocumentTest() throws Exception {
+    /**
+     * This test validates the behaviour of the 'Create Document' POST request endpoint.
+     *
+     * @throws IOException
+     * @throws ParseException
+     */
+    @Test
+    public void createDocumentTest() throws Exception {
 
-      MvcResult result = this.mockMvc.perform ( post ( INDEXES_URI + INDEX_NAME + "/" + DOCUMENT_URI ).contentType ( MediaType.APPLICATION_JSON )
-              .content ( CREATE_JSON_CONTENT ) ).andReturn ( );
+        MvcResult result = this.mockMvc.perform(post(INDEXES_URI + INDEX_NAME + "/" + DOCUMENT_URI)
+                .contentType(MediaType.APPLICATION_JSON).content(CREATE_JSON_CONTENT)).andReturn();
 
-    // Our stub document store DAO returns the parameters that it was
-    // passed as the result string, so now we can validate that our
-    // endpoint invoked it with the correct parameters.
+        // Our stub document store DAO returns the parameters that it was
+        // passed as the result string, so now we can validate that our
+        // endpoint invoked it with the correct parameters.
 
-    JSONParser parser = new JSONParser();
-    JSONObject json = (JSONObject) parser.parse(result.getResponse ().getContentAsString ());
+        JSONParser parser = new JSONParser();
+        JSONObject json = (JSONObject) parser.parse(result.getResponse().getContentAsString());
 
-    assertTrue("Unexpected Result ", !json.get("etag").toString().isEmpty());
-  }
+        assertTrue("Unexpected Result ", !json.get("etag").toString().isEmpty());
+    }
 
-  /**
-   * This test validates the behaviour of the 'Create Document' PUT request
-   * endpoint.
-   *
-   * @throws IOException
-   * @throws ParseException
-   */
-  @Test
-  public void updateDocumentTest() throws Exception {
-    // WebTarget target = target(INDEXES_URI + INDEX_NAME + "/" + DOCUMENT_URI + DOC_ID);
-    // Builder request = target.request().header("If-Match", "1");
-    // String result = request.put(Entity.json(CREATE_JSON_CONTENT), String.class);
+    /**
+     * This test validates the behaviour of the 'Create Document' PUT request endpoint.
+     *
+     * @throws IOException
+     * @throws ParseException
+     */
+    @Test
+    public void updateDocumentTest() throws Exception {
+        // WebTarget target = target(INDEXES_URI + INDEX_NAME + "/" + DOCUMENT_URI + DOC_ID);
+        // Builder request = target.request().header("If-Match", "1");
+        // String result = request.put(Entity.json(CREATE_JSON_CONTENT), String.class);
 
-      MvcResult result = this.mockMvc.perform ( put ( INDEXES_URI + INDEX_NAME + "/" + DOCUMENT_URI + DOC_ID ).contentType ( MediaType.APPLICATION_JSON )
-              .header ( "If-Match", "1" ).content ( CREATE_JSON_CONTENT ) ).andReturn ( );
+        MvcResult result = this.mockMvc
+                .perform(put(INDEXES_URI + INDEX_NAME + "/" + DOCUMENT_URI + DOC_ID)
+                        .contentType(MediaType.APPLICATION_JSON).header("If-Match", "1").content(CREATE_JSON_CONTENT))
+                .andReturn();
 
-    // Our stub document store DAO returns the parameters that it was
-    // passed as the result string, so now we can validate that our
-    // endpoint invoked it with the correct parameters.
-    JSONParser parser = new JSONParser();
-    JSONObject json = (JSONObject) parser.parse(result.getResponse ().getContentAsString ());
+        // Our stub document store DAO returns the parameters that it was
+        // passed as the result string, so now we can validate that our
+        // endpoint invoked it with the correct parameters.
+        JSONParser parser = new JSONParser();
+        JSONObject json = (JSONObject) parser.parse(result.getResponse().getContentAsString());
 
-    assertTrue("Unexpected Result ", !json.get("etag").toString().isEmpty());
-  }
+        assertTrue("Unexpected Result ", !json.get("etag").toString().isEmpty());
+    }
 
-  /**
-   * This test validates the behaviour of the 'Get Document' GET request
-   * endpoint.
-   *
-   * @throws IOException
-   * @throws ParseException
-   */
-  @Test
-  public void getDocumentTest() throws Exception {
-    // String result = target(INDEXES_URI + INDEX_NAME + "/" + DOCUMENT_URI + DOC_ID).request().get(String.class);
+    /**
+     * This test validates the behaviour of the 'Get Document' GET request endpoint.
+     *
+     * @throws IOException
+     * @throws ParseException
+     */
+    @Test
+    public void getDocumentTest() throws Exception {
+        // String result = target(INDEXES_URI + INDEX_NAME + "/" + DOCUMENT_URI + DOC_ID).request().get(String.class);
 
-      // MvcResult result = this.mockMvc.perform ( get ( INDEXES_URI + INDEX_NAME + "/" + DOCUMENT_URI + DOC_ID ) ).andReturn ();
-      MvcResult result = this.mockMvc.perform ( get ( INDEXES_URI + INDEX_NAME + "/" + DOCUMENT_URI + DOC_ID )
-              .contentType ( MediaType.APPLICATION_JSON )
-              .header ( "If-Match", "1" )
-              .content ( CREATE_JSON_CONTENT ) ).andReturn ( );
-
-
-    // Our stub document store DAO returns the parameters that it was
-    // passed as the result string, so now we can validate that our
-    // endpoint invoked it with the correct parameters.
-    JSONParser parser = new JSONParser();
-    JSONObject json = (JSONObject) parser.parse(result.getResponse ().getContentAsString ());
-
-    assertTrue("Unexpected Result ", !json.get("etag").toString().isEmpty());
-
-  }
-//
-//  /**
-//   * This test validates the behaviour of the 'Delete Document' DELETE request
-//   * endpoint.
-//   *
-//   * @throws IOException
-//   * @throws ParseException
-//   */
-  @Test
-  public void deleteDocumentTest() throws Exception {
-//    WebTarget target = target(INDEXES_URI + INDEX_NAME + "/" + DOCUMENT_URI + DOC_ID);
-//    Builder request = target.request().header("If-Match", "1");
-//    String result = request.delete(String.class);
-      MvcResult result = this.mockMvc.perform ( delete ( INDEXES_URI + INDEX_NAME + "/" + DOCUMENT_URI + DOC_ID )
-              .contentType ( MediaType.APPLICATION_JSON )
-              .header ( "If-Match", "1" )
-              .content ( CREATE_JSON_CONTENT ) ).andReturn ( );
+        // MvcResult result = this.mockMvc.perform ( get ( INDEXES_URI + INDEX_NAME + "/" + DOCUMENT_URI + DOC_ID )
+        // ).andReturn ();
+        MvcResult result = this.mockMvc
+                .perform(get(INDEXES_URI + INDEX_NAME + "/" + DOCUMENT_URI + DOC_ID)
+                        .contentType(MediaType.APPLICATION_JSON).header("If-Match", "1").content(CREATE_JSON_CONTENT))
+                .andReturn();
 
 
+        // Our stub document store DAO returns the parameters that it was
+        // passed as the result string, so now we can validate that our
+        // endpoint invoked it with the correct parameters.
+        JSONParser parser = new JSONParser();
+        JSONObject json = (JSONObject) parser.parse(result.getResponse().getContentAsString());
 
-    // Our stub document store DAO returns the parameters that it was
-    // passed as the result string, so now we can validate that our
-    // endpoint invoked it with the correct parameters.
-    assertTrue("Unexpected Result ", result.getResponse ().getContentAsString ().isEmpty ());
+        assertTrue("Unexpected Result ", !json.get("etag").toString().isEmpty());
 
-  }
-//
-//  /**
-//   * This test validates the behaviour of the 'Search Documents' GET request
-//   * endpoint.
-//   *
-//   * @throws IOException
-//   * @throws ParseException
-//   */
-  @Ignore
-  @Test
-  public void searchDocumentTest1() throws Exception {
-    // String result = target(INDEXES_URI + INDEX_NAME + "/" + SEARCH_URI + SIMPLE_QUERY).request().get(String.class);
+    }
 
-      MvcResult result = this.mockMvc.perform ( get ( INDEXES_URI + INDEX_NAME + "/" + SEARCH_URI + SIMPLE_QUERY )
-              .contentType ( MediaType.APPLICATION_JSON )
-              .header ( "If-Match", "1" )
-              .content ( CREATE_JSON_CONTENT ) ).andReturn ( );
-
-    // Our stub document store DAO returns the parameters that it was
-    // passed as the result string, so now we can validate that our
-    // endpoint invoked it with the correct parameters.
-    JSONParser parser = new JSONParser();
-    JSONObject json = (JSONObject) parser.parse(result.getResponse ().getContentAsString ());
-
-    assertTrue("Unexpected Result ", json.get("totalHits").toString().equals("1"));
+    //
+    // /**
+    // * This test validates the behaviour of the 'Delete Document' DELETE request
+    // * endpoint.
+    // *
+    // * @throws IOException
+    // * @throws ParseException
+    // */
+    @Test
+    public void deleteDocumentTest() throws Exception {
+        // WebTarget target = target(INDEXES_URI + INDEX_NAME + "/" + DOCUMENT_URI + DOC_ID);
+        // Builder request = target.request().header("If-Match", "1");
+        // String result = request.delete(String.class);
+        MvcResult result = this.mockMvc
+                .perform(delete(INDEXES_URI + INDEX_NAME + "/" + DOCUMENT_URI + DOC_ID)
+                        .contentType(MediaType.APPLICATION_JSON).header("If-Match", "1").content(CREATE_JSON_CONTENT))
+                .andReturn();
 
 
-  }
-//
-  /**
-   * This test validates the behaviour of the 'Search Documents' GET request
-   * endpoint.
-   *
-   * @throws IOException
-   * @throws ParseException
-   */
-  @Test
-  public void searchDocumentTest2() throws Exception {
-    // String result = target(INDEXES_URI + INDEX_NAME + "/" + SEARCH_URI).request().post(Entity.json(COMPLEX_QUERY), String.class);
 
-      MvcResult result = this.mockMvc.perform ( get ( INDEXES_URI + INDEX_NAME + "/" + SEARCH_URI)
-              .contentType ( MediaType.APPLICATION_JSON )
-              .content ( COMPLEX_QUERY ) ).andReturn ( );
+        // Our stub document store DAO returns the parameters that it was
+        // passed as the result string, so now we can validate that our
+        // endpoint invoked it with the correct parameters.
+        assertTrue("Unexpected Result ", result.getResponse().getContentAsString().isEmpty());
 
-    // Our stub document store DAO returns the parameters that it was
-    // passed as the result string, so now we can validate that our
-    // endpoint invoked it with the correct parameters.
-    JSONParser parser = new JSONParser();
-    JSONObject json = (JSONObject) parser.parse(result.getResponse ().getContentAsString ());
-    JSONObject resultJson = (JSONObject) json.get("searchResult");
+    }
 
-    assertTrue("Unexpected Result ", resultJson.get("totalHits").toString().equals("1"));
+    //
+    // /**
+    // * This test validates the behaviour of the 'Search Documents' GET request
+    // * endpoint.
+    // *
+    // * @throws IOException
+    // * @throws ParseException
+    // */
+    @Ignore
+    @Test
+    public void searchDocumentTest1() throws Exception {
+        // String result = target(INDEXES_URI + INDEX_NAME + "/" + SEARCH_URI +
+        // SIMPLE_QUERY).request().get(String.class);
 
-  }
+        MvcResult result = this.mockMvc
+                .perform(get(INDEXES_URI + INDEX_NAME + "/" + SEARCH_URI + SIMPLE_QUERY)
+                        .contentType(MediaType.APPLICATION_JSON).header("If-Match", "1").content(CREATE_JSON_CONTENT))
+                .andReturn();
+
+        // Our stub document store DAO returns the parameters that it was
+        // passed as the result string, so now we can validate that our
+        // endpoint invoked it with the correct parameters.
+        JSONParser parser = new JSONParser();
+        JSONObject json = (JSONObject) parser.parse(result.getResponse().getContentAsString());
+
+        assertTrue("Unexpected Result ", json.get("totalHits").toString().equals("1"));
+
+
+    }
+
+    //
+    /**
+     * This test validates the behaviour of the 'Search Documents' GET request endpoint.
+     *
+     * @throws IOException
+     * @throws ParseException
+     */
+    @Test
+    public void searchDocumentTest2() throws Exception {
+        // String result = target(INDEXES_URI + INDEX_NAME + "/" +
+        // SEARCH_URI).request().post(Entity.json(COMPLEX_QUERY), String.class);
+
+        MvcResult result = this.mockMvc.perform(get(INDEXES_URI + INDEX_NAME + "/" + SEARCH_URI)
+                .contentType(MediaType.APPLICATION_JSON).content(COMPLEX_QUERY)).andReturn();
+
+        // Our stub document store DAO returns the parameters that it was
+        // passed as the result string, so now we can validate that our
+        // endpoint invoked it with the correct parameters.
+        JSONParser parser = new JSONParser();
+        JSONObject json = (JSONObject) parser.parse(result.getResponse().getContentAsString());
+        JSONObject resultJson = (JSONObject) json.get("searchResult");
+
+        assertTrue("Unexpected Result ", resultJson.get("totalHits").toString().equals("1"));
+
+    }
 
 }

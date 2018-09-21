@@ -22,22 +22,22 @@ package org.onap.aai.sa.searchdbabstraction.elasticsearch.dao;
 
 public class ElasticSearchCause {
 
-  private String type;
-  private String reason;
+    private String type;
+    private String reason;
 
-  public String getType() {
-    return type;
-  }
+    public String getType() {
+        return type;
+    }
 
-  public void setType(String type) {
-    this.type = type;
-  }
+    public void setType(String type) {
+        this.type = type;
+    }
 
-  public String getReason() {
-    return reason;
-  }
+    public String getReason() {
+        return reason;
+    }
 
-  public void setReason(String reason) {
-    this.reason = reason;
-  }
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
 }

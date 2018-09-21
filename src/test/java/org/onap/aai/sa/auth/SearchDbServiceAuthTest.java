@@ -39,47 +39,47 @@ public class SearchDbServiceAuthTest {
     @Mock
     HttpHeaders headers;
 
-//    @Mock
-//    Cookie mockedCookie;
+    // @Mock
+    // Cookie mockedCookie;
 
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException, IOException {
         MockitoAnnotations.initMocks(this);
         System.setProperty("AJSC_HOME", new File(".").getCanonicalPath().replace('\\', '/'));
-        setFinalStatic(System.getProperty("AJSC_HOME")+"/src/test/resources/json/search_policy.json");
+        setFinalStatic(System.getProperty("AJSC_HOME") + "/src/test/resources/json/search_policy.json");
     }
 
     @Test
-    public void testAuthUser(){
+    public void testAuthUser() {
         SearchDbServiceAuth aaiAuth = new SearchDbServiceAuth();
         String auth = aaiAuth.authUser(headers, "user-1", "function-1");
         Assert.assertEquals(auth, "AAI_9101");
     }
 
-//    @Test
-//    public void testAuthCookie_NullCookie(){
-//        SearchDbServiceAuth aaiAuth = new SearchDbServiceAuth();
-//        Cookie cookie = null;
-//        Assert.assertFalse(aaiAuth.authCookie(cookie, "function-1", new StringBuilder("user-1")));
-//    }
+    // @Test
+    // public void testAuthCookie_NullCookie(){
+    // SearchDbServiceAuth aaiAuth = new SearchDbServiceAuth();
+    // Cookie cookie = null;
+    // Assert.assertFalse(aaiAuth.authCookie(cookie, "function-1", new StringBuilder("user-1")));
+    // }
 
-//    @Test
-//    public void testAuthCookie_NotNullCookie(){
-//        SearchDbServiceAuth aaiAuth = new SearchDbServiceAuth();
-//        Cookie cookie = new Cookie ( "TestCookie", "TestValue");
-//         // Cookie cookie = new Cookie ( "TestCookie", "TestValue" );
-//        boolean retValue = aaiAuth.authCookie(cookie, "GET:testFunction", new StringBuilder("testuser"));
-//        Assert.assertTrue(retValue);
-//        }
+    // @Test
+    // public void testAuthCookie_NotNullCookie(){
+    // SearchDbServiceAuth aaiAuth = new SearchDbServiceAuth();
+    // Cookie cookie = new Cookie ( "TestCookie", "TestValue");
+    // // Cookie cookie = new Cookie ( "TestCookie", "TestValue" );
+    // boolean retValue = aaiAuth.authCookie(cookie, "GET:testFunction", new StringBuilder("testuser"));
+    // Assert.assertTrue(retValue);
+    // }
 
-    static void setFinalStatic(String fieldValue) throws NoSuchFieldException, SecurityException,
-            IllegalArgumentException, IllegalAccessException {
+    static void setFinalStatic(String fieldValue)
+            throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         Field configField = SearchDbConstants.class.getDeclaredField("SDB_AUTH_CONFIG_FILENAME");
         configField.setAccessible(true);
 
-        Field modifiersField = Field.class.getDeclaredField( "modifiers" );
-        modifiersField.setAccessible( true );
-        modifiersField.setInt( configField, configField.getModifiers() & ~Modifier.FINAL );
+        Field modifiersField = Field.class.getDeclaredField("modifiers");
+        modifiersField.setAccessible(true);
+        modifiersField.setInt(configField, configField.getModifiers() & ~Modifier.FINAL);
 
         configField.set(null, fieldValue);
     }

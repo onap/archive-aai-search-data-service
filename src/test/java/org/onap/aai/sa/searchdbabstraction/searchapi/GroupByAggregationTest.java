@@ -27,36 +27,36 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 
 public class GroupByAggregationTest {
-  private static ObjectMapper mapper = new ObjectMapper();
+    private static ObjectMapper mapper = new ObjectMapper();
 
-  @Test
-  public void test() {
-    String input = "{\"field\" : \"entityType\", \"size\": 20}\r\n";
+    @Test
+    public void test() {
+        String input = "{\"field\" : \"entityType\", \"size\": 20}\r\n";
 
-    String expected = "\"terms\": {\"field\": \"entityType\", \"size\": 20}";
+        String expected = "\"terms\": {\"field\": \"entityType\", \"size\": 20}";
 
-    GroupByAggregation actual;
-    try {
-      actual = mapper.readValue(input, GroupByAggregation.class);
-      assertEquals(expected, actual.toElasticSearch());
-    } catch (Exception e) {
-      fail("Exception occurred: " + e.getMessage());
+        GroupByAggregation actual;
+        try {
+            actual = mapper.readValue(input, GroupByAggregation.class);
+            assertEquals(expected, actual.toElasticSearch());
+        } catch (Exception e) {
+            fail("Exception occurred: " + e.getMessage());
+        }
     }
-  }
 
-  @Test
-  public void testNoSize() {
-    String input = "{\"field\" : \"entityType\"}\r\n";
+    @Test
+    public void testNoSize() {
+        String input = "{\"field\" : \"entityType\"}\r\n";
 
-    String expected = "\"terms\": {\"field\": \"entityType\"}";
+        String expected = "\"terms\": {\"field\": \"entityType\"}";
 
-    GroupByAggregation actual;
-    try {
-      actual = mapper.readValue(input, GroupByAggregation.class);
-      assertEquals(expected, actual.toElasticSearch());
-    } catch (Exception e) {
-      fail("Exception occurred: " + e.getMessage());
+        GroupByAggregation actual;
+        try {
+            actual = mapper.readValue(input, GroupByAggregation.class);
+            assertEquals(expected, actual.toElasticSearch());
+        } catch (Exception e) {
+            fail("Exception occurred: " + e.getMessage());
+        }
     }
-  }
 
 }

@@ -23,61 +23,61 @@ package org.onap.aai.sa.searchdbabstraction.elasticsearch.config;
 import java.util.Properties;
 
 public class ElasticSearchConfig {
-  private String ipAddress;
-  private String httpPort;
-  private String javaApiPort;
-  private String clusterName;
+    private String ipAddress;
+    private String httpPort;
+    private String javaApiPort;
+    private String clusterName;
 
-  public static final String ES_CLUSTER_NAME = "es.cluster-name";
-  public static final String ES_IP_ADDRESS = "es.ip-address";
-  public static final String ES_HTTP_PORT = "es.http-port";
+    public static final String ES_CLUSTER_NAME = "es.cluster-name";
+    public static final String ES_IP_ADDRESS = "es.ip-address";
+    public static final String ES_HTTP_PORT = "es.http-port";
 
-  private static final String JAVA_API_PORT_DEFAULT = "9300";
+    private static final String JAVA_API_PORT_DEFAULT = "9300";
 
-  public ElasticSearchConfig(Properties props) {
+    public ElasticSearchConfig(Properties props) {
 
-     setClusterName(props.getProperty(ES_CLUSTER_NAME));
-     setIpAddress(props.getProperty(ES_IP_ADDRESS));
-     setHttpPort(props.getProperty(ES_HTTP_PORT));
-    setJavaApiPort(JAVA_API_PORT_DEFAULT);
-  }
+        setClusterName(props.getProperty(ES_CLUSTER_NAME));
+        setIpAddress(props.getProperty(ES_IP_ADDRESS));
+        setHttpPort(props.getProperty(ES_HTTP_PORT));
+        setJavaApiPort(JAVA_API_PORT_DEFAULT);
+    }
 
-  public String getIpAddress() {
-    return ipAddress;
-  }
+    public String getIpAddress() {
+        return ipAddress;
+    }
 
-  public void setIpAddress(String ipAddress) {
-    this.ipAddress = ipAddress;
-  }
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
 
-  public String getHttpPort() {
-    return httpPort;
-  }
+    public String getHttpPort() {
+        return httpPort;
+    }
 
-  public void setHttpPort(String httpPort) {
-    this.httpPort = httpPort;
-  }
+    public void setHttpPort(String httpPort) {
+        this.httpPort = httpPort;
+    }
 
-  public String getJavaApiPort() {
-    return javaApiPort;
-  }
+    public String getJavaApiPort() {
+        return javaApiPort;
+    }
 
-  public void setJavaApiPort(String javaApiPort) {
-    this.javaApiPort = javaApiPort;
-  }
+    public void setJavaApiPort(String javaApiPort) {
+        this.javaApiPort = javaApiPort;
+    }
 
-  public String getClusterName() {
-    return clusterName;
-  }
+    public String getClusterName() {
+        return clusterName;
+    }
 
-  public void setClusterName(String clusterName) {
-    this.clusterName = clusterName;
-  }
+    public void setClusterName(String clusterName) {
+        this.clusterName = clusterName;
+    }
 
-  @Override
-  public String toString() {
-    return "ElasticSearchConfig [ipAddress=" + ipAddress + ", httpPort=" + httpPort
-        + ", javaApiPort=" + javaApiPort + ", clusterName=" + clusterName + "]";
-  }
+    @Override
+    public String toString() {
+        return "ElasticSearchConfig [ipAddress=" + ipAddress + ", httpPort=" + httpPort + ", javaApiPort=" + javaApiPort
+                + ", clusterName=" + clusterName + "]";
+    }
 
 }

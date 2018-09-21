@@ -22,90 +22,89 @@ package org.onap.aai.sa.rest;
 
 
 /**
- * This class represents a single instance of a request from the search client
- * that would be part of a bundle of such operations sent in a single bulk
- * request.
+ * This class represents a single instance of a request from the search client that would be part of a bundle of such
+ * operations sent in a single bulk request.
  */
 public class BulkRequest {
 
-  public enum OperationType {
-    CREATE,
-    UPDATE,
-    DELETE
-  }
-
-  private BulkOperation create;
-  private BulkOperation update;
-  private BulkOperation delete;
-
-  public BulkOperation getCreate() {
-    return create;
-  }
-
-  public void setCreate(BulkOperation create) {
-    this.create = create;
-  }
-
-  public BulkOperation getUpdate() {
-    return update;
-  }
-
-  public void setUpdate(BulkOperation update) {
-    this.update = update;
-  }
-
-  public BulkOperation getDelete() {
-    return delete;
-  }
-
-  public void setDelete(BulkOperation delete) {
-    this.delete = delete;
-  }
-
-  public OperationType getOperationType() {
-
-    if (create != null) {
-      return OperationType.CREATE;
-    } else if (update != null) {
-      return OperationType.UPDATE;
-    } else if (delete != null) {
-      return OperationType.DELETE;
-    } else {
-      return null;
+    public enum OperationType {
+        CREATE,
+        UPDATE,
+        DELETE
     }
-  }
 
-  public BulkOperation getOperation() {
-    if (create != null) {
-      return create;
-    } else if (update != null) {
-      return update;
-    } else if (delete != null) {
-      return delete;
-    } else {
-      return null;
+    private BulkOperation create;
+    private BulkOperation update;
+    private BulkOperation delete;
+
+    public BulkOperation getCreate() {
+        return create;
     }
-  }
 
-  public String getIndex() {
-    return ApiUtils.extractIndexFromUri(getOperation().getMetaData().getUrl());
-  }
-
-  public String getId() {
-    return ApiUtils.extractIdFromUri(getOperation().getMetaData().getUrl());
-  }
-
-  @Override
-  public String toString() {
-
-    if (create != null) {
-      return "create: [" + create.toString() + "]\n";
-    } else if (update != null) {
-      return "update: [" + update.toString() + "]\n";
-    } else if (delete != null) {
-      return "delete: [" + delete.toString() + "]\n";
-    } else {
-      return "UNDEFINED";
+    public void setCreate(BulkOperation create) {
+        this.create = create;
     }
-  }
+
+    public BulkOperation getUpdate() {
+        return update;
+    }
+
+    public void setUpdate(BulkOperation update) {
+        this.update = update;
+    }
+
+    public BulkOperation getDelete() {
+        return delete;
+    }
+
+    public void setDelete(BulkOperation delete) {
+        this.delete = delete;
+    }
+
+    public OperationType getOperationType() {
+
+        if (create != null) {
+            return OperationType.CREATE;
+        } else if (update != null) {
+            return OperationType.UPDATE;
+        } else if (delete != null) {
+            return OperationType.DELETE;
+        } else {
+            return null;
+        }
+    }
+
+    public BulkOperation getOperation() {
+        if (create != null) {
+            return create;
+        } else if (update != null) {
+            return update;
+        } else if (delete != null) {
+            return delete;
+        } else {
+            return null;
+        }
+    }
+
+    public String getIndex() {
+        return ApiUtils.extractIndexFromUri(getOperation().getMetaData().getUrl());
+    }
+
+    public String getId() {
+        return ApiUtils.extractIdFromUri(getOperation().getMetaData().getUrl());
+    }
+
+    @Override
+    public String toString() {
+
+        if (create != null) {
+            return "create: [" + create.toString() + "]\n";
+        } else if (update != null) {
+            return "update: [" + update.toString() + "]\n";
+        } else if (delete != null) {
+            return "delete: [" + delete.toString() + "]\n";
+        } else {
+            return "UNDEFINED";
+        }
+    }
 }

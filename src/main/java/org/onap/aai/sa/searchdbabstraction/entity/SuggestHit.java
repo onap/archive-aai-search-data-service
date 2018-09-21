@@ -18,7 +18,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-   package org.onap.aai.sa.searchdbabstraction.entity;
+package org.onap.aai.sa.searchdbabstraction.entity;
 
 public class SuggestHit {
 

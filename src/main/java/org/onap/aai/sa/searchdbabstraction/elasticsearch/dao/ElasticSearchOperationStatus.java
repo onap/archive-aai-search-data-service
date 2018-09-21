@@ -27,88 +27,88 @@ import java.util.Map;
 
 public class ElasticSearchOperationStatus {
 
-  private String index;
-  private String type;
-  private String id;
-  private String version;
-  private ElasticSearchShardStatus shards;
-  private Integer status;
-  private ElasticSearchError error;
+    private String index;
+    private String type;
+    private String id;
+    private String version;
+    private ElasticSearchShardStatus shards;
+    private Integer status;
+    private ElasticSearchError error;
 
-  private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
 
-  public ElasticSearchError getError() {
-    return error;
-  }
+    public ElasticSearchError getError() {
+        return error;
+    }
 
-  public void setError(ElasticSearchError error) {
-    this.error = error;
-  }
+    public void setError(ElasticSearchError error) {
+        this.error = error;
+    }
 
-  public Integer getStatus() {
-    return status;
-  }
+    public Integer getStatus() {
+        return status;
+    }
 
-  public void setStatus(Integer status) {
-    this.status = status;
-  }
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 
-  public ElasticSearchShardStatus getShards() {
-    return shards;
-  }
+    public ElasticSearchShardStatus getShards() {
+        return shards;
+    }
 
-  public void setShards(ElasticSearchShardStatus shards) {
-    this.shards = shards;
-  }
+    public void setShards(ElasticSearchShardStatus shards) {
+        this.shards = shards;
+    }
 
-  public String getIndex() {
-    return index;
-  }
+    public String getIndex() {
+        return index;
+    }
 
-  public void setIndex(String index) {
-    this.index = index;
-  }
+    public void setIndex(String index) {
+        this.index = index;
+    }
 
-  public String getType() {
-    return type;
-  }
+    public String getType() {
+        return type;
+    }
 
-  public void setType(String type) {
-    this.type = type;
-  }
+    public void setType(String type) {
+        this.type = type;
+    }
 
-  public String getId() {
-    return id;
-  }
+    public String getId() {
+        return id;
+    }
 
-  public void setId(String id) {
-    this.id = id;
-  }
+    public void setId(String id) {
+        this.id = id;
+    }
 
-  public String getVersion() {
-    return version;
-  }
+    public String getVersion() {
+        return version;
+    }
 
-  public void setVersion(String version) {
-    this.version = version;
-  }
+    public void setVersion(String version) {
+        this.version = version;
+    }
 
-  @JsonAnyGetter
-  public Map<String, Object> getAdditionalProperties() {
-    return additionalProperties;
-  }
+    @JsonAnyGetter
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
 
-  @JsonAnySetter
-  public void setAdditionalProperties(String name, Object value) {
-    additionalProperties.put(name, value);
-  }
+    @JsonAnySetter
+    public void setAdditionalProperties(String name, Object value) {
+        additionalProperties.put(name, value);
+    }
 
-  @Override
-  public String toString() {
-    return "ElasticSearchIndexStatus [index=" + index + ", type=" + type + ", id="
-        + id + ", version=" + version + ", shards=" + shards + ", status=" + status + "]";
-  }
+    @Override
+    public String toString() {
+        return "ElasticSearchIndexStatus [index=" + index + ", type=" + type + ", id=" + id + ", version=" + version
+                + ", shards=" + shards + ", status=" + status + "]";
+    }
 
 
 }

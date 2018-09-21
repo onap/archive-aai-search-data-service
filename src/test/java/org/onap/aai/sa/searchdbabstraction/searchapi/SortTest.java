@@ -30,20 +30,20 @@ import org.junit.Test;
 
 public class SortTest {
 
-  @Test
-  public void sortFieldTest() throws JsonParseException, JsonMappingException, IOException {
+    @Test
+    public void sortFieldTest() throws JsonParseException, JsonMappingException, IOException {
 
-    String field = "fieldname";
-    String order = "ascending";
-    String json = "{\"field\": \"" + field + "\", \"order\": \"" + order + "\"}";
+        String field = "fieldname";
+        String order = "ascending";
+        String json = "{\"field\": \"" + field + "\", \"order\": \"" + order + "\"}";
 
-    ObjectMapper mapper = new ObjectMapper();
-    Sort sort = mapper.readValue(json, Sort.class);
+        ObjectMapper mapper = new ObjectMapper();
+        Sort sort = mapper.readValue(json, Sort.class);
 
-    assertTrue("Unexpected field name in marshalled object.  Expected: " + field + " Actual: " + sort.getField(),
-        field.equals(sort.getField()));
-    assertTrue("Unexpected order field in marshalled object.  Expected: " + order + " Actual: " + sort.getOrder(),
-        order.equals(sort.getOrder().toString()));
+        assertTrue("Unexpected field name in marshalled object.  Expected: " + field + " Actual: " + sort.getField(),
+                field.equals(sort.getField()));
+        assertTrue("Unexpected order field in marshalled object.  Expected: " + order + " Actual: " + sort.getOrder(),
+                order.equals(sort.getOrder().toString()));
 
-  }
+    }
 }

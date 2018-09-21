@@ -27,16 +27,16 @@ import org.junit.Test;
 
 public class ApiUtilsTest {
 
-  @Test
-  public void testHTTPStatusConversion() {
-      String statusString;
-      statusString = ApiUtils.getHttpStatusString(201);
-      assertEquals(0, statusString.compareToIgnoreCase("Created"));
+    @Test
+    public void testHTTPStatusConversion() {
+        String statusString;
+        statusString = ApiUtils.getHttpStatusString(201);
+        assertEquals(0, statusString.compareToIgnoreCase("Created"));
 
-      statusString = ApiUtils.getHttpStatusString(207);
-      assertEquals(0, statusString.compareToIgnoreCase("Multi-Status"));
+        statusString = ApiUtils.getHttpStatusString(207);
+        assertEquals(0, statusString.compareToIgnoreCase("Multi-Status"));
 
-      statusString = ApiUtils.getHttpStatusString(9999);
-      assertEquals(0, statusString.compareToIgnoreCase("Unknown"));
-  }
+        statusString = ApiUtils.getHttpStatusString(9999);
+        assertEquals(0, statusString.compareToIgnoreCase("Unknown"));
+    }
 }

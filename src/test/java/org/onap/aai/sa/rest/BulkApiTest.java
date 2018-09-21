@@ -38,8 +38,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 
 /**
- * This suite of tests validates the behaviour of the bulk operations REST
- * end point.
+ * This suite of tests validates the behaviour of the bulk operations REST end point.
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = org.onap.aai.sa.Application.class)
@@ -54,16 +53,16 @@ public class BulkApiTest {
     @Test
     public void authenticationFailureTest() throws Exception {
 
-        this.mockMvc.perform ( post ( TOP_URI) .contentType( MediaType.APPLICATION_JSON)
-                .content ( SearchServiceApiHarness.FAIL_AUTHENTICATION_TRIGGER )).andExpect ( status ().isForbidden () );
+        this.mockMvc
+                .perform(post(TOP_URI).contentType(MediaType.APPLICATION_JSON)
+                        .content(SearchServiceApiHarness.FAIL_AUTHENTICATION_TRIGGER))
+                .andExpect(status().isForbidden());
     }
 
 
     /**
-     * This test validates that properly constructed json payloads are
-     * correctly validated and that improperly contructed payloads will
-     * be rejected with the appropriate response code returned to the
-     * client.
+     * This test validates that properly constructed json payloads are correctly validated and that improperly
+     * contructed payloads will be rejected with the appropriate response code returned to the client.
      *
      * @throws IOException
      */
@@ -72,19 +71,20 @@ public class BulkApiTest {
 
         // Post a request to the bulk operations endpoint with a valid
         // operations list payload.
-        File validBulkOpsFile = new File ("src/test/resources/json/bulk-ops-valid.json");
+        File validBulkOpsFile = new File("src/test/resources/json/bulk-ops-valid.json");
         String validPayloadStr = TestUtils.readFileToString(validBulkOpsFile);
 
         // Validate that the payload is accepted as expected.
-        this.mockMvc.perform ( post ( TOP_URI ).contentType ( MediaType.APPLICATION_JSON )
-                .content ( validPayloadStr ) ).andExpect ( status ().isOk () );
+        this.mockMvc.perform(post(TOP_URI).contentType(MediaType.APPLICATION_JSON).content(validPayloadStr))
+                .andExpect(status().isOk());
 
 
         // Post a request to the bulk operations endpoint with an invalid
         // operations list payload.
         File inValidBulkOpsFile = new File("src/test/resources/json/bulk-ops-invalid.json");
         String inValidPayloadStr = TestUtils.readFileToString(inValidBulkOpsFile);
-        ResultActions invalid = this.mockMvc.perform ( post ( TOP_URI ).contentType ( MediaType.APPLICATION_JSON )
-                .content ( inValidPayloadStr ) ).andExpect ( status ().isBadRequest ());
+        ResultActions invalid =
+                this.mockMvc.perform(post(TOP_URI).contentType(MediaType.APPLICATION_JSON).content(inValidPayloadStr))
+                        .andExpect(status().isBadRequest());
     }
 }

@@ -71,7 +71,7 @@ public class DocumentTest {
     DocumentApi documentApi;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
         documentApi = new DocumentApi(searchServiceApi);
     }
@@ -80,14 +80,14 @@ public class DocumentTest {
     public void testDocumentClass_AllMethods() throws JsonProcessingException {
         Document doc = new Document();
         doc.setField("name-1", "value-1");
-        Assert.assertTrue(doc.getFields().size()==1);
+        Assert.assertTrue(doc.getFields().size() == 1);
         Assert.assertTrue(doc.toJson().contains("value-1"));
         Assert.assertNotNull(doc.toString());
         Assert.assertTrue(doc.toString().contains("name-1"));
     }
 
     @Test
-    public void testProcessPost_NullContent(){
+    public void testProcessPost_NullContent() {
         String transactionId = "transactionId-1";
         String remoteAddr = "http://127.0.0.1";
         String content = null;
@@ -97,10 +97,10 @@ public class DocumentTest {
         Mockito.when(request.getMethod()).thenReturn("testMethod");
         Mockito.when(request.getRequestURL()).thenReturn(new StringBuffer("http://127.0.0.1"));
         Mockito.when(request.getRemoteHost()).thenReturn("localhost");
-        ResponseEntity<String> response = documentApi.processPost(content, request, headers, httpResponse, "index",
-                documentStore);
+        ResponseEntity<String> response =
+                documentApi.processPost(content, request, headers, httpResponse, "index", documentStore);
         Assert.assertNotNull(response);
-        Assert.assertTrue( HttpStatus.BAD_REQUEST.value () == response.getStatusCodeValue ());
+        Assert.assertTrue(HttpStatus.BAD_REQUEST.value() == response.getStatusCodeValue());
     }
 
     @Test
@@ -117,12 +117,13 @@ public class DocumentTest {
         Mockito.when(searchServiceApi.validateRequest(Mockito.any(HttpHeaders.class),
                 Mockito.any(HttpServletRequest.class), Mockito.any(ApiUtils.Action.class), Mockito.anyString()))
                 .thenThrow(IllegalArgumentException.class);
-        ResponseEntity response = documentApi.processPost(content, request, headers, httpResponse, "index",
-                documentStore);
+        ResponseEntity response =
+                documentApi.processPost(content, request, headers, httpResponse, "index", documentStore);
         Assert.assertNotNull(response);
-        Assert.assertTrue(HttpStatus.FORBIDDEN.value () == response.getStatusCodeValue ());
+        Assert.assertTrue(HttpStatus.FORBIDDEN.value() == response.getStatusCodeValue());
     }
-//
+
+    //
     @Test
     public void testProcessPost_ValidRequest() throws Exception {
         String transactionId = "transactionId-1";
@@ -144,12 +145,13 @@ public class DocumentTest {
         Mockito.when(documentStore.createDocument(Mockito.anyString(), Mockito.any(DocumentStoreDataEntity.class),
                 Mockito.anyBoolean())).thenReturn(result);
         Mockito.doNothing().when(httpResponse).setHeader(Mockito.anyString(), Mockito.anyString());
-        ResponseEntity<String> response = documentApi.processPost(content, request, headers, httpResponse, "index",
-                documentStore);
+        ResponseEntity<String> response =
+                documentApi.processPost(content, request, headers, httpResponse, "index", documentStore);
         Assert.assertNotNull(response);
-        Assert.assertTrue(HttpStatus.INTERNAL_SERVER_ERROR.value () == response.getStatusCodeValue ());
+        Assert.assertTrue(HttpStatus.INTERNAL_SERVER_ERROR.value() == response.getStatusCodeValue());
     }
-//
+
+    //
     @Test
     public void testProcessSearchWithGet_Created() throws Exception {
         String transactionId = "transactionId-1";
@@ -170,13 +172,14 @@ public class DocumentTest {
                 Mockito.any(HttpServletRequest.class), Mockito.any(ApiUtils.Action.class), Mockito.anyString()))
                 .thenReturn(true);
         Mockito.when(documentStore.search(Mockito.anyString(), Mockito.anyString())).thenReturn(result);
-        ResponseEntity<String>response = documentApi.processSearchWithGet(content, request, headers, "index-1",
-                "query-text", documentStore);
+        ResponseEntity<String> response =
+                documentApi.processSearchWithGet(content, request, headers, "index-1", "query-text", documentStore);
         Assert.assertNotNull(response);
         Assert.assertTrue(HttpStatus.CREATED.value() == response.getStatusCodeValue());
 
     }
-//
+
+    //
     @Test
     public void testProcessSearchWithGet_ValidateThrowsException() throws Exception {
         String transactionId = "transactionId-1";
@@ -197,13 +200,14 @@ public class DocumentTest {
                 Mockito.any(HttpServletRequest.class), Mockito.any(ApiUtils.Action.class), Mockito.anyString()))
                 .thenThrow(IllegalArgumentException.class);
         Mockito.when(documentStore.search(Mockito.anyString(), Mockito.anyString())).thenReturn(result);
-        ResponseEntity<String>response = documentApi.processSearchWithGet(content, request, headers, "index-1",
-                "query-text", documentStore);
+        ResponseEntity<String> response =
+                documentApi.processSearchWithGet(content, request, headers, "index-1", "query-text", documentStore);
         Assert.assertNotNull(response);
         Assert.assertTrue(HttpStatus.FORBIDDEN.value() == response.getStatusCodeValue());
 
     }
-//
+
+    //
     @Test
     public void testProcessSearchWithGet_ValidateIsFalse() throws Exception {
         String transactionId = "transactionId-1";
@@ -224,8 +228,8 @@ public class DocumentTest {
                 Mockito.any(HttpServletRequest.class), Mockito.any(ApiUtils.Action.class), Mockito.anyString()))
                 .thenReturn(false);
         Mockito.when(documentStore.search(Mockito.anyString(), Mockito.anyString())).thenReturn(result);
-        ResponseEntity<String>response = documentApi.processSearchWithGet(content, request, headers, "index-1",
-                "query-text", documentStore);
+        ResponseEntity<String> response =
+                documentApi.processSearchWithGet(content, request, headers, "index-1", "query-text", documentStore);
         Assert.assertNotNull(response);
         Assert.assertTrue(HttpStatus.FORBIDDEN.value() == response.getStatusCodeValue());
 
@@ -251,15 +255,15 @@ public class DocumentTest {
                 Mockito.any(HttpServletRequest.class), Mockito.any(ApiUtils.Action.class), Mockito.anyString()))
                 .thenReturn(true);
         Mockito.when(documentStore.search(Mockito.anyString(), Mockito.anyString())).thenReturn(result);
-        ResponseEntity<String>response = documentApi.processSearchWithGet(content, request, headers, "index-1",
-                "query-text", documentStore);
+        ResponseEntity<String> response =
+                documentApi.processSearchWithGet(content, request, headers, "index-1", "query-text", documentStore);
         Assert.assertNotNull(response);
         Assert.assertTrue(HttpStatus.FOUND.value() == response.getStatusCodeValue());
 
     }
 
     @Test
-    public void testProcessPut_NullContent(){
+    public void testProcessPut_NullContent() {
         String transactionId = "transactionId-1";
         String remoteAddr = "http://127.0.0.1";
         String content = null;
@@ -269,8 +273,8 @@ public class DocumentTest {
         Mockito.when(request.getMethod()).thenReturn("testMethod");
         Mockito.when(request.getRequestURL()).thenReturn(new StringBuffer("http://127.0.0.1"));
         Mockito.when(request.getRemoteHost()).thenReturn("localhost");
-        ResponseEntity<String>response = documentApi.processPut(content, request, headers, httpResponse, "index","id-1",
-                documentStore);
+        ResponseEntity<String> response =
+                documentApi.processPut(content, request, headers, httpResponse, "index", "id-1", documentStore);
         Assert.assertNotNull(response);
         Assert.assertTrue(HttpStatus.BAD_REQUEST.value() == response.getStatusCodeValue());
     }
@@ -289,8 +293,8 @@ public class DocumentTest {
         Mockito.when(searchServiceApi.validateRequest(Mockito.any(HttpHeaders.class),
                 Mockito.any(HttpServletRequest.class), Mockito.any(ApiUtils.Action.class), Mockito.anyString()))
                 .thenThrow(IllegalArgumentException.class);
-        ResponseEntity<String>response = documentApi.processPut(content, request, headers, httpResponse, "index","id-1",
-                documentStore);
+        ResponseEntity<String> response =
+                documentApi.processPut(content, request, headers, httpResponse, "index", "id-1", documentStore);
         Assert.assertNotNull(response);
         Assert.assertTrue(HttpStatus.FORBIDDEN.value() == response.getStatusCodeValue());
     }
@@ -309,8 +313,8 @@ public class DocumentTest {
         Mockito.when(searchServiceApi.validateRequest(Mockito.any(HttpHeaders.class),
                 Mockito.any(HttpServletRequest.class), Mockito.any(ApiUtils.Action.class), Mockito.anyString()))
                 .thenReturn(false);
-        ResponseEntity<String>response = documentApi.processPut(content, request, headers, httpResponse, "index","id-1",
-                documentStore);
+        ResponseEntity<String> response =
+                documentApi.processPut(content, request, headers, httpResponse, "index", "id-1", documentStore);
         Assert.assertNotNull(response);
         Assert.assertTrue(HttpStatus.FORBIDDEN.value() == response.getStatusCodeValue());
     }
@@ -336,8 +340,8 @@ public class DocumentTest {
                 .thenReturn(true);
         Mockito.when(documentStore.updateDocument(Mockito.anyString(), Mockito.any(DocumentStoreDataEntity.class),
                 Mockito.anyBoolean())).thenReturn(result);
-        ResponseEntity<String>response = documentApi.processPut(content, request, headers, httpResponse, "index","id-1",
-                documentStore);
+        ResponseEntity<String> response =
+                documentApi.processPut(content, request, headers, httpResponse, "index", "id-1", documentStore);
         Assert.assertNotNull(response);
         Assert.assertTrue(HttpStatus.FOUND.value() == response.getStatusCodeValue());
     }
@@ -356,8 +360,8 @@ public class DocumentTest {
         Mockito.when(searchServiceApi.validateRequest(Mockito.any(HttpHeaders.class),
                 Mockito.any(HttpServletRequest.class), Mockito.any(ApiUtils.Action.class), Mockito.anyString()))
                 .thenThrow(IllegalArgumentException.class);
-        ResponseEntity<String>response = documentApi.processDelete(content, request, headers, httpResponse, "index","id-1",
-                documentStore);
+        ResponseEntity<String> response =
+                documentApi.processDelete(content, request, headers, httpResponse, "index", "id-1", documentStore);
         Assert.assertNotNull(response);
         Assert.assertTrue(HttpStatus.FORBIDDEN.value() == response.getStatusCodeValue());
     }
@@ -376,8 +380,8 @@ public class DocumentTest {
         Mockito.when(searchServiceApi.validateRequest(Mockito.any(HttpHeaders.class),
                 Mockito.any(HttpServletRequest.class), Mockito.any(ApiUtils.Action.class), Mockito.anyString()))
                 .thenReturn(false);
-        ResponseEntity<String>response = documentApi.processDelete(content, request, headers, httpResponse, "index","id-1",
-                documentStore);
+        ResponseEntity<String> response =
+                documentApi.processDelete(content, request, headers, httpResponse, "index", "id-1", documentStore);
         Assert.assertNotNull(response);
         Assert.assertTrue(HttpStatus.FORBIDDEN.value() == response.getStatusCodeValue());
     }
@@ -403,8 +407,8 @@ public class DocumentTest {
                 .thenReturn(true);
         Mockito.when(documentStore.deleteDocument(Mockito.anyString(), Mockito.any(DocumentStoreDataEntity.class)))
                 .thenReturn(result);
-        ResponseEntity<String>response = documentApi.processDelete(content, request, headers, httpResponse, "index","id-1",
-                documentStore);
+        ResponseEntity<String> response =
+                documentApi.processDelete(content, request, headers, httpResponse, "index", "id-1", documentStore);
         Assert.assertNotNull(response);
         Assert.assertTrue(HttpStatus.FOUND.value() == response.getStatusCodeValue());
     }
@@ -423,8 +427,8 @@ public class DocumentTest {
         Mockito.when(searchServiceApi.validateRequest(Mockito.any(HttpHeaders.class),
                 Mockito.any(HttpServletRequest.class), Mockito.any(ApiUtils.Action.class), Mockito.anyString()))
                 .thenThrow(IllegalArgumentException.class);
-        ResponseEntity<String>response = documentApi.processGet(content, request, headers, httpResponse, "index","id-1",
-                documentStore);
+        ResponseEntity<String> response =
+                documentApi.processGet(content, request, headers, httpResponse, "index", "id-1", documentStore);
         Assert.assertNotNull(response);
         Assert.assertTrue(HttpStatus.FORBIDDEN.value() == response.getStatusCodeValue());
     }
@@ -443,8 +447,8 @@ public class DocumentTest {
         Mockito.when(searchServiceApi.validateRequest(Mockito.any(HttpHeaders.class),
                 Mockito.any(HttpServletRequest.class), Mockito.any(ApiUtils.Action.class), Mockito.anyString()))
                 .thenReturn(false);
-        ResponseEntity<String>response = documentApi.processGet(content, request, headers, httpResponse, "index","id-1",
-                documentStore);
+        ResponseEntity<String> response =
+                documentApi.processGet(content, request, headers, httpResponse, "index", "id-1", documentStore);
         Assert.assertNotNull(response);
         Assert.assertTrue(HttpStatus.FORBIDDEN.value() == response.getStatusCodeValue());
     }
@@ -469,14 +473,14 @@ public class DocumentTest {
                 .thenReturn(true);
         Mockito.when(documentStore.getDocument(Mockito.anyString(), Mockito.any(DocumentStoreDataEntity.class)))
                 .thenReturn(result);
-        ResponseEntity<String>response = documentApi.processGet(content, request, headers, httpResponse, "index","id-1",
-                documentStore);
+        ResponseEntity<String> response =
+                documentApi.processGet(content, request, headers, httpResponse, "index", "id-1", documentStore);
         Assert.assertNotNull(response);
         Assert.assertTrue(HttpStatus.FOUND.value() == response.getStatusCodeValue());
     }
 
     @Test
-    public void testQueryWithGetWithPayload_NullContent(){
+    public void testQueryWithGetWithPayload_NullContent() {
         String transactionId = "transactionId-1";
         String remoteAddr = "http://127.0.0.1";
         String content = null;
@@ -486,8 +490,8 @@ public class DocumentTest {
         Mockito.when(request.getMethod()).thenReturn("testMethod");
         Mockito.when(request.getRequestURL()).thenReturn(new StringBuffer("http://127.0.0.1"));
         Mockito.when(request.getRemoteHost()).thenReturn("localhost");
-        ResponseEntity<String>response = documentApi.queryWithGetWithPayload(content, request, headers, "index-1",
-                documentStore);
+        ResponseEntity<String> response =
+                documentApi.queryWithGetWithPayload(content, request, headers, "index-1", documentStore);
         Assert.assertNotNull(response);
         Assert.assertTrue(HttpStatus.BAD_REQUEST.value() == response.getStatusCodeValue());
     }
@@ -506,8 +510,8 @@ public class DocumentTest {
         Mockito.when(searchServiceApi.validateRequest(Mockito.any(HttpHeaders.class),
                 Mockito.any(HttpServletRequest.class), Mockito.any(ApiUtils.Action.class), Mockito.anyString()))
                 .thenThrow(IllegalArgumentException.class);
-        ResponseEntity<String>response = documentApi.queryWithGetWithPayload(content, request, headers, "index-1",
-                documentStore);
+        ResponseEntity<String> response =
+                documentApi.queryWithGetWithPayload(content, request, headers, "index-1", documentStore);
         Assert.assertNotNull(response);
         Assert.assertTrue(HttpStatus.FORBIDDEN.value() == response.getStatusCodeValue());
     }
@@ -526,8 +530,8 @@ public class DocumentTest {
         Mockito.when(searchServiceApi.validateRequest(Mockito.any(HttpHeaders.class),
                 Mockito.any(HttpServletRequest.class), Mockito.any(ApiUtils.Action.class), Mockito.anyString()))
                 .thenReturn(false);
-        ResponseEntity<String>response = documentApi.queryWithGetWithPayload(content, request, headers, "index-1",
-                documentStore);
+        ResponseEntity<String> response =
+                documentApi.queryWithGetWithPayload(content, request, headers, "index-1", documentStore);
         Assert.assertNotNull(response);
         Assert.assertTrue(HttpStatus.FORBIDDEN.value() == response.getStatusCodeValue());
     }
@@ -545,8 +549,8 @@ public class DocumentTest {
         Mockito.when(searchServiceApi.validateRequest(Mockito.any(HttpHeaders.class),
                 Mockito.any(HttpServletRequest.class), Mockito.any(ApiUtils.Action.class), Mockito.anyString()))
                 .thenReturn(false);
-        ResponseEntity<String>response = indexApi.processCreateIndex("document-1", request, headers, "index-1",
-                documentStore);
+        ResponseEntity<String> response =
+                indexApi.processCreateIndex("document-1", request, headers, "index-1", documentStore);
         Assert.assertNotNull(response);
         Assert.assertTrue(HttpStatus.FORBIDDEN.value() == response.getStatusCodeValue());
     }
@@ -564,8 +568,8 @@ public class DocumentTest {
         Mockito.when(searchServiceApi.validateRequest(Mockito.any(HttpHeaders.class),
                 Mockito.any(HttpServletRequest.class), Mockito.any(ApiUtils.Action.class), Mockito.anyString()))
                 .thenThrow(IllegalArgumentException.class);
-        ResponseEntity<String>response = indexApi.processCreateIndex("document-1", request, headers, "index-1",
-                documentStore);
+        ResponseEntity<String> response =
+                indexApi.processCreateIndex("document-1", request, headers, "index-1", documentStore);
         Assert.assertNotNull(response);
         Assert.assertTrue(HttpStatus.FORBIDDEN.value() == response.getStatusCodeValue());
     }
@@ -574,7 +578,7 @@ public class DocumentTest {
     public void testCreateProcessIndex_IndexApi_NullDocument() throws Exception {
         String transactionId = "transactionId-1";
         String remoteAddr = "http://127.0.0.1";
-        String documentSchema= null;
+        String documentSchema = null;
         // Mockito.when(headers.getRequestHeaders()).thenReturn(multivaluedMap);;
         Mockito.when(multivaluedMap.getFirst(Mockito.anyString())).thenReturn(transactionId);
         Mockito.when(request.getRemoteAddr()).thenReturn(remoteAddr);
@@ -584,8 +588,8 @@ public class DocumentTest {
         Mockito.when(searchServiceApi.validateRequest(Mockito.any(HttpHeaders.class),
                 Mockito.any(HttpServletRequest.class), Mockito.any(ApiUtils.Action.class), Mockito.anyString()))
                 .thenReturn(true);
-        ResponseEntity<String>response = indexApi.processCreateIndex(documentSchema, request, headers, "index-1",
-                documentStore);
+        ResponseEntity<String> response =
+                indexApi.processCreateIndex(documentSchema, request, headers, "index-1", documentStore);
         Assert.assertNotNull(response);
         Assert.assertTrue(HttpStatus.INTERNAL_SERVER_ERROR.value() == response.getStatusCodeValue());
     }
@@ -603,7 +607,7 @@ public class DocumentTest {
         Mockito.when(searchServiceApi.validateRequest(Mockito.any(HttpHeaders.class),
                 Mockito.any(HttpServletRequest.class), Mockito.any(ApiUtils.Action.class), Mockito.anyString()))
                 .thenReturn(false);
-        ResponseEntity<String>response = indexApi.processDelete("document-1", request, headers, documentStore);
+        ResponseEntity<String> response = indexApi.processDelete("document-1", request, headers, documentStore);
         Assert.assertNotNull(response);
         Assert.assertTrue(HttpStatus.FORBIDDEN.value() == response.getStatusCodeValue());
     }
@@ -621,7 +625,7 @@ public class DocumentTest {
         Mockito.when(searchServiceApi.validateRequest(Mockito.any(HttpHeaders.class),
                 Mockito.any(HttpServletRequest.class), Mockito.any(ApiUtils.Action.class), Mockito.anyString()))
                 .thenThrow(IllegalArgumentException.class);
-        ResponseEntity<String>response = indexApi.processDelete("document-1", request, headers, documentStore);
+        ResponseEntity<String> response = indexApi.processDelete("document-1", request, headers, documentStore);
         Assert.assertNotNull(response);
         Assert.assertTrue(HttpStatus.FORBIDDEN.value() == response.getStatusCodeValue());
     }
@@ -640,7 +644,7 @@ public class DocumentTest {
                 Mockito.any(HttpServletRequest.class), Mockito.any(ApiUtils.Action.class), Mockito.anyString()))
                 .thenReturn(true);
         Mockito.when(documentStore.deleteIndex(Mockito.anyString())).thenThrow(DocumentStoreOperationException.class);
-        ResponseEntity<String>response = indexApi.processDelete("document-1", request, headers, documentStore);
+        ResponseEntity<String> response = indexApi.processDelete("document-1", request, headers, documentStore);
         Assert.assertNotNull(response);
         Assert.assertTrue(HttpStatus.INTERNAL_SERVER_ERROR.value() == response.getStatusCodeValue());
     }

@@ -22,36 +22,38 @@ package org.onap.aai.sa.searchdbabstraction.entity;
 
 public class SearchOperationResult extends OperationResult {
 
-  private SearchHits searchResult;
-  private AggregationResults aggregationResult;
-  private SuggestHits suggestResult;
+    private SearchHits searchResult;
+    private AggregationResults aggregationResult;
+    private SuggestHits suggestResult;
 
-  public SearchHits getSearchResult() {
-    return searchResult;
-  }
+    public SearchHits getSearchResult() {
+        return searchResult;
+    }
 
-  public SuggestHits getSuggestResult() {
-    return suggestResult;
-  }
+    public SuggestHits getSuggestResult() {
+        return suggestResult;
+    }
 
-  public AggregationResults getAggregationResult() {
-    return aggregationResult;
-  }
+    public AggregationResults getAggregationResult() {
+        return aggregationResult;
+    }
 
-  public void setAggregationResult(AggregationResults aggregations) {
-    this.aggregationResult = aggregations;
-  }
+    public void setAggregationResult(AggregationResults aggregations) {
+        this.aggregationResult = aggregations;
+    }
 
-  public void setSearchResult(SearchHits hits) {
-    this.searchResult = hits;
-  }
+    public void setSearchResult(SearchHits hits) {
+        this.searchResult = hits;
+    }
 
-  public void setSuggestResult(SuggestHits hits) { this.suggestResult = hits; }
+    public void setSuggestResult(SuggestHits hits) {
+        this.suggestResult = hits;
+    }
 
-  @Override
-  public String toString() {
-    return "SearchOperationResult [searchResult=" + searchResult
-        + ", aggregationResult=" + aggregationResult + ", suggestResult=" + suggestResult;
-  }
+    @Override
+    public String toString() {
+        return "SearchOperationResult [searchResult=" + searchResult + ", aggregationResult=" + aggregationResult
+                + ", suggestResult=" + suggestResult;
+    }
 
 }

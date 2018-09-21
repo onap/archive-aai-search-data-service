@@ -23,19 +23,19 @@ package org.onap.aai.sa.searchdbabstraction.entity;
 import java.util.Arrays;
 
 public class AggregationResults {
-  private AggregationResult[] aggregations;
+    private AggregationResult[] aggregations;
 
-  public AggregationResult[] getAggregations() {
-    return aggregations;
-  }
+    public AggregationResult[] getAggregations() {
+        return aggregations;
+    }
 
-  public void setAggregations(AggregationResult[] aggregations) {
-    this.aggregations = aggregations;
-  }
+    public void setAggregations(AggregationResult[] aggregations) {
+        this.aggregations = aggregations;
+    }
 
-  @Override
-  public String toString() {
-    return "AggregationResults [aggregations=" + Arrays.toString(aggregations) + "]";
-  }
+    @Override
+    public String toString() {
+        return "AggregationResults [aggregations=" + Arrays.toString(aggregations) + "]";
+    }
 
 }

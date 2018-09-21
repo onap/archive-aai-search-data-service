@@ -22,10 +22,10 @@ package org.onap.aai.sa.searchdbabstraction.elasticsearch.dao;
 
 public interface DocumentStoreDataEntity {
 
-  public String getId();
+    public String getId();
 
-  public String getContentInJson();
+    public String getContentInJson();
 
-  public String getVersion();
+    public String getVersion();
 
 }

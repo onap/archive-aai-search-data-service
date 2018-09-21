@@ -22,57 +22,57 @@ package org.onap.aai.sa.searchdbabstraction.entity;
 
 public class OperationResult {
 
-  private int resultCode;
+    private int resultCode;
 
-  private String failureCause;
-  private String resultVersion;
-  private String result;
-  private ErrorResult error;
+    private String failureCause;
+    private String resultVersion;
+    private String result;
+    private ErrorResult error;
 
-  public int getResultCode() {
-    return resultCode;
-  }
+    public int getResultCode() {
+        return resultCode;
+    }
 
-  public void setResultCode(int resultCode) {
-    this.resultCode = resultCode;
-  }
+    public void setResultCode(int resultCode) {
+        this.resultCode = resultCode;
+    }
 
-  public String getFailureCause() {
-    return failureCause;
-  }
+    public String getFailureCause() {
+        return failureCause;
+    }
 
-  public void setFailureCause(String failureCause) {
-    this.failureCause = failureCause;
-  }
+    public void setFailureCause(String failureCause) {
+        this.failureCause = failureCause;
+    }
 
-  public String getResultVersion() {
-    return resultVersion;
-  }
+    public String getResultVersion() {
+        return resultVersion;
+    }
 
-  public void setResultVersion(String resultVersion) {
-    this.resultVersion = resultVersion;
-  }
+    public void setResultVersion(String resultVersion) {
+        this.resultVersion = resultVersion;
+    }
 
-  public String getResult() {
-    return result;
-  }
+    public String getResult() {
+        return result;
+    }
 
-  public void setResult(String result) {
-    this.result = result;
-  }
+    public void setResult(String result) {
+        this.result = result;
+    }
 
-  public ErrorResult getError() {
-    return error;
-  }
+    public ErrorResult getError() {
+        return error;
+    }
 
-  public void setError(ErrorResult error) {
-    this.error = error;
-  }
+    public void setError(ErrorResult error) {
+        this.error = error;
+    }
 
-  @Override
-  public String toString() {
-    return "OperationResult [resultCode=" + resultCode + ", failureCause=" + failureCause
-        + ", resultVersion=" + resultVersion + ", result=" + result + ", error=" + error + "]";
-  }
+    @Override
+    public String toString() {
+        return "OperationResult [resultCode=" + resultCode + ", failureCause=" + failureCause + ", resultVersion="
+                + resultVersion + ", result=" + result + ", error=" + error + "]";
+    }
 
 }

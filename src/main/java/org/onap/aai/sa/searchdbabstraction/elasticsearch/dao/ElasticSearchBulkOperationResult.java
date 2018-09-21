@@ -24,43 +24,43 @@ import java.util.Arrays;
 
 public class ElasticSearchBulkOperationResult {
 
-  private Integer took;
-  private Boolean errors;
-  private ElasticSearchResultItem[] items;
+    private Integer took;
+    private Boolean errors;
+    private ElasticSearchResultItem[] items;
 
-  public ElasticSearchBulkOperationResult() {
+    public ElasticSearchBulkOperationResult() {
 
-  }
+    }
 
-  public ElasticSearchResultItem[] getItems() {
-    return items;
-  }
+    public ElasticSearchResultItem[] getItems() {
+        return items;
+    }
 
-  public void setItems(ElasticSearchResultItem[] items) {
-    this.items = items;
-  }
+    public void setItems(ElasticSearchResultItem[] items) {
+        this.items = items;
+    }
 
-  public Integer getTook() {
-    return took;
-  }
+    public Integer getTook() {
+        return took;
+    }
 
-  public void setTook(Integer took) {
-    this.took = took;
-  }
+    public void setTook(Integer took) {
+        this.took = took;
+    }
 
-  public Boolean getErrors() {
-    return errors;
-  }
+    public Boolean getErrors() {
+        return errors;
+    }
 
-  public void setErrors(Boolean errors) {
-    this.errors = errors;
-  }
+    public void setErrors(Boolean errors) {
+        this.errors = errors;
+    }
 
-  @Override
-  public String toString() {
-    return "ElasticSearchOperationResult [took=" + took + ", errors="
-        + errors + ", items=" + Arrays.toString(items) + "]";
-  }
+    @Override
+    public String toString() {
+        return "ElasticSearchOperationResult [took=" + took + ", errors=" + errors + ", items=" + Arrays.toString(items)
+                + "]";
+    }
 
 
 }

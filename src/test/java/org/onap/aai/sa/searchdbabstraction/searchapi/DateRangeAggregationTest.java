@@ -28,40 +28,42 @@ import org.junit.Test;
 
 public class DateRangeAggregationTest {
 
-  private static ObjectMapper mapper = new ObjectMapper();
+    private static ObjectMapper mapper = new ObjectMapper();
 
 
-  @Test
-  public void test() {
+    @Test
+    public void test() {
 
-    String input =
-        "{\r\n    \"field\": \"mydate\",\r\n    \"ranges\": [\r\n      {\r\n        \"from\": \"2016-12-19T00:00:00.738-05:00\",\r\n        \"to\": \"2016-12-23T23:59:59.738-05:00\"\r\n      },\r\n      {\r\n        \"to\": \"2016-12-23T23:59:59.738-05:00\"\r\n      },\r\n      {\r\n        \"from\": \"2016-12-19T00:00:00.738-05:00\"\r\n      }\r\n    ],\r\n    \"format\": \"MM-yyy\",\r\n    \"size\": \"5\"\r\n}";
-    String expected = "\"date_range\": {\"field\": \"mydate\", \"format\": \"MM-yyy\", \"ranges\": [{\"from\": \"2016-12-19T00:00:00.738-05:00\", \"to\": \"2016-12-23T23:59:59.738-05:00\"},{\"to\": \"2016-12-23T23:59:59.738-05:00\"},{\"from\": \"2016-12-19T00:00:00.738-05:00\"}], \"size\": 5}";
+        String input =
+                "{\r\n    \"field\": \"mydate\",\r\n    \"ranges\": [\r\n      {\r\n        \"from\": \"2016-12-19T00:00:00.738-05:00\",\r\n        \"to\": \"2016-12-23T23:59:59.738-05:00\"\r\n      },\r\n      {\r\n        \"to\": \"2016-12-23T23:59:59.738-05:00\"\r\n      },\r\n      {\r\n        \"from\": \"2016-12-19T00:00:00.738-05:00\"\r\n      }\r\n    ],\r\n    \"format\": \"MM-yyy\",\r\n    \"size\": \"5\"\r\n}";
+        String expected =
+                "\"date_range\": {\"field\": \"mydate\", \"format\": \"MM-yyy\", \"ranges\": [{\"from\": \"2016-12-19T00:00:00.738-05:00\", \"to\": \"2016-12-23T23:59:59.738-05:00\"},{\"to\": \"2016-12-23T23:59:59.738-05:00\"},{\"from\": \"2016-12-19T00:00:00.738-05:00\"}], \"size\": 5}";
 
-    DateRangeAggregation actual;
-    try {
-      actual = mapper.readValue(input, DateRangeAggregation.class);
-      assertEquals(expected, actual.toElasticSearch());
-    } catch (Exception e) {
-      fail("Exception occurred: " + e.getMessage());
+        DateRangeAggregation actual;
+        try {
+            actual = mapper.readValue(input, DateRangeAggregation.class);
+            assertEquals(expected, actual.toElasticSearch());
+        } catch (Exception e) {
+            fail("Exception occurred: " + e.getMessage());
+        }
     }
-  }
 
-  @Test
-  public void testNoFormatNoSize() {
+    @Test
+    public void testNoFormatNoSize() {
 
-    String input =
-        "{\r\n    \"field\": \"mydate\",\r\n    \"ranges\": [\r\n      {\r\n        \"from\": \"2016-12-19T00:00:00.738-05:00\",\r\n        \"to\": \"2016-12-23T23:59:59.738-05:00\"\r\n      },\r\n      {\r\n        \"to\": \"2016-12-23T23:59:59.738-05:00\"\r\n      },\r\n      {\r\n        \"from\": \"2016-12-19T00:00:00.738-05:00\"\r\n      }\r\n    ]\r\n}";
-    String expected = "\"date_range\": {\"field\": \"mydate\", \"ranges\": [{\"from\": \"2016-12-19T00:00:00.738-05:00\", \"to\": \"2016-12-23T23:59:59.738-05:00\"},{\"to\": \"2016-12-23T23:59:59.738-05:00\"},{\"from\": \"2016-12-19T00:00:00.738-05:00\"}]}";
+        String input =
+                "{\r\n    \"field\": \"mydate\",\r\n    \"ranges\": [\r\n      {\r\n        \"from\": \"2016-12-19T00:00:00.738-05:00\",\r\n        \"to\": \"2016-12-23T23:59:59.738-05:00\"\r\n      },\r\n      {\r\n        \"to\": \"2016-12-23T23:59:59.738-05:00\"\r\n      },\r\n      {\r\n        \"from\": \"2016-12-19T00:00:00.738-05:00\"\r\n      }\r\n    ]\r\n}";
+        String expected =
+                "\"date_range\": {\"field\": \"mydate\", \"ranges\": [{\"from\": \"2016-12-19T00:00:00.738-05:00\", \"to\": \"2016-12-23T23:59:59.738-05:00\"},{\"to\": \"2016-12-23T23:59:59.738-05:00\"},{\"from\": \"2016-12-19T00:00:00.738-05:00\"}]}";
 
-    DateRangeAggregation actual;
-    try {
-      actual = mapper.readValue(input, DateRangeAggregation.class);
-      assertEquals(expected, actual.toElasticSearch());
-    } catch (Exception e) {
-      fail("Exception occurred: " + e.getMessage());
+        DateRangeAggregation actual;
+        try {
+            actual = mapper.readValue(input, DateRangeAggregation.class);
+            assertEquals(expected, actual.toElasticSearch());
+        } catch (Exception e) {
+            fail("Exception occurred: " + e.getMessage());
+        }
     }
-  }
 
 
 }

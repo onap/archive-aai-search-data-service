@@ -29,35 +29,34 @@ import java.io.IOException;
 
 public class TestUtils {
 
-  /**
-   * This helper method reads the contents of a file into a
-   * simple string.
-   *
-   * @param aFile - The file to be imported.
-   *
-   * @return - The file contents expressed as a simple string.
-   *
-   * @throws IOException
-   */
-  public static String readFileToString(File aFile) throws IOException {
+    /**
+     * This helper method reads the contents of a file into a simple string.
+     *
+     * @param aFile - The file to be imported.
+     *
+     * @return - The file contents expressed as a simple string.
+     *
+     * @throws IOException
+     */
+    public static String readFileToString(File aFile) throws IOException {
 
-    BufferedReader br = new BufferedReader(new FileReader(aFile));
-    try {
-      StringBuilder sb = new StringBuilder();
-      String line = br.readLine();
+        BufferedReader br = new BufferedReader(new FileReader(aFile));
+        try {
+            StringBuilder sb = new StringBuilder();
+            String line = br.readLine();
 
-      while (line != null) {
-        sb.append(line);
-        line = br.readLine();
-      }
+            while (line != null) {
+                sb.append(line);
+                line = br.readLine();
+            }
 
-      return sb.toString().replaceAll("\\s+", "");
-    } finally {
-      try {
-        br.close();
-      } catch (IOException e) {
-        fail("Unexpected IOException: " + e.getMessage());
-      }
+            return sb.toString().replaceAll("\\s+", "");
+        } finally {
+            try {
+                br.close();
+            } catch (IOException e) {
+                fail("Unexpected IOException: " + e.getMessage());
+            }
+        }
     }
-  }
 }

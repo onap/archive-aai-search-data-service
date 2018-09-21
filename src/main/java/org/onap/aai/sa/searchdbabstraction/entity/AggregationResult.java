@@ -24,52 +24,51 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Arrays;
 
 public class AggregationResult {
-  private String name;
+    private String name;
 
-  private Number count;
+    private Number count;
 
-  private AggregationBucket[] buckets;
+    private AggregationBucket[] buckets;
 
-  @JsonProperty("nested-aggregations")
-  private AggregationResult[] nestedAggregations;
+    @JsonProperty("nested-aggregations")
+    private AggregationResult[] nestedAggregations;
 
-  public String getName() {
-    return name;
-  }
+    public String getName() {
+        return name;
+    }
 
-  public void setName(String name) {
-    this.name = name;
-  }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-  public AggregationBucket[] getBuckets() {
-    return buckets;
-  }
+    public AggregationBucket[] getBuckets() {
+        return buckets;
+    }
 
-  public void setBuckets(AggregationBucket[] buckets) {
-    this.buckets = buckets;
-  }
+    public void setBuckets(AggregationBucket[] buckets) {
+        this.buckets = buckets;
+    }
 
-  public AggregationResult[] getNestedAggregations() {
-    return nestedAggregations;
-  }
+    public AggregationResult[] getNestedAggregations() {
+        return nestedAggregations;
+    }
 
-  public void setNestedAggregations(AggregationResult[] nestedAggregations) {
-    this.nestedAggregations = nestedAggregations;
-  }
+    public void setNestedAggregations(AggregationResult[] nestedAggregations) {
+        this.nestedAggregations = nestedAggregations;
+    }
 
-  public Number getCount() {
-    return count;
-  }
+    public Number getCount() {
+        return count;
+    }
 
-  public void setCount(Number count) {
-    this.count = count;
-  }
+    public void setCount(Number count) {
+        this.count = count;
+    }
 
-  @Override
-  public String toString() {
-    return "AggregationResult [name=" + name + ", count=" + count + ", buckets="
-        + Arrays.toString(buckets) + ", nestedAggregations=" + Arrays.toString(nestedAggregations)
-        + "]";
-  }
+    @Override
+    public String toString() {
+        return "AggregationResult [name=" + name + ", count=" + count + ", buckets=" + Arrays.toString(buckets)
+                + ", nestedAggregations=" + Arrays.toString(nestedAggregations) + "]";
+    }
 
 }

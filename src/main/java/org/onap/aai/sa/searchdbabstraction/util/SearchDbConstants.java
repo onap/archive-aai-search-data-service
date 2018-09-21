@@ -21,37 +21,32 @@
 package org.onap.aai.sa.searchdbabstraction.util;
 
 public class SearchDbConstants {
-  public static final String SDB_FILESEP = (System.getProperty("file.separator") == null) ? "/"
-    : System.getProperty("file.separator");
-  public static final String SDB_BUNDLECONFIG_NAME =
-    (System.getProperty("BUNDLECONFIG_DIR") == null)
-    ? "bundleconfig" : System.getProperty("BUNDLECONFIG_DIR");
-//
-  public static final String SDB_HOME_BUNDLECONFIG = (System.getProperty("AJSC_HOME") == null)
-    ? SDB_FILESEP + "opt" + SDB_FILESEP + "app" + SDB_FILESEP + "searchdb"
-    + SDB_FILESEP + SDB_BUNDLECONFIG_NAME
-    : System.getProperty("AJSC_HOME") + SDB_FILESEP + SDB_BUNDLECONFIG_NAME;
-//
-  public static final String SDB_HOME_ETC =
-    SDB_HOME_BUNDLECONFIG + SDB_FILESEP + "etc" + SDB_FILESEP;
-  public static final String SDB_CONFIG_APP_LOCATION = SDB_HOME_ETC + "appprops" + SDB_FILESEP;
+    public static final String SDB_FILESEP =
+            (System.getProperty("file.separator") == null) ? "/" : System.getProperty("file.separator");
+    public static final String SDB_BUNDLECONFIG_NAME =
+            (System.getProperty("BUNDLECONFIG_DIR") == null) ? "bundleconfig" : System.getProperty("BUNDLECONFIG_DIR");
+    //
+    public static final String SDB_HOME_BUNDLECONFIG = (System.getProperty("AJSC_HOME") == null)
+            ? SDB_FILESEP + "opt" + SDB_FILESEP + "app" + SDB_FILESEP + "searchdb" + SDB_FILESEP + SDB_BUNDLECONFIG_NAME
+            : System.getProperty("AJSC_HOME") + SDB_FILESEP + SDB_BUNDLECONFIG_NAME;
+    //
+    public static final String SDB_HOME_ETC = SDB_HOME_BUNDLECONFIG + SDB_FILESEP + "etc" + SDB_FILESEP;
+    public static final String SDB_CONFIG_APP_LOCATION = SDB_HOME_ETC + "appprops" + SDB_FILESEP;
 
-  // Elastic Search related
-  public static final String SDB_SPECIFIC_CONFIG = (System.getProperty("CONFIG_HOME") == null)
-    ? SDB_CONFIG_APP_LOCATION : System.getProperty("CONFIG_HOME") + SDB_FILESEP;
-  public static final String ES_CONFIG_FILE = SDB_SPECIFIC_CONFIG + SDB_FILESEP
-    + "elastic-search.properties";
-  public static final String SDB_AUTH = SDB_SPECIFIC_CONFIG + "auth" + SDB_FILESEP;
-  public static final String SDB_AUTH_CONFIG_FILENAME = SDB_AUTH + "search_policy.json";
-  public static final String SDB_FILTER_CONFIG_FILE = SDB_SPECIFIC_CONFIG + "filter-config.json";
-  public static final String SDB_ANALYSIS_CONFIG_FILE =
-    SDB_SPECIFIC_CONFIG + "analysis-config.json";
+    // Elastic Search related
+    public static final String SDB_SPECIFIC_CONFIG = (System.getProperty("CONFIG_HOME") == null)
+            ? SDB_CONFIG_APP_LOCATION : System.getProperty("CONFIG_HOME") + SDB_FILESEP;
+    public static final String ES_CONFIG_FILE = SDB_SPECIFIC_CONFIG + SDB_FILESEP + "elastic-search.properties";
+    public static final String SDB_AUTH = SDB_SPECIFIC_CONFIG + "auth" + SDB_FILESEP;
+    public static final String SDB_AUTH_CONFIG_FILENAME = SDB_AUTH + "search_policy.json";
+    public static final String SDB_FILTER_CONFIG_FILE = SDB_SPECIFIC_CONFIG + "filter-config.json";
+    public static final String SDB_ANALYSIS_CONFIG_FILE = SDB_SPECIFIC_CONFIG + "analysis-config.json";
 
-//  public static final String SDB_HOME_SEARCHCONFIG = (System.getProperty("app.config") == null)
-//          ?  System.getProperty("user.dir") + SDB_FILESEP + "config" + SDB_FILESEP + "searchdb"
-//          + SDB_FILESEP + "elastic-search.properties"
-//          : System.getProperty("app.config") + SDB_FILESEP + "searchdb" + SDB_FILESEP + "elastic-search.properties";
+    // public static final String SDB_HOME_SEARCHCONFIG = (System.getProperty("app.config") == null)
+    // ? System.getProperty("user.dir") + SDB_FILESEP + "config" + SDB_FILESEP + "searchdb"
+    // + SDB_FILESEP + "elastic-search.properties"
+    // : System.getProperty("app.config") + SDB_FILESEP + "searchdb" + SDB_FILESEP + "elastic-search.properties";
 
-  // Logging related
-  public static final String SDB_SERVICE_NAME = "SearchDataService";
+    // Logging related
+    public static final String SDB_SERVICE_NAME = "SearchDataService";
 }

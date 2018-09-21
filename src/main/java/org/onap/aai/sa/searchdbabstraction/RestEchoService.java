@@ -35,15 +35,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/services/search-data-service/v1")
 public class RestEchoService {
 
-  /**
-   * REST endpoint for a simple echo service.
-   *
-   * @param input - The value to be echoed back.
-   * @return - The input value.
-   */
-  @RequestMapping(value = "/echo/{input}", method = {RequestMethod.GET})
-  public String ping(@PathVariable("input") String input) {
-    return "[Search Database Abstraction Micro Service] - Echo Service: " + input + ".";
-  }
+    /**
+     * REST endpoint for a simple echo service.
+     *
+     * @param input - The value to be echoed back.
+     * @return - The input value.
+     */
+    @RequestMapping(value = "/echo/{input}", method = {RequestMethod.GET})
+    public String ping(@PathVariable("input") String input) {
+        return "[Search Database Abstraction Micro Service] - Echo Service: " + input + ".";
+    }
 
 }
