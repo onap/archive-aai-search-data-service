@@ -49,10 +49,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.Status.Family;
+import javax.ws.rs.core.UriBuilder;
 import org.eclipse.jetty.http.HttpStatus;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -71,6 +74,7 @@ import org.onap.aai.sa.rest.BulkRequest.OperationType;
 import org.onap.aai.sa.rest.DocumentSchema;
 import org.onap.aai.sa.searchdbabstraction.elasticsearch.config.ElasticSearchConfig;
 import org.onap.aai.sa.searchdbabstraction.elasticsearch.exception.DocumentStoreOperationException;
+import org.onap.aai.sa.searchdbabstraction.elasticsearch.exception.DocumentStoreOperationException.ErrorMessage;
 import org.onap.aai.sa.searchdbabstraction.entity.AggregationResult;
 import org.onap.aai.sa.searchdbabstraction.entity.AggregationResults;
 import org.onap.aai.sa.searchdbabstraction.entity.Document;
@@ -102,20 +106,18 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
     private static final Logger metricsLogger =
             LoggerFactory.getInstance().getMetricsLogger(ElasticSearchHttpController.class.getName());
 
+    private static final String URL_QUERY_VERSION = "version=";
+
     private static final String JSON_ATTR_VERSION = "_version";
     private static final String JSON_ATTR_ERROR = "error";
     private static final String JSON_ATTR_REASON = "reason";
 
     private static final String DEFAULT_TYPE = "default";
-    private static final String QUERY_PARAM_VERSION = "?version=";
 
     private static final String MSG_RESOURCE_MISSING = "Specified resource does not exist: ";
     private static final String MSG_RESPONSE_CODE = "Response Code : ";
     private static final String MSG_INVALID_DOCUMENT_URL = "Invalid document URL: ";
-    private static final String MSG_HTTP_PUT_FAILED = "Failed to set HTTP request method to PUT.";
-    private static final String MSG_HTTP_POST_FAILED = "Failed to set HTTP request method to POST.";
-    private static final String FAILED_TO_GET_THE_RESPONSE_CODE_FROM_THE_CONNECTION =
-            "Failed to get the response code from the connection.";
+
     private static final String FAILED_TO_PARSE_ELASTIC_SEARCH_RESPONSE = "Failed to parse Elastic Search response.";
 
     private static final String BULK_CREATE_WITHOUT_INDEX_TEMPLATE =
@@ -136,13 +138,14 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         this.config = config;
         analysisConfig = new AnalysisConfiguration();
 
+        String rootUrl = null;
         try {
-            logger.info(SearchDbMsgs.ELASTIC_SEARCH_CONNECTION_ATTEMPT, getFullUrl("", false));
+            rootUrl = buildUrl(createUriBuilder("")).toString();
+            logger.info(SearchDbMsgs.ELASTIC_SEARCH_CONNECTION_ATTEMPT, rootUrl);
             checkConnection();
-            logger.info(SearchDbMsgs.ELASTIC_SEARCH_CONNECTION_SUCCESS, getFullUrl("", false));
+            logger.info(SearchDbMsgs.ELASTIC_SEARCH_CONNECTION_SUCCESS, rootUrl);
         } catch (Exception e) {
-            logger.error(SearchDbMsgs.ELASTIC_SEARCH_CONNECTION_FAILURE, null, e, getFullUrl("", false),
-                    e.getMessage());
+            logger.error(SearchDbMsgs.ELASTIC_SEARCH_CONNECTION_FAILURE, null, e, rootUrl, e.getMessage());
         }
     }
 
@@ -191,7 +194,6 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
             return new OperationResultBuilder().useDefaults()
                     .failureCause("Document store operation failure.  Cause: " + e.getMessage()).build();
         }
-
     }
 
     @Override
@@ -216,21 +218,9 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
     @Override
     public OperationResult deleteIndex(String indexName) throws DocumentStoreOperationException {
-        // Grab the current time so we can use it to generate a metrics log.
         MdcOverride override = getStartTime(new MdcOverride());
 
-        String fullUrl = getFullUrl("/" + indexName + "/", false);
-        HttpURLConnection conn = initializeConnection(fullUrl);
-
-        logger.debug("\nSending 'DELETE' request to URL : " + conn.getURL());
-
-        try {
-            conn.setRequestMethod("DELETE");
-        } catch (ProtocolException e) {
-            shutdownConnection(conn);
-            throw new DocumentStoreOperationException("Failed to set HTTP request method to DELETE.", e);
-        }
-
+        HttpURLConnection conn = createConnection(buildUrl(createUriBuilder(indexName)), HttpMethod.DELETE);
         OperationResult opResult = handleResponse(conn);
         logMetricsInfo(override, SearchDbMsgs.DELETE_INDEX_TIME, opResult, indexName);
         shutdownConnection(conn);
@@ -249,18 +239,9 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
             logger.debug("No mappings provided.");
         }
 
-        // Grab the current time so we can use it to generate a metrics log.
         MdcOverride override = getStartTime(new MdcOverride());
 
-        String fullUrl = getFullUrl("/" + indexName + "/", false);
-        HttpURLConnection conn = initializeConnection(fullUrl);
-
-        try {
-            conn.setRequestMethod("PUT");
-        } catch (ProtocolException e) {
-            shutdownConnection(conn);
-            throw new DocumentStoreOperationException(MSG_HTTP_PUT_FAILED, e);
-        }
+        HttpURLConnection conn = createConnection(buildUrl(createUriBuilder(indexName)), HttpMethod.PUT);
 
         StringBuilder sb = new StringBuilder(128);
         sb.append("{ \"settings\" : ");
@@ -279,7 +260,6 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
             throw new DocumentStoreOperationException(e.getMessage(), e);
         }
 
-        logger.debug("\ncreateTable(), Sending 'PUT' request to URL : " + conn.getURL());
         logger.debug("Request content: " + sb);
 
         OperationResult opResult = handleResponse(conn);
@@ -300,19 +280,9 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
      */
     protected OperationResult createTable(String indexName, String settingsAndMappings)
             throws DocumentStoreOperationException {
-        // Grab the current time so we can use it to generate a metrics log.
         MdcOverride override = getStartTime(new MdcOverride());
 
-        String fullUrl = getFullUrl("/" + indexName + "/", false);
-        HttpURLConnection conn = initializeConnection(fullUrl);
-
-        try {
-            conn.setRequestMethod("PUT");
-        } catch (ProtocolException e) {
-            shutdownConnection(conn);
-            throw new DocumentStoreOperationException(MSG_HTTP_PUT_FAILED, e);
-        }
-
+        HttpURLConnection conn = createConnection(buildUrl(createUriBuilder(indexName)), HttpMethod.PUT);
         try {
             attachContent(conn, ElasticSearchPayloadTranslator.translateESPayload(settingsAndMappings));
         } catch (IOException e) {
@@ -353,7 +323,6 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
     @Override
     public DocumentOperationResult updateDocument(String indexName, DocumentStoreDataEntity document,
             boolean allowImplicitIndexCreation) throws DocumentStoreOperationException {
-
         if (!allowImplicitIndexCreation) {
             // Before we do anything, make sure that the specified index actually exists in the
             // document store - we don't want to rely on ElasticSearch to fail the document
@@ -370,23 +339,13 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
             }
         }
 
-        // Grab the current time so we can use it to generate a metrics log.
         MdcOverride override = getStartTime(new MdcOverride());
 
-        String fullUrl = getFullUrl("/" + indexName + "/" + DEFAULT_TYPE + "/" + document.getId() + QUERY_PARAM_VERSION
-                + document.getVersion(), false);
-        HttpURLConnection conn = initializeConnection(fullUrl);
+        final URL url = buildUrl(createUriBuilder(indexName, DEFAULT_TYPE, document.getId())
+                .replaceQuery(URL_QUERY_VERSION + document.getVersion()));
 
-        try {
-            conn.setRequestMethod("PUT");
-        } catch (ProtocolException e) {
-            shutdownConnection(conn);
-            throw new DocumentStoreOperationException(MSG_HTTP_PUT_FAILED, e);
-        }
-
+        HttpURLConnection conn = createConnection(url, HttpMethod.PUT);
         attachDocument(conn, document);
-
-        logger.debug("Sending 'PUT' request to: " + conn.getURL());
 
         DocumentOperationResult opResult = getOperationResult(conn);
         buildDocumentResult(opResult, indexName);
@@ -401,21 +360,12 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
     @Override
     public DocumentOperationResult deleteDocument(String indexName, DocumentStoreDataEntity document)
             throws DocumentStoreOperationException {
-        // Grab the current time so we can use it to generate a metrics log.
+        final URL url = buildUrl(createUriBuilder(indexName, DEFAULT_TYPE, document.getId())
+                .replaceQuery(URL_QUERY_VERSION + document.getVersion()));
+
         MdcOverride override = getStartTime(new MdcOverride());
 
-        String fullUrl = getFullUrl("/" + indexName + "/" + DEFAULT_TYPE + "/" + document.getId() + QUERY_PARAM_VERSION
-                + document.getVersion(), false);
-        HttpURLConnection conn = initializeConnection(fullUrl);
-
-        try {
-            conn.setRequestMethod("DELETE");
-        } catch (ProtocolException e) {
-            shutdownConnection(conn);
-            throw new DocumentStoreOperationException("Failed to set HTTP request method to DELETE.", e);
-        }
-
-        logger.debug("\nSending 'DELETE' request to " + conn.getURL());
+        HttpURLConnection conn = createConnection(url, HttpMethod.DELETE);
 
         DocumentOperationResult opResult = getOperationResult(conn);
         buildDocumentResult(opResult, indexName);
@@ -435,19 +385,13 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
     @Override
     public DocumentOperationResult getDocument(String indexName, DocumentStoreDataEntity document)
             throws DocumentStoreOperationException {
-        // Grab the current time so we can use it to generate a metrics log.
-        MdcOverride override = getStartTime(new MdcOverride());
-
-        String fullUrl = null;
-        if (document.getVersion() == null) {
-            fullUrl = getFullUrl("/" + indexName + "/" + DEFAULT_TYPE + "/" + document.getId(), false);
-        } else {
-            fullUrl = getFullUrl("/" + indexName + "/" + DEFAULT_TYPE + "/" + document.getId() + QUERY_PARAM_VERSION
-                    + document.getVersion(), false);
+        final UriBuilder uriBuilder = createUriBuilder(indexName, DEFAULT_TYPE, document.getId());
+        if (document.getVersion() != null) {
+            uriBuilder.replaceQuery(URL_QUERY_VERSION + document.getVersion());
         }
-        HttpURLConnection conn = initializeConnection(fullUrl);
 
-        logger.debug("\nSending 'GET' request to: " + conn.getURL());
+        MdcOverride override = getStartTime(new MdcOverride());
+        HttpURLConnection conn = createConnection(buildUrl(uriBuilder), "GET");
 
         DocumentOperationResult opResult = getOperationResult(conn);
         buildDocumentResult(opResult, indexName);
@@ -461,23 +405,11 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
     @Override
     public SearchOperationResult search(String indexName, String queryString) throws DocumentStoreOperationException {
+        final URL url = buildUrl(createUriBuilder(indexName, "_search").replaceQuery(queryString));
 
-        String fullUrl = getFullUrl("/" + indexName + "/_search" + "?" + queryString, false);
-
-        // Grab the current time so we can use it to generate a metrics log.
         MdcOverride override = getStartTime(new MdcOverride());
 
-        HttpURLConnection conn = initializeConnection(fullUrl);
-
-        try {
-            conn.setRequestMethod("GET");
-        } catch (ProtocolException e) {
-            shutdownConnection(conn);
-            throw new DocumentStoreOperationException("Failed to set HTTP request method to GET.", e);
-        }
-
-        logger.debug("\nsearch(), Sending 'GET' request to URL : " + conn.getURL());
-
+        HttpURLConnection conn = createConnection(url, "GET");
         SearchOperationResult opResult = getSearchOperationResult(conn);
         buildSearchResult(opResult, indexName);
 
@@ -492,24 +424,12 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         if (logger.isDebugEnabled()) {
             logger.debug("Querying index: " + indexName + " with query string: " + query);
         }
+        final URL url = buildUrl(createUriBuilder(indexName, "_search"));
 
-        String fullUrl = getFullUrl("/" + indexName + "/_search", false);
-
-        // Grab the current time so we can use it to generate a metrics log.
         MdcOverride override = getStartTime(new MdcOverride());
 
-        HttpURLConnection conn = initializeConnection(fullUrl);
-
-        try {
-            conn.setRequestMethod("POST");
-        } catch (ProtocolException e) {
-            shutdownConnection(conn);
-            throw new DocumentStoreOperationException(MSG_HTTP_POST_FAILED, e);
-        }
-
+        HttpURLConnection conn = createConnection(url, HttpMethod.POST);
         attachContent(conn, query);
-
-        logger.debug("\nsearch(), Sending 'POST' request to URL : " + conn.getURL());
         logger.debug("Request body =  Elasticsearch query = " + query);
 
         SearchOperationResult opResult = getSearchOperationResult(conn);
@@ -522,7 +442,6 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         return opResult;
     }
 
-
     @Override
     public SearchOperationResult suggestionQueryWithPayload(String indexName, String query)
             throws DocumentStoreOperationException {
@@ -530,23 +449,10 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
             logger.debug("Querying Suggestion index: " + indexName + " with query string: " + query);
         }
 
-        String fullUrl = getFullUrl("/" + indexName + "/_suggest", false);
-
-        // Grab the current time so we can use it to generate a metrics log.
         MdcOverride override = getStartTime(new MdcOverride());
-
-        HttpURLConnection conn = initializeConnection(fullUrl);
-
-        try {
-            conn.setRequestMethod("POST");
-        } catch (ProtocolException e) {
-            shutdownConnection(conn);
-            throw new DocumentStoreOperationException(MSG_HTTP_POST_FAILED, e);
-        }
-
+        HttpURLConnection conn = createConnection(buildUrl(createUriBuilder(indexName, "_suggest")), HttpMethod.POST);
         attachContent(conn, query);
 
-        logger.debug("\nsearch(), Sending 'POST' request to URL : " + conn.getURL());
         logger.debug("Request body =  Elasticsearch query = " + query);
 
         SearchOperationResult opResult = getSearchOperationResult(conn);
@@ -571,7 +477,6 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
             logger.debug(dbgString.toString());
         }
 
-        // Grab the current time so we can use it to generate a metrics log.
         MdcOverride override = getStartTime(new MdcOverride());
 
         // Parse the supplied set of operations.
@@ -590,16 +495,10 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
         ElasticSearchBulkOperationResult opResult = null;
         if (opCount > 0) {
-
-            // Open an HTTP connection to the ElasticSearch back end.
-            String fullUrl = getFullUrl("/_bulk", false);
-            URL url;
             HttpURLConnection conn;
             try {
-
-                url = new URL(fullUrl);
-                conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("PUT");
+                conn = (HttpURLConnection) buildUrl(createUriBuilder("_bulk")).openConnection();
+                conn.setRequestMethod(HttpMethod.PUT);
                 conn.setDoOutput(true);
                 conn.setRequestProperty(CONTENT_TYPE, APPLICATION_FORM_URLENCODED);
                 conn.setRequestProperty("Connection", "Close");
@@ -704,28 +603,15 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
      * @throws DocumentStoreOperationException
      */
     private OperationResult checkIndexExistence(String indexName) throws DocumentStoreOperationException {
-        // Grab the current time so we can use it to generate a metrics log.
         MdcOverride override = getStartTime(new MdcOverride());
 
-        String fullUrl = getFullUrl("/" + indexName, false);
-        HttpURLConnection conn = initializeConnection(fullUrl);
-
-        try {
-            conn.setRequestMethod("HEAD");
-
-        } catch (ProtocolException e) {
-            shutdownConnection(conn);
-            throw new DocumentStoreOperationException("Failed to set HTTP request method to HEAD.", e);
-        }
-
-        logger.debug("Sending 'HEAD' request to: " + conn.getURL());
-
+        HttpURLConnection conn = createConnection(buildUrl(createUriBuilder(indexName)), HttpMethod.HEAD);
         int resultCode;
         try {
             resultCode = conn.getResponseCode();
-        } catch (IOException e) {
+        } catch (IOException ex) {
             shutdownConnection(conn);
-            throw new DocumentStoreOperationException(FAILED_TO_GET_THE_RESPONSE_CODE_FROM_THE_CONNECTION, e);
+            throw new DocumentStoreOperationException(ErrorMessage.NO_RESPONSE_CODE, ex);
         }
         logger.debug(MSG_RESPONSE_CODE + resultCode);
 
@@ -751,22 +637,14 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
             return opResult;
         }
 
-        // Grab the current time so we can use it to generate a metrics log.
+        final URL url = buildUrl(createUriBuilder(indexName, DEFAULT_TYPE, document.getId()));
         MdcOverride override = getStartTime(new MdcOverride());
 
-        String fullUrl = getFullUrl("/" + indexName + "/" + DEFAULT_TYPE + "/" + document.getId(), false);
-        HttpURLConnection conn = initializeConnection(fullUrl);
+        HttpURLConnection conn = createConnection(url, HttpMethod.PUT);
 
-        try {
-            conn.setRequestMethod("PUT");
-        } catch (ProtocolException e) {
-            shutdownConnection(conn);
-            throw new DocumentStoreOperationException(MSG_HTTP_PUT_FAILED, e);
-        }
 
         attachDocument(conn, document);
 
-        logger.debug("Sending 'PUT' request to: " + conn.getURL());
 
         opResult = getOperationResult(conn);
         buildDocumentResult(opResult, indexName);
@@ -780,22 +658,11 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
     private DocumentOperationResult createDocumentWithoutId(String indexName, DocumentStoreDataEntity document)
             throws DocumentStoreOperationException {
-        // Grab the current time so we can use it to generate a metrics log.
+        final URL url = buildUrl(createUriBuilder(indexName, DEFAULT_TYPE));
+
         MdcOverride override = getStartTime(new MdcOverride());
-
-        String fullUrl = getFullUrl("/" + indexName + "/" + DEFAULT_TYPE, false);
-        HttpURLConnection conn = initializeConnection(fullUrl);
-
-        try {
-            conn.setRequestMethod("POST");
-        } catch (ProtocolException e) {
-            shutdownConnection(conn);
-            throw new DocumentStoreOperationException(MSG_HTTP_POST_FAILED, e);
-        }
-
+        HttpURLConnection conn = createConnection(url, HttpMethod.POST);
         attachDocument(conn, document);
-
-        logger.debug("Sending 'POST' request to: " + conn.getURL());
 
         DocumentOperationResult response = getOperationResult(conn);
         buildDocumentResult(response, indexName);
@@ -815,27 +682,15 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
     private DocumentOperationResult checkDocumentExistence(String indexName, String docId)
             throws DocumentStoreOperationException {
-        // Grab the current time so we can use it to generate a metrics log.
         MdcOverride override = getStartTime(new MdcOverride());
-
-        String fullUrl = getFullUrl("/" + indexName + "/" + DEFAULT_TYPE + "/" + docId, false);
-        HttpURLConnection conn = initializeConnection(fullUrl);
-
-        try {
-            conn.setRequestMethod("HEAD");
-        } catch (ProtocolException e) {
-            shutdownConnection(conn);
-            throw new DocumentStoreOperationException("Failed to set HTTP request method to HEAD.", e);
-        }
-
-        logger.debug("Sending 'HEAD' request to: " + conn.getURL());
-
+        HttpURLConnection conn =
+                createConnection(buildUrl(createUriBuilder(indexName, DEFAULT_TYPE, docId)), HttpMethod.HEAD);
         int resultCode;
         try {
             resultCode = conn.getResponseCode();
-        } catch (IOException e) {
+        } catch (IOException ex) {
             shutdownConnection(conn);
-            throw new DocumentStoreOperationException(FAILED_TO_GET_THE_RESPONSE_CODE_FROM_THE_CONNECTION, e);
+            throw new DocumentStoreOperationException(ErrorMessage.NO_RESPONSE_CODE, ex);
         }
 
         logger.debug(MSG_RESPONSE_CODE + resultCode);
@@ -871,16 +726,8 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         }
     }
 
-    private HttpURLConnection initializeConnection(String fullUrl) throws DocumentStoreOperationException {
-        URL url = null;
+    private HttpURLConnection initializeConnection(URL url) throws DocumentStoreOperationException {
         HttpURLConnection conn = null;
-
-        try {
-            url = new URL(fullUrl);
-        } catch (MalformedURLException e) {
-            throw new DocumentStoreOperationException("Error building a URL with " + url, e);
-        }
-
         try {
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestProperty(CONTENT_TYPE, APPLICATION_JSON);
@@ -903,9 +750,9 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
         try {
             resultCode = conn.getResponseCode();
-        } catch (IOException e) {
+        } catch (IOException ex) {
             shutdownConnection(conn);
-            throw new DocumentStoreOperationException(FAILED_TO_GET_THE_RESPONSE_CODE_FROM_THE_CONNECTION, e);
+            throw new DocumentStoreOperationException(ErrorMessage.NO_RESPONSE_CODE, ex);
         }
 
         logger.debug(MSG_RESPONSE_CODE + resultCode);
@@ -980,8 +827,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         // Grab the current time...
         long startTimeInMs = System.currentTimeMillis();
 
-        // ...and add it as an attribute to the supplied MDC Override
-        // object.
+        // ...and add it as an attribute to the supplied MDC Override object.
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
         override.addAttribute(MdcContext.MDC_START_TIME, formatter.format(startTimeInMs));
 
@@ -1003,35 +849,46 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         return Family.familyOf(statusCode).equals(Family.SUCCESSFUL);
     }
 
-    private OperationResult checkConnection() throws IOException {
-        String fullUrl = getFullUrl("/_cluster/health", false);
-        URL url = null;
-        HttpURLConnection conn = null;
-
-        url = new URL(fullUrl);
-        conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-        conn.setDoOutput(true);
-        logger.debug("getClusterHealth(), Sending 'GET' request to URL : " + url);
-
-        int resultCode = conn.getResponseCode();
-        logger.debug("getClusterHealth() response Code : " + resultCode);
-
-        shutdownConnection(conn);
-
-        return new OperationResultBuilder().resultCode(resultCode).build();
+    private UriBuilder createUriBuilder(String path, String... paths) {
+        UriBuilder builder = UriBuilder.fromPath(path);
+        for (String other : paths) {
+            builder.path(other);
+        }
+        builder.host(config.getIpAddress());
+        String port = Optional.ofNullable(config.getHttpPort()).orElse("0");
+        builder.port(Integer.valueOf(port));
+        builder.scheme("http");
+        return builder;
     }
 
-    private String getFullUrl(String resourceUrl, boolean isSecure) {
-
-        final String host = config.getIpAddress();
-        final String port = config.getHttpPort();
-
-        if (isSecure) {
-            return String.format("https://%s:%s%s", host, port, resourceUrl);
-        } else {
-            return String.format("http://%s:%s%s", host, port, resourceUrl);
+    private URL buildUrl(UriBuilder builder) throws DocumentStoreOperationException {
+        try {
+            return builder.build().toURL();
+        } catch (MalformedURLException e) {
+            logger.error(SearchDbMsgs.EXCEPTION_DURING_METHOD_CALL, "buildUrl", e.getLocalizedMessage());
+            throw new DocumentStoreOperationException("Error building a URL with " + builder.toString(), e);
         }
+    }
+
+    private HttpURLConnection createConnection(final URL url, final String method)
+            throws DocumentStoreOperationException {
+        HttpURLConnection conn = initializeConnection(url);
+        try {
+            logger.debug("\nSending '" + method + "' request to URL : " + conn.getURL());
+            conn.setRequestMethod(method);
+        } catch (ProtocolException e) {
+            shutdownConnection(conn);
+            throw new DocumentStoreOperationException(ErrorMessage.SET_REQUEST_METHOD_FAILED, e, method);
+        }
+        return conn;
+    }
+
+    private OperationResult checkConnection() throws IOException, DocumentStoreOperationException {
+        HttpURLConnection conn = createConnection(buildUrl(createUriBuilder("_cluster/health")), HttpMethod.GET);
+        int resultCode = conn.getResponseCode();
+        logger.debug("getClusterHealth() response Code : " + resultCode);
+        shutdownConnection(conn);
+        return new OperationResultBuilder().resultCode(resultCode).build();
     }
 
     private void shutdownConnection(HttpURLConnection connection) {
