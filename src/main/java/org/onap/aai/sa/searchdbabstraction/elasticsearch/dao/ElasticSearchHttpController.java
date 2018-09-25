@@ -54,7 +54,6 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.Response.Status.Family;
 import javax.ws.rs.core.UriBuilder;
 import org.eclipse.jetty.http.HttpStatus;
 import org.json.simple.JSONArray;
@@ -641,10 +640,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         MdcOverride override = getStartTime(new MdcOverride());
 
         HttpURLConnection conn = createConnection(url, HttpMethod.PUT);
-
-
         attachDocument(conn, document);
-
 
         opResult = getOperationResult(conn);
         buildDocumentResult(opResult, indexName);
@@ -759,7 +755,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
         InputStream inputStream = null;
 
-        if (!isSuccessCode(resultCode)) {
+        if (!ApiUtils.isSuccessStatusCode(resultCode)) {
             inputStream = conn.getErrorStream();
         } else {
             try {
@@ -842,11 +838,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
     }
 
     private boolean isSuccess(OperationResult result) {
-        return isSuccessCode(result.getResultCode());
-    }
-
-    private boolean isSuccessCode(int statusCode) {
-        return Family.familyOf(statusCode).equals(Family.SUCCESSFUL);
+        return ApiUtils.isSuccessStatusCode(result.getResultCode());
     }
 
     private UriBuilder createUriBuilder(String path, String... paths) {
@@ -1216,7 +1208,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
             // Increment the operation counts.
             totalOps++;
-            if (isSuccessCode(item.operationStatus().getStatus())) {
+            if (ApiUtils.isSuccessStatusCode(item.operationStatus().getStatus())) {
                 totalSuccess++;
             } else {
                 totalFails++;

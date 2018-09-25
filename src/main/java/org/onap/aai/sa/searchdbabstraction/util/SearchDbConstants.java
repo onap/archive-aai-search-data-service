@@ -22,9 +22,6 @@ package org.onap.aai.sa.searchdbabstraction.util;
 
 public class SearchDbConstants {
 
-    private SearchDbConstants() { // Do not instantiate
-    }
-
     public static final String SDB_FILESEP =
             (System.getProperty("file.separator") == null) ? "/" : System.getProperty("file.separator");
     public static final String SDB_BUNDLECONFIG_NAME =
@@ -48,4 +45,8 @@ public class SearchDbConstants {
 
     // Logging related
     public static final String SDB_SERVICE_NAME = "SearchDataService";
+
+    private SearchDbConstants() { // Do not instantiate
+    }
+
 }

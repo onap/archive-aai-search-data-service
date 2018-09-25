@@ -67,6 +67,7 @@ public class BulkApi {
     private static Logger logger = LoggerFactory.getInstance().getLogger(BulkApi.class.getName());
     private static Logger auditLogger = LoggerFactory.getInstance().getAuditLogger(BulkApi.class.getName());
 
+    private static final String MSG_STACK_TRACE = "Stack Trace:\n";
 
     /**
      * Create a new instance of the BulkApi end point.
@@ -89,20 +90,20 @@ public class BulkApi {
      */
     public ResponseEntity<String> processPost(String operations, HttpServletRequest request, HttpHeaders headers,
             DocumentStoreInterface documentStore) {
-        // Initialize the MDC Context for logging purposes.
         ApiUtils.initMdcContext(request, headers);
-
-        // Set a default result code and entity string for the request.
-        int resultCode = 500;
-        String resultString;
 
         if (logger.isDebugEnabled()) {
             logger.debug("SEARCH: Process Bulk Request - operations = [" + operations.replaceAll("\n", "") + " ]");
         }
 
+        // We expect a payload containing a JSON structure enumerating the operations to be performed.
+        if (operations == null) {
+            logger.warn(SearchDbMsgs.BULK_OPERATION_FAILURE, "Missing operations list payload");
+            return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Missing payload", request);
+        }
+
         try {
-            // Validate that the request is correctly authenticated before going
-            // any further.
+            // Validate that the request is correctly authenticated before going any further.
             if (!searchService.validateRequest(headers, request, ApiUtils.Action.POST,
                     ApiUtils.SEARCH_AUTH_POLICY_NAME)) {
                 logger.warn(SearchDbMsgs.BULK_OPERATION_FAILURE, "Authentication failure.");
@@ -110,23 +111,15 @@ public class BulkApi {
                 return buildResponse(HttpStatus.FORBIDDEN.value(), "Authentication failure.", request);
             }
         } catch (Exception e) {
-            // This is a catch all for any unexpected failure trying to perform
-            // the authentication.
+            // This is a catch all for any unexpected failure trying to perform the authentication.
             logger.warn(SearchDbMsgs.BULK_OPERATION_FAILURE,
                     "Unexpected authentication failure - cause: " + e.getMessage());
             if (logger.isDebugEnabled()) {
-                logger.debug("Stack Trace:\n" + e.getStackTrace());
+                logger.debug(MSG_STACK_TRACE + e.getStackTrace());
             }
 
             return buildResponse(HttpStatus.FORBIDDEN.value(), "Authentication failure - cause " + e.getMessage(),
                     request);
-        }
-
-        // We expect a payload containing a JSON structure enumerating the
-        // operations to be performed.
-        if (operations == null) {
-            logger.warn(SearchDbMsgs.BULK_OPERATION_FAILURE, "Missing operations list payload");
-            return buildResponse(resultCode, "Missing payload", request);
         }
 
         // Marshal the supplied json string into a Java object.
@@ -137,7 +130,7 @@ public class BulkApi {
         } catch (IOException e) {
             logger.warn(SearchDbMsgs.BULK_OPERATION_FAILURE, "Failed to marshal operations list: " + e.getMessage());
             if (logger.isDebugEnabled()) {
-                logger.debug("Stack Trace:\n" + e.getStackTrace());
+                logger.debug(MSG_STACK_TRACE + e.getStackTrace());
             }
             // Populate the result code and entity string for our HTTP response
             // and return the response to the client..
@@ -145,53 +138,46 @@ public class BulkApi {
                     request);
         }
 
-        // Verify that our parsed operations list actually contains some valid
-        // operations.
+        // Verify that our parsed operations list actually contains some valid operations.
         if (requests.length == 0) {
             logger.warn(SearchDbMsgs.BULK_OPERATION_FAILURE, "Empty operations list in bulk request");
-
 
             // Populate the result code and entity string for our HTTP response
             // and return the response to the client..
             return buildResponse(HttpStatus.BAD_REQUEST.value(), "Empty operations list in bulk request", request);
         }
-        try {
 
+        int resultCode;
+        String resultString;
+
+        try {
             // Now, forward the set of bulk operations to the DAO for processing.
             OperationResult result = documentStore.performBulkOperations(requests);
 
-            // Populate the result code and entity string for our HTTP response.
             resultCode = result.getResultCode();
             resultString = (result.getFailureCause() == null) ? result.getResult() : result.getFailureCause();
-
         } catch (DocumentStoreOperationException e) {
-
             logger.warn(SearchDbMsgs.BULK_OPERATION_FAILURE,
                     "Unexpected failure communicating with document store: " + e.getMessage());
             if (logger.isDebugEnabled()) {
-                logger.debug("Stack Trace:\n" + e.getStackTrace());
+                logger.debug(MSG_STACK_TRACE + e.getStackTrace());
             }
 
-            // Populate the result code and entity string for our HTTP response.
             resultCode = HttpStatus.INTERNAL_SERVER_ERROR.value();
             resultString = "Unexpected failure processing bulk operations: " + e.getMessage();
         }
 
-        // Build our HTTP response.
         ResponseEntity<String> response =
                 ResponseEntity.status(resultCode).contentType(MediaType.APPLICATION_JSON).body(resultString);
 
-        // Log the result.
         if ((response.getStatusCodeValue() >= 200) && (response.getStatusCodeValue() < 300)) {
             logger.info(SearchDbMsgs.PROCESSED_BULK_OPERATIONS);
         } else {
             logger.warn(SearchDbMsgs.BULK_OPERATION_FAILURE, response.getBody());
         }
 
-        // Finally, return the HTTP response to the client.
         return buildResponse(resultCode, resultString, request);
     }
-
 
     /**
      * This method generates an audit log and returns an HTTP response object.
@@ -206,12 +192,13 @@ public class BulkApi {
                 ResponseEntity.status(resultCode).contentType(MediaType.APPLICATION_JSON).body(resultString);
 
         // Generate our audit log.
+        String unknownLogField = "Unknown";
         auditLogger.info(SearchDbMsgs.PROCESS_REST_REQUEST,
                 new LogFields().setField(LogLine.DefinedFields.RESPONSE_CODE, resultCode)
                         .setField(LogLine.DefinedFields.RESPONSE_DESCRIPTION, ApiUtils.getHttpStatusString(resultCode)),
-                (request != null) ? request.getMethod() : "Unknown",
-                (request != null) ? request.getRequestURL().toString() : "Unknown",
-                (request != null) ? request.getRemoteHost() : "Unknown",
+                (request != null) ? request.getMethod() : unknownLogField,
+                (request != null) ? request.getRequestURL().toString() : unknownLogField,
+                (request != null) ? request.getRemoteHost() : unknownLogField,
                 Integer.toString(response.getStatusCodeValue()));
 
         // Clear the MDC context so that no other transaction inadvertently

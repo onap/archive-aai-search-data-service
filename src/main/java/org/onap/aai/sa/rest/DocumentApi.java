@@ -43,6 +43,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 public class DocumentApi {
+    private static final String MSG_REQUEST_BODY = "Request Body: ";
     private static final String REQUEST_HEADER_RESOURCE_VERSION = "If-Match";
     private static final String RESPONSE_HEADER_RESOURCE_VERSION = "ETag";
     private static final String REQUEST_HEADER_ALLOW_IMPLICIT_INDEX_CREATION = "X-CreateIndex";
@@ -88,7 +89,7 @@ public class DocumentApi {
             DocumentOperationResult result =
                     documentStore.createDocument(index, document, implicitlyCreateIndex(headers));
             String output = null;
-            if (result.getResultCode() >= 200 && result.getResultCode() <= 299) {
+            if (ApiUtils.isSuccessStatusCode(result.getResultCode())) {
                 output = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(result.getDocument());
             } else {
                 output = result.getError() != null
@@ -155,7 +156,7 @@ public class DocumentApi {
             }
 
             String output = null;
-            if (result.getResultCode() >= 200 && result.getResultCode() <= 299) {
+            if (ApiUtils.isSuccessStatusCode(result.getResultCode())) {
                 output = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(result.getDocument());
             } else {
                 output = result.getError() != null
@@ -212,7 +213,7 @@ public class DocumentApi {
 
             DocumentOperationResult result = documentStore.deleteDocument(index, document);
             String output = null;
-            if (!(result.getResultCode() >= 200 && result.getResultCode() <= 299)) { //
+            if (ApiUtils.isSuccessStatusCode(result.getResultCode())) {
                 output = result.getError() != null
                         ? mapper.writerWithDefaultPrettyPrinter().writeValueAsString(result.getError())
                         : result.getFailureCause();
@@ -271,7 +272,7 @@ public class DocumentApi {
 
             DocumentOperationResult result = documentStore.getDocument(index, document);
             String output = null;
-            if (result.getResultCode() >= 200 && result.getResultCode() <= 299) {
+            if (ApiUtils.isSuccessStatusCode(result.getResultCode())) {
                 output = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(result.getDocument());
             } else {
                 output = result.getError() != null
@@ -320,7 +321,7 @@ public class DocumentApi {
 
             SearchOperationResult result = documentStore.search(index, queryText);
             String output = null;
-            if (result.getResultCode() >= 200 && result.getResultCode() <= 299) {
+            if (ApiUtils.isSuccessStatusCode(result.getResultCode())) {
                 output = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(result.getSearchResult());
             } else {
                 output = result.getError() != null
@@ -349,7 +350,7 @@ public class DocumentApi {
         logger.info(SearchDbMsgs.PROCESS_PAYLOAD_QUERY, "GET",
                 (request != null) ? request.getRequestURL().toString() : "");
         if (logger.isDebugEnabled()) {
-            logger.debug("Request Body: " + content);
+            logger.debug(MSG_REQUEST_BODY + content);
         }
         return processQuery(index, content, request, headers, documentStore);
     }
@@ -363,7 +364,7 @@ public class DocumentApi {
         logger.info(SearchDbMsgs.PROCESS_PAYLOAD_QUERY, "POST",
                 (request != null) ? request.getRequestURL().toString() : "");
         if (logger.isDebugEnabled()) {
-            logger.debug("Request Body: " + content);
+            logger.debug(MSG_REQUEST_BODY + content);
         }
 
         return processQuery(index, content, request, headers, documentStore);
@@ -379,7 +380,7 @@ public class DocumentApi {
         logger.info(SearchDbMsgs.PROCESS_PAYLOAD_QUERY, "POST",
                 (request != null) ? request.getRequestURL().toString() : "");
         if (logger.isDebugEnabled()) {
-            logger.debug("Request Body: " + content);
+            logger.debug(MSG_REQUEST_BODY + content);
         }
 
         return processSuggestQuery(index, content, request, headers, documentStore);
@@ -437,7 +438,7 @@ public class DocumentApi {
             // ElasticSearch syntax, to the document store DAO.
             SearchOperationResult result = documentStore.searchWithPayload(index, searchStatement.toElasticSearch());
             String output = null;
-            if (result.getResultCode() >= 200 && result.getResultCode() <= 299) {
+            if (ApiUtils.isSuccessStatusCode(result.getResultCode())) {
                 output = prepareOutput(mapper, result);
             } else {
                 output = result.getError() != null
@@ -512,7 +513,7 @@ public class DocumentApi {
             SearchOperationResult result =
                     documentStore.suggestionQueryWithPayload(index, suggestionStatement.toElasticSearch());
             String output = null;
-            if (result.getResultCode() >= 200 && result.getResultCode() <= 299) {
+            if (ApiUtils.isSuccessStatusCode(result.getResultCode())) {
                 output = prepareSuggestOutput(mapper, result);
             } else {
                 output = result.getError() != null
@@ -541,15 +542,8 @@ public class DocumentApi {
      * @return - true if the headers indicate that missing indices should be implicitly created, false otherwise.
      */
     private boolean implicitlyCreateIndex(HttpHeaders headers) {
-
-        boolean createIndexIfNotPresent = false;
         String implicitIndexCreationHeader = headers.getFirst(REQUEST_HEADER_ALLOW_IMPLICIT_INDEX_CREATION);
-
-        if ((implicitIndexCreationHeader != null) && (implicitIndexCreationHeader.equals("true"))) {
-            createIndexIfNotPresent = true;
-        }
-
-        return createIndexIfNotPresent;
+        return implicitIndexCreationHeader != null && "true".equals(implicitIndexCreationHeader);
     }
 
     private String prepareOutput(ObjectMapper mapper, SearchOperationResult result) throws JsonProcessingException {

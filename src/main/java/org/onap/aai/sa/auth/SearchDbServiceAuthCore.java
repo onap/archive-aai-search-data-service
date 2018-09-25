@@ -51,12 +51,12 @@ public class SearchDbServiceAuthCore {
         DELETE
     }
 
-    // Don't instantiate
-    private SearchDbServiceAuthCore() {}
-
     private static boolean usersInitialized = false;
     private static HashMap<String, SearchDbAuthUser> users;
     private static Timer timer = null;
+
+    // Don't instantiate
+    private SearchDbServiceAuthCore() {}
 
     public static synchronized void init() {
         if (SearchDbServiceAuthCore.authFileName == null) {
@@ -133,7 +133,6 @@ public class SearchDbServiceAuthCore {
         }
 
         usersInitialized = true;
-
     }
 
     public static class SearchDbAuthUser {
@@ -160,18 +159,15 @@ public class SearchDbServiceAuthCore {
             for (Map.Entry<String, TabularAuthRole> roleEntry : this.roles.entrySet()) {
                 TabularAuthRole role = roleEntry.getValue();
                 if (role.hasAllowedFunction(checkFunc)) {
-                    // break out as soon as we find it
                     return true;
                 }
             }
-            // we would have got positive confirmation had it been there
             return false;
         }
 
         public void setUser(String myuser) {
             this.username = myuser;
         }
-
     }
 
     public static class TabularAuthRole {

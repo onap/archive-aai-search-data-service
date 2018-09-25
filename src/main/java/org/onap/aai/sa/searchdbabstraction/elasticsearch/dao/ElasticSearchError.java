@@ -31,8 +31,7 @@ public class ElasticSearchError {
     private String reason;
     private ElasticSearchCause causedBy;
 
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-
+    private Map<String, Object> additionalProperties = new HashMap<>();
 
     public String getType() {
         return type;

@@ -33,7 +33,7 @@ import org.radeox.util.logging.Logger;
  * The expected JSON structure to represent a search statement is as follows:
  *
  * <p>
- * 
+ *
  * <pre>
  *     {
  *         "results-start": int,  - Optional: index of starting point in result set.
@@ -152,11 +152,10 @@ public class SearchStatement {
      * @return - ElasticSearch syntax string.
      */
     public String toElasticSearch() {
-
         StringBuilder sb = new StringBuilder();
-        List<QueryStatement> notMatchQueries = new ArrayList<QueryStatement>();
-        List<QueryStatement> mustQueries = new ArrayList<QueryStatement>();
-        List<QueryStatement> shouldQueries = new ArrayList<QueryStatement>();
+        List<QueryStatement> notMatchQueries = new ArrayList<>();
+        List<QueryStatement> mustQueries = new ArrayList<>();
+        List<QueryStatement> shouldQueries = new ArrayList<>();
 
         createQueryLists(queries, mustQueries, shouldQueries, notMatchQueries);
 

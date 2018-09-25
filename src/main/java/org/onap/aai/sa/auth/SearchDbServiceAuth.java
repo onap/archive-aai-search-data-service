@@ -25,29 +25,18 @@ import org.springframework.http.HttpHeaders;
 
 public class SearchDbServiceAuth {
 
-    public SearchDbServiceAuth() {}
+    public SearchDbServiceAuth() { // Do not instantiate
+    }
 
     public boolean authBasic(String username, String authFunction) {
         return SearchDbServiceAuthCore.authorize(username, authFunction);
     }
 
     public String authUser(HttpHeaders headers, String authUser, String authFunction) {
-
-
-        SearchDbServiceAuth aaiAuth = new SearchDbServiceAuth();
-
-        StringBuilder username = new StringBuilder();
-
-        username.append(authUser);
-        if (aaiAuth.authBasic(username.toString(), authFunction) == false) {
-            return "AAI_9101";
-
-        }
-        return "OK";
+        return new SearchDbServiceAuth().authBasic(authUser, authFunction) ? "OK" : "AAI_9101";
     }
 
     public boolean authCookie(Cookie cookie, String authFunction, StringBuilder username) {
-
         if (cookie == null) {
             return false;
         }

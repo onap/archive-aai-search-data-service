@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * An example of a date_range aggregation:
  *
  * <p>
- * 
+ *
  * <pre>
  * {
  *    "aggs": {
@@ -47,7 +47,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author sye
  */
 public class DateRangeAggregation extends AbstractAggregation {
-
 
     private String format;
 
@@ -114,7 +113,7 @@ public class DateRangeAggregation extends AbstractAggregation {
 
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("date-range: {field: " + field + ", format: " + format + ", size: " + size + ", minThreshold: "
                 + minThreshold + "ranges: [");
         for (int i = 0; i < dateRanges.length; i++) {

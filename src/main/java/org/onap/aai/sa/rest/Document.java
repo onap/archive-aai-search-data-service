@@ -26,9 +26,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class Document {
-    private Map<String, Object> fields = new HashMap<String, Object>();
+    private Map<String, Object> fields = new HashMap<>();
 
     @JsonAnyGetter
     public Map<String, Object> getFields() {
@@ -41,20 +42,16 @@ public class Document {
     }
 
     public String toJson() throws JsonProcessingException {
-
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(this);
+        return new ObjectMapper().writeValueAsString(this);
     }
-
 
     @Override
     public String toString() {
-        String str = "Document: [";
-        for (String key : fields.keySet()) {
-            str += key + ": " + fields.get(key);
+        StringBuilder sb = new StringBuilder("Document: [");
+        for (Entry<String, Object> entry : fields.entrySet()) {
+            sb.append(entry.getKey()).append(": ").append(entry.getValue());
         }
-        str += "]";
-
-        return str;
+        sb.append("]");
+        return sb.toString();
     }
 }

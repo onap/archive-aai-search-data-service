@@ -112,7 +112,7 @@ public class ElasticSearchResultItem {
 
         sb.append("\"status-message\": \"");
 
-        if ((operationStatus().getStatus() >= 200) && (operationStatus().getStatus() < 300)) {
+        if (ApiUtils.isSuccessStatusCode(operationStatus().getStatus())) {
             sb.append("OK");
         } else {
             // Sometimes the error object doesn't get populated, so check

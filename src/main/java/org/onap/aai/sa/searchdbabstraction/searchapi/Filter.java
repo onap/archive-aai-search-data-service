@@ -28,7 +28,7 @@ import java.util.List;
  *
  * <p>
  * The expected JSON structure for a filter stanza is as follows:
- * 
+ *
  * <pre>
  * {
  *     "filter": {
@@ -77,7 +77,7 @@ public class Filter {
 
         StringBuilder sb = new StringBuilder();
 
-        List<QueryStatement> notMatchQueries = new ArrayList<QueryStatement>();
+        List<QueryStatement> notMatchQueries = new ArrayList<>();
         sb.append("{");
         sb.append("\"bool\": {");
 
@@ -123,7 +123,6 @@ public class Filter {
 
             matchQueriesCount = 0;
             for (QueryStatement query : any) {
-                // if(!firstQuery.compareAndSet(true, false)) {
                 if (matchQueriesCount > 0) {
                     sb.append(", ");
                 }
@@ -137,11 +136,9 @@ public class Filter {
             }
             sb.append("],");
 
-            // firstQuery.set(true);
             notMatchQueriesCount = 0;
             sb.append("\"must_not\": [");
             for (QueryStatement query : notMatchQueries) {
-                // if(!firstQuery.compareAndSet(true, false)) {
                 if (notMatchQueriesCount > 0) {
                     sb.append(", ");
                 }

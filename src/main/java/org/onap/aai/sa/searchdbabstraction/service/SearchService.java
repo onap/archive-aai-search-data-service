@@ -21,6 +21,7 @@
 package org.onap.aai.sa.searchdbabstraction.service;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Properties;
 import org.onap.aai.cl.api.Logger;
 import org.onap.aai.cl.eelf.LoggerFactory;
@@ -31,23 +32,23 @@ import org.onap.aai.sa.searchdbabstraction.util.SearchDbConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class SearchService {
-  static Logger logger = LoggerFactory.getInstance().getLogger(SearchService.class.getName());
+    static Logger logger = LoggerFactory.getInstance().getLogger(SearchService.class.getName());
 
-  @Autowired
-  private  ElasticSearchConfig esConfig;
+    @Autowired
+    private ElasticSearchConfig esConfig;
 
-  public SearchService() {
-    try {
-      start();
-    } catch (Exception e) {
-      logger.error(SearchDbMsgs.STARTUP_EXCEPTION, e.getLocalizedMessage());
+    public SearchService() {
+        try {
+            start();
+        } catch (Exception e) {
+            logger.error(SearchDbMsgs.STARTUP_EXCEPTION, e.getLocalizedMessage());
+        }
     }
-  }
 
-  protected void start() throws Exception {
-    Properties configProperties = new Properties();
-    configProperties.load(new FileInputStream(SearchDbConstants.ES_CONFIG_FILE));
+    protected void start() throws IOException {
+        Properties configProperties = new Properties();
+        configProperties.load(new FileInputStream(SearchDbConstants.ES_CONFIG_FILE));
         new ElasticSearchHttpController(esConfig);
-    logger.info(SearchDbMsgs.SERVICE_STARTED);
-  }
+        logger.info(SearchDbMsgs.SERVICE_STARTED);
+    }
 }

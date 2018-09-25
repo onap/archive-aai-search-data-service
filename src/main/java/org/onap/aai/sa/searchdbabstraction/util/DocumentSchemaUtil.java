@@ -32,24 +32,21 @@ import org.onap.aai.sa.rest.DocumentSchema;
 
 public class DocumentSchemaUtil {
 
-    private DocumentSchemaUtil() { // Do not instantiate
-    }
-
     private static String dynamicCustomMapping = null;
     private static final String DYNAMIC_CUSTOM_TEMPALTE_FILE =
             System.getProperty("CONFIG_HOME") + File.separator + "dynamic-custom-template.json";
 
-    public static String generateDocumentMappings(String documentSchema) throws IOException {
+    private DocumentSchemaUtil() { // Do not instantiate
+    }
 
+    public static String generateDocumentMappings(String documentSchema) throws IOException {
         // Unmarshal the json content into a document schema object.
         ObjectMapper mapper = new ObjectMapper();
         DocumentSchema schema = mapper.readValue(documentSchema, DocumentSchema.class);
-
         return generateDocumentMappings(schema);
     }
 
     public static String generateDocumentMappings(DocumentSchema schema) throws IOException {
-
         // Adding dynamic template to add fielddata=true to dynamic fields of type "string"
         // in order to avoid aggregation queries breaking in ESv6.1.2
         if (dynamicCustomMapping == null) {

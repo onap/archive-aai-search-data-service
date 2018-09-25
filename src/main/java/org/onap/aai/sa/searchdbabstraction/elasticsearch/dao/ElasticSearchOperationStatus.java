@@ -35,8 +35,7 @@ public class ElasticSearchOperationStatus {
     private Integer status;
     private ElasticSearchError error;
 
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-
+    private Map<String, Object> additionalProperties = new HashMap<>();
 
     public ElasticSearchError getError() {
         return error;
@@ -109,6 +108,5 @@ public class ElasticSearchOperationStatus {
         return "ElasticSearchIndexStatus [index=" + index + ", type=" + type + ", id=" + id + ", version=" + version
                 + ", shards=" + shards + ", status=" + status + "]";
     }
-
 
 }

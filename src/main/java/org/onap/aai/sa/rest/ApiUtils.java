@@ -20,8 +20,10 @@
  */
 package org.onap.aai.sa.rest;
 
+import com.google.common.base.Strings;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response.Status.Family;
 import org.onap.aai.cl.mdc.MdcContext;
 import org.onap.aai.sa.searchdbabstraction.util.SearchDbConstants;
 import org.slf4j.MDC;
@@ -34,8 +36,11 @@ import org.springframework.http.HttpStatus;
  */
 public class ApiUtils {
 
-    public static final String SEARCH_AUTH_POLICY_NAME = "search";
     public static final String URL_PREFIX = "services/search-data-service/v1/search";
+    public static final String SEARCH_AUTH_POLICY_NAME = "search";
+
+    private static final String URI_SEGMENT_INDEXES = "indexes";
+    private static final String URI_SEGMENT_DOCUMENTS = "documents";
 
     public enum Action {
         POST,
@@ -56,8 +61,7 @@ public class ApiUtils {
         String transId = null;
         if (headers != null) {
             transId = headers.getFirst("X-TransactionId");
-
-            if ((transId == null) || (transId.equals(""))) {
+            if (Strings.isNullOrEmpty(transId)) {
                 transId = UUID.randomUUID().toString();
             }
         }
@@ -73,38 +77,29 @@ public class ApiUtils {
     }
 
     public static String buildIndexUri(String index) {
-
         return (URL_PREFIX + "/indexes/") + index;
     }
 
     public static String buildDocumentUri(String index, String documentId) {
-
         return buildIndexUri(index) + "/documents/" + documentId;
     }
 
     public static boolean validateIndexUri(String uri) {
-
-        // If the URI starts with a leading '/' character, remove it.
         uri = uri.startsWith("/") ? uri.substring(1) : uri;
-
-        // Now, tokenize the URI string.
         String[] tokens = uri.split("/");
-
-        return (tokens.length == 6) && (tokens[4].equals("indexes"));
-
+        return (tokens.length == 6) && (tokens[4].equals(URI_SEGMENT_INDEXES));
     }
 
     public static boolean validateDocumentUri(String uri, boolean requireId) {
         uri = uri.startsWith("/") ? uri.substring(1) : uri;
-
-        // Now, tokenize the URI string.
         String[] tokens = uri.split("/");
 
         if (requireId) {
-            return (tokens.length == 8) && (tokens[4].equals("indexes") && (tokens[6].equals("documents")));
+            return (tokens.length == 8)
+                    && (tokens[4].equals(URI_SEGMENT_INDEXES) && (tokens[6].equals(URI_SEGMENT_DOCUMENTS)));
         } else {
             return ((tokens.length == 8) || (tokens.length == 7))
-                    && (tokens[4].equals("indexes") && (tokens[6].equals("documents")));
+                    && (tokens[4].equals(URI_SEGMENT_INDEXES) && (tokens[6].equals(URI_SEGMENT_DOCUMENTS)));
         }
     }
 
@@ -115,7 +110,7 @@ public class ApiUtils {
 
         int i = 0;
         for (String token : tokens) {
-            if (token.equals("indexes") && i + 1 < tokens.length) {
+            if (token.equals(URI_SEGMENT_INDEXES) && i + 1 < tokens.length) {
                 return tokens[i + 1];
             }
             i++;
@@ -131,7 +126,7 @@ public class ApiUtils {
 
         int i = 0;
         for (String token : tokens) {
-            if (token.equals("documents") && i + 1 < tokens.length) {
+            if (token.equals(URI_SEGMENT_DOCUMENTS) && i + 1 < tokens.length) {
                 return tokens[i + 1];
             }
             i++;
@@ -144,11 +139,15 @@ public class ApiUtils {
         try {
             return HttpStatus.valueOf(httpStatusCode).getReasonPhrase();
         } catch (IllegalArgumentException e) {
-            if (httpStatusCode == 207) {
+            if (207 == httpStatusCode) {
                 return "Multi-Status";
             } else {
                 return "Unknown";
             }
         }
+    }
+
+    public static boolean isSuccessStatusCode(int statusCode) {
+        return Family.familyOf(statusCode).equals(Family.SUCCESSFUL);
     }
 }

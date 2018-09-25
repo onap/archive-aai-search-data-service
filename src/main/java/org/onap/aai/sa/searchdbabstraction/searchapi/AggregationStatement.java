@@ -81,7 +81,7 @@ public class AggregationStatement {
     }
 
     public String toElasticSearch() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append("{");
 
@@ -127,7 +127,7 @@ public class AggregationStatement {
 
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         if (nested != null) {
             sb.append("{nested: ");

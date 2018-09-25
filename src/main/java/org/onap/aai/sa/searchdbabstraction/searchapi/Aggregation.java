@@ -45,13 +45,11 @@ public class Aggregation {
     }
 
     public String toElasticSearch() {
-        StringBuffer sb = new StringBuffer();
-
+        StringBuilder sb = new StringBuilder();
         sb.append("\"");
         sb.append(name);
         sb.append("\": ");
         sb.append(aggregation.toElasticSearch());
-
         return sb.toString();
     }
 
