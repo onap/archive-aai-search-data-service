@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -29,6 +29,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
 import java.util.Properties;
+import org.eclipse.jetty.util.security.Password;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -62,6 +63,9 @@ public class ElasticSearchHttpControllerTest {
         Properties properties = new Properties();
         properties.put(ElasticSearchConfig.ES_IP_ADDRESS, "127.0.0.1");
         properties.put(ElasticSearchConfig.ES_HTTP_PORT, "9200");
+        properties.put(ElasticSearchConfig.ES_URI_SCHEME, "http");
+        properties.put(ElasticSearchConfig.ES_AUTH_USER, "your_user_here");
+        properties.put(ElasticSearchConfig.ES_AUTH_ENC, Password.obfuscate("your_password_here"));
         elasticSearch = new ElasticSearchHttpController(new ElasticSearchConfig(properties));
 
         testDocument = new AAIEntityTestObject();
@@ -155,7 +159,12 @@ public class ElasticSearchHttpControllerTest {
 
     @Test
     public void testDeleteDocument() throws Exception {
-        OperationResult result = elasticSearch.deleteDocument(TEST_INDEX_NAME, testDocument);
+        OperationResult result = elasticSearch.getDocument(TEST_INDEX_NAME, testDocument);
+        if (result.getResultCode() == 404) {
+            testCreateDocument();
+        }
+
+        result = elasticSearch.deleteDocument(TEST_INDEX_NAME, testDocument);
         assertThat(result.getResult(), containsString(TEST_INDEX_NAME));
 
         result = elasticSearch.getDocument(TEST_INDEX_NAME, testDocument);
@@ -173,8 +182,8 @@ public class ElasticSearchHttpControllerTest {
             doc.setSearchTagIDs("" + i);
             doc.setSearchTags("service-instance-id");
 
-            // OperationResult result = elasticSearch.createDocument(TEST_INDEX_NAME, doc, false);
-            // assertThat(result.getResultCode(), anyOf(equalTo(201), equalTo(400)));
+            OperationResult result = elasticSearch.createDocument(TEST_INDEX_NAME, doc, false);
+            assertThat(result.getResultCode(), anyOf(equalTo(201), equalTo(400)));
         }
     }
 

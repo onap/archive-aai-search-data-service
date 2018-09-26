@@ -100,13 +100,20 @@ Create this file with exactly the contents below:
     
 _elastic-search.properties_
 
-This file tells the _Search Data Service_ how to communicate with the ElasticSearch data store which it will use for its back end.
+This properties file configures the _Search Data Service_ for communication with ElasticSearch.
 The contents of this file will be determined by your ElasticSearch deployment:
 
-    es-cluster-name=<<name of your ElasticSearch cluster>>
-    es-ip-address=<<ip address of your ElasticSearch instance>>
-    ex.http-port=9200
-    
+    es.cluster-name=<<name of your ElasticSearch cluster>>
+    es.ip-address=<<IP address of your ElasticSearch instance>>
+    es.http-port=9200
+    # Optional parameters
+    es.uri-scheme=<<either http or https>>
+    es.trust-store=<<key store containing the certs of trusted servers>>
+    es.trust-store-password=<<encrypted passsword to open the trust store>>
+    es.key-store=<<key store containing the client cert>>
+    es.key-store-password=<<encrypted passsword to open the client key store>>
+    es.auth-user=<<username for HTTP Basic Authentication>>
+    es.auth-password=<<encrypted passsword for HTTP Basic Authentication>>
 
 
 ##### Contents of the /opt/app/search-data-service/app-config/auth Directory

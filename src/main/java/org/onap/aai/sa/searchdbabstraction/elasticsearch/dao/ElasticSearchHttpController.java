@@ -132,13 +132,15 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
 
     protected AnalysisConfiguration analysisConfig;
 
-
     public ElasticSearchHttpController(ElasticSearchConfig config) {
         this.config = config;
         analysisConfig = new AnalysisConfiguration();
 
         String rootUrl = null;
         try {
+            if ("https".equals(config.getUriScheme())) {
+                new ElasticSearchHttpsController(config);
+            }
             rootUrl = buildUrl(createUriBuilder("")).toString();
             logger.info(SearchDbMsgs.ELASTIC_SEARCH_CONNECTION_ATTEMPT, rootUrl);
             checkConnection();
@@ -728,6 +730,9 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestProperty(CONTENT_TYPE, APPLICATION_JSON);
             conn.setDoOutput(true);
+            if (config.useAuth()) {
+                conn.setRequestProperty("Authorization", config.getAuthValue());
+            }
         } catch (IOException e) {
             shutdownConnection(conn);
             throw new DocumentStoreOperationException("Failed to open connection to URL " + url, e);
@@ -849,7 +854,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         builder.host(config.getIpAddress());
         String port = Optional.ofNullable(config.getHttpPort()).orElse("0");
         builder.port(Integer.valueOf(port));
-        builder.scheme("http");
+        builder.scheme(config.getUriScheme());
         return builder;
     }
 
