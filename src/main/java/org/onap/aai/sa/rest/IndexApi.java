@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -41,7 +41,6 @@ import org.springframework.http.ResponseEntity;
  * This class encapsulates the REST end points associated with manipulating indexes in the document store.
  */
 public class IndexApi {
-
 
     private static final String UNKNOWN_LOG_FIELD_STR = "Unknown";
     private static final String MSG_UNEXPECTED_AUTHENTICATION_FAILURE_CAUSE =
