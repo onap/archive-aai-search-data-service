@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -19,7 +19,6 @@
  * ============LICENSE_END=========================================================
  */
 package org.onap.aai.sa.rest;
-
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;

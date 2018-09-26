@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -38,7 +38,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-
 
 /**
  * This class encapsulates the REST end points associated with performing bulk operations against the document store.

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ============LICENSE_START=======================================================
  * org.onap.aai
  * ================================================================================
@@ -22,55 +22,54 @@ package org.onap.aai.sa.searchdbabstraction.searchapi;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-
 /**
  * This is the common parent from which all aggregation types inherit. It defines the common fields that all
  * aggregations must include.
  */
 public abstract class AbstractAggregation {
 
-  /**
-   * The name of the field to apply the aggregation against.
-   */
-  protected String field;
+    /**
+     * The name of the field to apply the aggregation against.
+     */
+    protected String field;
 
-  /**
+    /**
      * Optionally allows the number of buckets for the aggregation to be specified.
-   */
-  protected Integer size;
+     */
+    protected Integer size;
 
-  /**
+    /**
      * Optionally sets the minimum number of matches that must occur before a particular bucket is included in the
      * aggregation result.
-   */
-  @JsonProperty("min-threshold")
-  protected Integer minThreshold;
+     */
+    @JsonProperty("min-threshold")
+    protected Integer minThreshold;
 
 
-  public String getField() {
-    return field;
-  }
+    public String getField() {
+        return field;
+    }
 
-  public void setField(String field) {
-    this.field = field;
-  }
+    public void setField(String field) {
+        this.field = field;
+    }
 
-  public Integer getSize() {
-    return size;
-  }
+    public Integer getSize() {
+        return size;
+    }
 
-  public void setSize(Integer size) {
-    this.size = size;
-  }
+    public void setSize(Integer size) {
+        this.size = size;
+    }
 
-  public Integer getMinThreshold() {
-    return minThreshold;
-  }
+    public Integer getMinThreshold() {
+        return minThreshold;
+    }
 
-  public void setMinThreshold(Integer minThreshold) {
-    this.minThreshold = minThreshold;
-  }
+    public void setMinThreshold(Integer minThreshold) {
+        this.minThreshold = minThreshold;
+    }
 
-  public abstract String toElasticSearch();
+    public abstract String toElasticSearch();
 
 }
