@@ -31,7 +31,7 @@
     </parent>
     <groupId>org.onap.aai</groupId>
     <artifactId>search-data-service</artifactId>
-    <version>1.3.2-SNAPSHOT</version>
+    <version>1.4.0-SNAPSHOT</version>
     <name>aai-search-data-service</name>
 
     <properties>
