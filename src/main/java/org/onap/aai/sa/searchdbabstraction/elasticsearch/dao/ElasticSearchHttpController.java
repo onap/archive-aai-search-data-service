@@ -53,6 +53,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.ws.rs.HttpMethod;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import org.eclipse.jetty.http.HttpStatus;
@@ -127,6 +128,7 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
             "{\"index\":{\"_index\":\"%s\",\"_type\":\"%s\",\"_id\":\"%s\", \"_version\":\"%s\"}}\n";
     private static final String BULK_DELETE_TEMPLATE =
             "{ \"delete\": { \"_index\": \"%s\", \"_type\": \"%s\", \"_id\": \"%s\", \"_version\":\"%s\"}}\n";
+    public final static String APPLICATION_XND_JSON_TYPE = new MediaType("application", "x-ndjson").toString();
 
     private final ElasticSearchConfig config;
 
@@ -501,7 +503,10 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
                 conn = (HttpURLConnection) buildUrl(createUriBuilder("_bulk")).openConnection();
                 conn.setRequestMethod(HttpMethod.PUT);
                 conn.setDoOutput(true);
-                conn.setRequestProperty(CONTENT_TYPE, APPLICATION_FORM_URLENCODED);
+                conn.setRequestProperty(CONTENT_TYPE, APPLICATION_XND_JSON_TYPE);
+                if(config.useAuth()){
+                	conn.setRequestProperty("Authorization", config.getAuthValue());
+                }
                 conn.setRequestProperty("Connection", "Close");
 
             } catch (IOException e) {
