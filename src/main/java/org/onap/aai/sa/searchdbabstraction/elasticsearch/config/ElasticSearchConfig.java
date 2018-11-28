@@ -189,7 +189,11 @@ public class ElasticSearchConfig {
 
         Optional<String> passwordValue = Optional.ofNullable(props.getProperty(ES_TRUST_STORE_ENC));
         if (passwordValue.isPresent()) {
+          if(passwordValue.get().startsWith("OBF:")){
             setTrustStorePassword(Password.deobfuscate(passwordValue.get()));
+          }else{
+            setTrustStorePassword(passwordValue.get());
+          }
         }
 
         Optional<String> keyStoreFile = Optional.ofNullable(props.getProperty(ES_KEY_STORE));
@@ -199,7 +203,11 @@ public class ElasticSearchConfig {
 
         passwordValue = Optional.ofNullable(props.getProperty(ES_KEY_STORE_ENC));
         if (passwordValue.isPresent()) {
+          if(passwordValue.get().startsWith("OBF:")){
             setKeyStorePassword(Password.deobfuscate(passwordValue.get()));
+          }else{
+            setKeyStorePassword(passwordValue.get());
+          }
         }
     }
 

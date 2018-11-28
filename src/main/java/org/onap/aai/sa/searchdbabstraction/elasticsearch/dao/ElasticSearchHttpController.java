@@ -1397,7 +1397,8 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         metricsLogger.info(message,
                 new LogFields() //
                         .setField(LogLine.DefinedFields.RESPONSE_CODE, operationResult.getResultCode())
-                        .setField(LogLine.DefinedFields.RESPONSE_DESCRIPTION, operationResult.getResult()),
+                        .setField(LogLine.DefinedFields.RESPONSE_DESCRIPTION, operationResult.getResult())
+                        .setField(LogLine.DefinedFields.SERVER_IP, "ElasticHost-"+config.getIpAddress()),
                 override, args);
     }
 }
