@@ -185,6 +185,12 @@ public class SearchServiceApi {
 
     protected boolean validateRequest(HttpHeaders headers, HttpServletRequest req, Action action,
             String authPolicyFunctionName) {
+
+        boolean isUserAuthEnabled = ((ElasticSearchHttpController)documentStore).getElasticSearchConfig().useAuthorizationUser();
+        if(! isUserAuthEnabled) {
+            return true;
+        }
+        
         SearchDbServiceAuth serviceAuth = new SearchDbServiceAuth();
 
         String cipherSuite = (String) req.getAttribute("javax.servlet.request.cipher_suite");

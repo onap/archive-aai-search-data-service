@@ -176,6 +176,10 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         return analysisConfig;
     }
 
+    public ElasticSearchConfig getElasticSearchConfig() {
+        return config;
+    }
+
     @Override
     public OperationResult createIndex(String index, DocumentSchema documentSchema) {
         try {

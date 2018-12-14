@@ -33,8 +33,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.onap.aai.sa.searchdbabstraction.elasticsearch.config.ElasticSearchConfig;
 import org.onap.aai.sa.searchdbabstraction.elasticsearch.dao.DocumentStoreDataEntity;
 import org.onap.aai.sa.searchdbabstraction.elasticsearch.dao.DocumentStoreInterface;
+import org.onap.aai.sa.searchdbabstraction.elasticsearch.dao.ElasticSearchHttpController;
 import org.onap.aai.sa.searchdbabstraction.elasticsearch.exception.DocumentStoreOperationException;
 import org.onap.aai.sa.searchdbabstraction.entity.DocumentOperationResult;
 import org.onap.aai.sa.searchdbabstraction.entity.ErrorResult;
@@ -43,6 +47,7 @@ import org.onap.aai.sa.searchdbabstraction.entity.SearchOperationResult;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import java.util.Properties;
 
 
 public class DocumentTest {
@@ -69,6 +74,9 @@ public class DocumentTest {
     IndexApi indexApi;
 
     DocumentApi documentApi;
+
+    @Mock
+    ElasticSearchHttpController httpController;
 
     @Before
     public void setUp() {
@@ -653,5 +661,67 @@ public class DocumentTest {
         ResponseEntity<String> response = indexApi.processDelete("document-1", request, headers, documentStore);
         Assert.assertNotNull(response);
         Assert.assertTrue(HttpStatus.INTERNAL_SERVER_ERROR.value() == response.getStatusCodeValue());
+    }
+
+    @Test
+    public void testUserAuthorization() throws Exception {
+        String transactionId = "transactionId-1";
+        String remoteAddr = "http://127.0.0.1";
+        String content = "content";
+        // Mockito.when(headers.getRequestHeaders()).thenReturn(multivaluedMap);;
+        Mockito.when(multivaluedMap.getFirst(Mockito.anyString())).thenReturn(transactionId);
+        Mockito.when(request.getRemoteAddr()).thenReturn(remoteAddr);
+        Mockito.when(request.getMethod()).thenReturn("testMethod");
+        Mockito.when(request.getRequestURL()).thenReturn(new StringBuffer("http://127.0.0.1"));
+        Mockito.when(request.getRemoteHost()).thenReturn("localhost");
+        Mockito.when(searchServiceApi.validateRequest(Mockito.any(HttpHeaders.class),
+                Mockito.any(HttpServletRequest.class), Mockito.any(ApiUtils.Action.class), Mockito.anyString()))
+                .thenCallRealMethod();
+
+        Mockito.doAnswer(new Answer<ElasticSearchConfig>() {
+            public ElasticSearchConfig answer(InvocationOnMock invocation) {
+                Properties properties = new Properties();
+                return new ElasticSearchConfig(properties);
+            }
+        }).when(httpController).getElasticSearchConfig();
+
+        searchServiceApi.documentStore = httpController;
+
+        ResponseEntity<String> response =
+                documentApi.processPut(content, request, headers, httpResponse, "index", "id-1", documentStore);
+        Assert.assertNotNull(response);
+        Assert.assertTrue(HttpStatus.FORBIDDEN.value() == response.getStatusCodeValue());
+
+        Mockito.doAnswer(new Answer<ElasticSearchConfig>() {
+            public ElasticSearchConfig answer(InvocationOnMock invocation) {
+                Properties properties = new Properties();
+                properties.put(ElasticSearchConfig.ES_AUTH_ENABLED, "true");
+                return new ElasticSearchConfig(properties);
+            }
+        }).when(httpController).getElasticSearchConfig();
+
+
+        response = documentApi.processPut(content, request, headers, httpResponse, "index", "id-1", documentStore);
+        Assert.assertNotNull(response);
+        Assert.assertTrue(HttpStatus.FORBIDDEN.value() == response.getStatusCodeValue());
+
+        Mockito.doAnswer(new Answer<ElasticSearchConfig>() {
+            public ElasticSearchConfig answer(InvocationOnMock invocation) {
+                Properties properties = new Properties();
+                properties.put(ElasticSearchConfig.ES_AUTH_ENABLED, "false");
+                return new ElasticSearchConfig(properties);
+            }
+        }).when(httpController).getElasticSearchConfig();
+
+        DocumentOperationResult result = new DocumentOperationResult();
+        result.setResultCode(302);
+        result.setError(new ErrorResult("type-1", "reason-1"));
+        result.setFailureCause("test-failure");
+        Mockito.when(documentStore.createDocument(Mockito.anyString(), Mockito.any(DocumentStoreDataEntity.class),
+                Mockito.anyBoolean())).thenReturn(result);
+        response = documentApi.processPut(content, request, headers, httpResponse, "index", "id-1", documentStore);
+        Assert.assertNotNull(response);
+        Assert.assertTrue(HttpStatus.FOUND.value() == response.getStatusCodeValue());
+
     }
 }

@@ -40,6 +40,7 @@ public class ElasticSearchConfig {
     private String httpPort;
     private String javaApiPort;
     private String clusterName;
+    private String authorizationEnabled;
 
     public static final String ES_CLUSTER_NAME = "es.cluster-name";
     public static final String ES_IP_ADDRESS = "es.ip-address";
@@ -51,6 +52,7 @@ public class ElasticSearchConfig {
     public static final String ES_KEY_STORE_ENC = "es.key-store-password";
     public static final String ES_AUTH_USER = "es.auth-user";
     public static final String ES_AUTH_ENC = "es.auth-password";
+    public static final String ES_AUTH_ENABLED = "es.auth.authorization.enabled";
 
     private static final String DEFAULT_URI_SCHEME = "http";
     private static final String JAVA_API_PORT_DEFAULT = "9300";
@@ -66,6 +68,7 @@ public class ElasticSearchConfig {
         setHttpPort(props.getProperty(ES_HTTP_PORT));
         setJavaApiPort(JAVA_API_PORT_DEFAULT);
         initializeAuthValues(props);
+        setAuthorizationEnabled(props.getProperty(ES_AUTH_ENABLED));
     }
 
 
@@ -161,12 +164,24 @@ public class ElasticSearchConfig {
         return authValue;
     }
 
+    public String getAuthorizationEnabled() {
+        return authorizationEnabled;
+    }
+
+    public void setAuthorizationEnabled(String authorizationEnabled) {
+        this.authorizationEnabled = authorizationEnabled;
+    }
+
+    public boolean useAuthorizationUser() {
+        return getAuthorizationEnabled()== null? true : Boolean.parseBoolean(getAuthorizationEnabled());
+    }
+
     @Override
     public String toString() {
         return String.format(
-                "%s://%s:%s (cluster=%s) (API port=%s)%nauth=%s%ntrustStore=%s (passwd %s)%nkeyStore=%s (passwd %s)",
+                "%s://%s:%s (cluster=%s) (API port=%s)%nauth=%s%ntrustStore=%s (passwd %s)%nkeyStore=%s (passwd %s)%nauthorizationUser=%s",
                 uriScheme, ipAddress, httpPort, clusterName, javaApiPort, useAuth(), trustStore,
-                trustStorePassword != null, keyStore, keyStorePassword != null);
+                trustStorePassword != null, keyStore, keyStorePassword != null, useAuthorizationUser());
     }
 
     private void initializeAuthValues(Properties props) {
