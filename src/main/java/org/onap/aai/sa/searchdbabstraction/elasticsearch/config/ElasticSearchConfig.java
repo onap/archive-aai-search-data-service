@@ -24,6 +24,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Optional;
 import java.util.Properties;
+
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.util.security.Password;
 import org.onap.aai.sa.searchdbabstraction.util.SearchDbConstants;
 
@@ -206,7 +208,10 @@ public class ElasticSearchConfig {
         if (passwordValue.isPresent()) {
           if(passwordValue.get().startsWith("OBF:")){
             setTrustStorePassword(Password.deobfuscate(passwordValue.get()));
-          }else{
+          }else if(passwordValue.get().startsWith("ENV:")){
+              setTrustStorePassword(System.getProperty(StringUtils.removeStart(passwordValue.get(), "ENV:")));
+          }
+          else{
             setTrustStorePassword(passwordValue.get());
           }
         }
@@ -220,7 +225,10 @@ public class ElasticSearchConfig {
         if (passwordValue.isPresent()) {
           if(passwordValue.get().startsWith("OBF:")){
             setKeyStorePassword(Password.deobfuscate(passwordValue.get()));
-          }else{
+          }else if(passwordValue.get().startsWith("ENV:")){
+            setKeyStorePassword(System.getProperty(StringUtils.removeStart(passwordValue.get(), "ENV:")));
+           }
+          else{
             setKeyStorePassword(passwordValue.get());
           }
         }
