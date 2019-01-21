@@ -209,7 +209,7 @@ public class ElasticSearchConfig {
           if(passwordValue.get().startsWith("OBF:")){
             setTrustStorePassword(Password.deobfuscate(passwordValue.get()));
           }else if(passwordValue.get().startsWith("ENV:")){
-              setTrustStorePassword(System.getProperty(StringUtils.removeStart(passwordValue.get(), "ENV:")));
+              setTrustStorePassword(System.getenv(StringUtils.removeStart(passwordValue.get(), "ENV:")));
           }
           else{
             setTrustStorePassword(passwordValue.get());
@@ -226,7 +226,7 @@ public class ElasticSearchConfig {
           if(passwordValue.get().startsWith("OBF:")){
             setKeyStorePassword(Password.deobfuscate(passwordValue.get()));
           }else if(passwordValue.get().startsWith("ENV:")){
-            setKeyStorePassword(System.getProperty(StringUtils.removeStart(passwordValue.get(), "ENV:")));
+            setKeyStorePassword(System.getenv(StringUtils.removeStart(passwordValue.get(), "ENV:")));
            }
           else{
             setKeyStorePassword(passwordValue.get());
