@@ -46,6 +46,13 @@ public class Application extends SpringBootServletInitializer {
             props.put("server.ssl.trust-store-password", trustStorePassword);
         }
 
+        String requireClientAuth = System.getenv("REQUIRE_CLIENT_AUTH");
+        if (requireClientAuth == null || requireClientAuth.isEmpty()) {
+            props.put("server.ssl.client-auth", "need");
+        }else {
+            props.put("server.ssl.client-auth", Boolean.valueOf(requireClientAuth)? "need" : "want");
+        }
+		
         new Application().configure(new SpringApplicationBuilder(Application.class).properties(props)).run(args);
     }
 }
