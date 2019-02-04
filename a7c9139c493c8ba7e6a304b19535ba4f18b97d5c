@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0c47d549_6224ffa5",
+        "filename": "src/main/java/org/onap/aai/sa/Application.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 703
+      },
+      "writtenOn": "2019-02-04T15:25:09Z",
+      "side": 1,
+      "message": "Please use Boolean.valueOf(String s) method instead of bespoke implementation to convert a String into a Boolean.",
+      "range": {
+        "startLine": 50,
+        "startChar": 0,
+        "endLine": 54,
+        "endChar": 9
+      },
+      "revId": "a7c9139c493c8ba7e6a304b19535ba4f18b97d5c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
