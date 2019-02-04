@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8fa2b7b4_45123c5d",
+        "filename": "src/main/java/org/onap/aai/sa/Application.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 703
+      },
+      "writtenOn": "2019-02-04T15:49:16Z",
+      "side": 1,
+      "message": "Boolean.valueOf will handle any null checks for you ( see https://docs.oracle.com/javase/7/docs/api/java/lang/Boolean.html#valueOf(java.lang.String) )\n\nThe entire highlighted code block can be simplified to something like the following:\n\nprops.put(\"server.ssl.client-auth\", Boolean.valueOf(requireClientAuth) ? \"need\" : \"want\");",
+      "range": {
+        "startLine": 50,
+        "startChar": 0,
+        "endLine": 54,
+        "endChar": 9
+      },
+      "revId": "0afd8dd50d1a9c141b9135f491de9f8cc83f9b29",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
