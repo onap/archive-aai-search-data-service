@@ -34,7 +34,9 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.onap.aai.sa.rest.AnalysisConfiguration;
 import org.onap.aai.sa.rest.DocumentSchema;
+import org.onap.aai.sa.rest.SettingConfiguration;
 import org.onap.aai.sa.searchdbabstraction.elasticsearch.config.ElasticSearchConfig;
 import org.onap.aai.sa.searchdbabstraction.entity.OperationResult;
 
@@ -114,8 +116,13 @@ public class ElasticSearchHttpControllerTest {
 
     @Test
     public void testCreateTable() throws Exception {
+        AnalysisConfiguration ac = new AnalysisConfiguration();
+        ac.init("src/test/resources/json/filter-config.json", "src/test/resources/json/analysis-config.json");
+        SettingConfiguration sc = new SettingConfiguration();
+        sc.init("src/test/resources/json/settings-config.json");
+        
         OperationResult result =
-                elasticSearch.createTable(TEST_INDEX_NAME, "aai-entities", indexSettings, indexMappings);
+                elasticSearch.createTable(TEST_INDEX_NAME, "aai-entities", ac, indexMappings, sc);
         assertThat(result.getResult(), containsString("\"index\":\"test\"}"));
         assertThat(result.getResultCode(), either(is(200)).or(is(400)));
     }

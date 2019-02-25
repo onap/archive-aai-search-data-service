@@ -1,0 +1,9 @@
+{
+    "number_of_shards": "5",
+    "replication": "TLV_DATACENTER:2",
+    "drop_on_delete_index": true,
+    "version": {
+        "created": "6020399"
+    }
+}
+

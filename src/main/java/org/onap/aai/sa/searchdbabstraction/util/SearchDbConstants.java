@@ -42,6 +42,7 @@ public class SearchDbConstants {
     public static final String SDB_AUTH_CONFIG_FILENAME = SDB_AUTH + "search_policy.json";
     public static final String SDB_FILTER_CONFIG_FILE = SDB_SPECIFIC_CONFIG + "filter-config.json";
     public static final String SDB_ANALYSIS_CONFIG_FILE = SDB_SPECIFIC_CONFIG + "analysis-config.json";
+    public static final String SDB_SETTINGS_CONFIG_FILE = SDB_SPECIFIC_CONFIG + "settings-config.json";
 
     // Logging related
     public static final String SDB_SERVICE_NAME = "SearchDataService";

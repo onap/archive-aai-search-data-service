@@ -22,7 +22,6 @@
 package org.onap.aai.sa.searchdbabstraction.elasticsearch.dao;
 
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
-import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -72,6 +71,7 @@ import org.onap.aai.sa.rest.ApiUtils;
 import org.onap.aai.sa.rest.BulkRequest;
 import org.onap.aai.sa.rest.BulkRequest.OperationType;
 import org.onap.aai.sa.rest.DocumentSchema;
+import org.onap.aai.sa.rest.SettingConfiguration;
 import org.onap.aai.sa.searchdbabstraction.elasticsearch.config.ElasticSearchConfig;
 import org.onap.aai.sa.searchdbabstraction.elasticsearch.exception.DocumentStoreOperationException;
 import org.onap.aai.sa.searchdbabstraction.elasticsearch.exception.DocumentStoreOperationException.ErrorMessage;
@@ -133,10 +133,12 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
     private final ElasticSearchConfig config;
 
     protected AnalysisConfiguration analysisConfig;
+    protected SettingConfiguration settingConfig;
 
     public ElasticSearchHttpController(ElasticSearchConfig config) {
         this.config = config;
         analysisConfig = new AnalysisConfiguration();
+        settingConfig = new SettingConfiguration();
 
         String rootUrl = null;
         try {
@@ -184,8 +186,8 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
     public OperationResult createIndex(String index, DocumentSchema documentSchema) {
         try {
             // Submit the request to ElasticSearch to create the index using a default document type.
-            OperationResult result = createTable(index, DEFAULT_TYPE, analysisConfig.getEsIndexSettings(),
-                    DocumentSchemaUtil.generateDocumentMappings(documentSchema));
+            OperationResult result = createTable(index, DEFAULT_TYPE, analysisConfig,
+                    DocumentSchemaUtil.generateDocumentMappings(documentSchema), settingConfig);
 
             // ElasticSearch will return us a 200 code on success when we
             // want to report a 201, so translate the result here.
@@ -236,10 +238,10 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
     }
 
     // @Override
-    protected OperationResult createTable(String indexName, String typeName, String indexSettings, String indexMappings)
-            throws DocumentStoreOperationException {
-        if (indexSettings == null) {
-            logger.debug("No settings provided.");
+    protected OperationResult createTable(String indexName, String typeName, AnalysisConfiguration ac, 
+            String indexMappings, SettingConfiguration sc) throws DocumentStoreOperationException {
+        if (ac.getEsIndexSettings() == null) {
+            logger.debug("No analysis settings provided.");
         }
 
         if (indexMappings == null) {
@@ -249,10 +251,10 @@ public class ElasticSearchHttpController implements DocumentStoreInterface {
         MdcOverride override = getStartTime(new MdcOverride());
 
         HttpURLConnection conn = createConnection(buildUrl(createUriBuilder(indexName)), HttpMethod.PUT);
-
+        
         StringBuilder sb = new StringBuilder(128);
         sb.append("{ \"settings\" : ");
-        sb.append(indexSettings);
+        sb.append(sc.getSettingsWithAnalysis(ac));
         sb.append(",");
 
         sb.append("\"mappings\" : {");
