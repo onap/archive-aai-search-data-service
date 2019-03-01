@@ -35,6 +35,10 @@
 		<module>elasticsearch-sg</module>
 	</modules>
 
+	<properties>
+		<nexusproxy>https://nexus.onap.org</nexusproxy>
+	</properties>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -47,5 +51,18 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>ecomp-releases</id>
+			<name>ECOMP Release Repository</name>
+			<url>${nexusproxy}/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>ecomp-snapshots</id>
+			<name>ECOMP Snapshot Repository</name>
+			<url>${nexusproxy}/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 </project>
