@@ -24,27 +24,57 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.onap.aai</groupId>
-	<artifactId>search-data-service-agg</artifactId>
-	<name>aai-search-data-service aggregate pom</name>
+	<groupId>org.onap.aai.search-data-service</groupId>
+	<artifactId>elasticsearch-sg</artifactId>
+	<name>elasticsearch with searchguard</name>
 	<version>1.4.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<modules>
-		<module>search-data-service</module>
-		<module>elasticsearch-sg</module>
-	</modules>
-
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.7</version>
+				<executions>
+					<execution>
+						<id>copy-docker-file</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>target</outputDirectory>
+							<overwrite>true</overwrite>
+							<resources>
+								<resource>
+									<directory>${basedir}/src/main/docker</directory>
+									<includes>
+										<include>**/*</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 			<plugin>
 				<groupId>com.spotify</groupId>
 				<artifactId>docker-maven-plugin</artifactId>
 				<version>0.4.11</version>
 				<configuration>
-					<skipDockerBuild>true</skipDockerBuild>
+					<verbose>true</verbose>
+					<serverId>docker-hub</serverId>
+					<imageName>${docker.push.registry}/onap/${project.artifactId}</imageName>
+					<dockerDirectory>${basedir}/target</dockerDirectory>
+					<imageTags>
+						<imageTag>latest</imageTag>
+					</imageTags>
+					<forceTags>true</forceTags>
 				</configuration>
 			</plugin>
+
 		</plugins>
 	</build>
 
