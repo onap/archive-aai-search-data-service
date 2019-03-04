@@ -25,13 +25,13 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.onap.aai</groupId>
-	<artifactId>search-data-service-agg</artifactId>
+	<artifactId>search-data-service</artifactId>
 	<name>aai-search-data-service aggregate pom</name>
 	<version>1.4.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>search-data-service</module>
+		<module>search-data-service-app</module>
 		<module>elasticsearch-sg</module>
 	</modules>
 
