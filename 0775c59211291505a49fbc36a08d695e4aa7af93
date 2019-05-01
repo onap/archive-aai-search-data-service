@@ -1,0 +1,7 @@
+Code-Review+2: James Forsyth <jf2512@att.com>
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Submitted-by: James Forsyth <jf2512@att.com>
+Submitted-at: Wed, 01 May 2019 20:12:32 +0000
+Reviewed-on: https://gerrit.onap.org/r/86731
+Project: aai/search-data-service
+Branch: refs/heads/master
