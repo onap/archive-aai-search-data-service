@@ -27,7 +27,7 @@
 	<groupId>org.onap.aai.search-data-service</groupId>
 	<artifactId>elasticsearch-sg</artifactId>
 	<name>ElasticSearch with SearchGuard</name>
-	<version>1.4.1-SNAPSHOT</version>
+	<version>1.4.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<properties>
