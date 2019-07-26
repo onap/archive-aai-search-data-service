@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "baefa19a_24db92de",
+        "filename": "search-data-service-app/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 423,
+      "author": {
+        "id": 651
+      },
+      "writtenOn": "2019-07-26T13:44:37Z",
+      "side": 1,
+      "message": "The change looks big but this sureFireArgLine was the missing piece.\n(The report was not created where it was expected without it)\n\nI copied the whole plugin from data-router to be on the safe side.",
+      "revId": "5d0e33ce34d021a354b574819536a6379413e53b",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
