@@ -1,5 +1,5 @@
 **/src/main/java-gen/
-/target/
+target/
 /bin/
 .project
 .settings/
@@ -7,3 +7,4 @@
 .idea/
 logs/
 debug-logs/
+*.iml
