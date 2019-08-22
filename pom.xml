@@ -41,18 +41,17 @@
 
 	<properties>
 		<nexusproxy>https://nexus.onap.org</nexusproxy>
+		<!-- docker related properties -->
+		<docker.fabric.version>0.31.0</docker.fabric.version>
+		<aai.docker.version>1.0.0</aai.docker.version>
+		<aai.docker.namespace>onap</aai.docker.namespace>
+		<aai.base.image>alpine</aai.base.image>
+		<aai.base.image.version>1.6.0</aai.base.image.version>
+		<aai.build.directory>${project.build.directory}/${project.artifactId}-build/</aai.build.directory>
 	</properties>
 
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>com.spotify</groupId>
-				<artifactId>docker-maven-plugin</artifactId>
-				<version>0.4.11</version>
-				<configuration>
-					<skipDockerBuild>true</skipDockerBuild>
-				</configuration>
-			</plugin>
 			<plugin>
 			  <groupId>org.apache.maven.plugins</groupId>
 			  <artifactId>maven-deploy-plugin</artifactId>

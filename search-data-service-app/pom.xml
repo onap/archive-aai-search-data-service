@@ -21,8 +21,8 @@
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<artifactId>search-data-service</artifactId>
@@ -35,13 +35,11 @@
 	<version>1.6.0-SNAPSHOT</version>
 	<name>AAI Search Data Service Application</name>
 
-	<properties>
-		<docker.location>${basedir}/target</docker.location>
-		<docker.image.name.suffix>search-data-service</docker.image.name.suffix>
-		<nexusproxy>https://nexus.onap.org</nexusproxy>
-		<java.version>1.8</java.version>
-		<generatedSourceDir>${basedir}/src/main/java-gen</generatedSourceDir>
-		<checkstyle.config.location>google_checks.xml</checkstyle.config.location>
+    <properties>
+        <docker.image.name.suffix>search-data-service</docker.image.name.suffix>
+        <java.version>1.8</java.version>
+        <generatedSourceDir>${basedir}/src/main/java-gen</generatedSourceDir>
+        <checkstyle.config.location>google_checks.xml</checkstyle.config.location>
 
 		<sonar.language>java</sonar.language>
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
@@ -54,7 +52,7 @@
 		<jacoco.line.coverage.limit>0.58</jacoco.line.coverage.limit>
 		<spring.boot.version>1.5.21.RELEASE</spring.boot.version>
 	</properties>
-	
+
 	<dependencyManagement>
           <dependencies>
             <dependency>
@@ -66,313 +64,371 @@
             </dependency>
           </dependencies>
 	</dependencyManagement>
-	
+
 	<dependencies>
 
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+        </dependency>
 
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-library</artifactId>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-library</artifactId>
+            <scope>test</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>com.jayway.jsonpath</groupId>
-			<artifactId>json-path</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path</artifactId>
+        </dependency>
 
-		<dependency>
-			<groupId>com.googlecode.json-simple</groupId>
-			<artifactId>json-simple</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+        </dependency>
 
-		<dependency>
-			<groupId>org.dom4j</groupId>
-			<artifactId>dom4j</artifactId>
-			<version>2.1.1</version>
-			<scope>provided</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+            <version>2.1.1</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.4</version>
-		</dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+        </dependency>
 
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<version>1.10.19</version>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.10.19</version>
+            <scope>test</scope>
+        </dependency>
 
         <!-- Common logging framework -->
-		<dependency>
-			<groupId>org.onap.aai.logging-service</groupId>
-			<artifactId>common-logging</artifactId>
-			<version>1.5.0</version>
-		</dependency>
+        <dependency>
+            <groupId>org.onap.aai.logging-service</groupId>
+            <artifactId>common-logging</artifactId>
+            <version>1.5.0</version>
+        </dependency>
 
-		<dependency>
-			<groupId>org.onap.aai.logging-service</groupId>
-			<artifactId>logging-api</artifactId>
-			<version>1.5.0</version>
-		</dependency>
+        <dependency>
+            <groupId>org.onap.aai.logging-service</groupId>
+            <artifactId>logging-api</artifactId>
+            <version>1.5.0</version>
+        </dependency>
 
-		<dependency>
-			<groupId>org.onap.aai.logging-service</groupId>
-			<artifactId>eelf-logging</artifactId>
-			<version>1.5.0</version>
-		</dependency>
+        <dependency>
+            <groupId>org.onap.aai.logging-service</groupId>
+            <artifactId>eelf-logging</artifactId>
+            <version>1.5.0</version>
+        </dependency>
 
         <!-- For JSON Mapping Support. -->
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
 
-		<dependency>
-			<groupId>org.apache.directory.studio</groupId>
-			<artifactId>org.apache.commons.lang</artifactId>
-			<version>2.6</version>
-		</dependency>
+        <dependency>
+            <groupId>org.apache.directory.studio</groupId>
+            <artifactId>org.apache.commons.lang</artifactId>
+            <version>2.6</version>
+        </dependency>
 
-		<dependency>
-			<groupId>radeox</groupId>
-			<artifactId>radeox</artifactId>
-			<version>0.9</version>
-		</dependency>
+        <dependency>
+            <groupId>radeox</groupId>
+            <artifactId>radeox</artifactId>
+            <version>0.9</version>
+        </dependency>
 
-		<dependency>
-			<groupId>com.github.fge</groupId>
-			<artifactId>json-schema-validator</artifactId>
-			<version>2.0.0</version>
-		</dependency>
+        <dependency>
+            <groupId>com.github.fge</groupId>
+            <artifactId>json-schema-validator</artifactId>
+            <version>2.0.0</version>
+        </dependency>
 
-		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-			<version>20180130</version>
-		</dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20180130</version>
+        </dependency>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-starter-tomcat</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-jetty</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jetty</artifactId>
+        </dependency>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>ch.qos.logback</groupId>
-					<artifactId>logback-classic</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-jersey</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-starter-tomcat</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jersey</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
 
         <!--Logback classic-->
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
 
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-core</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+        </dependency>
 
-	</dependencies>
+    </dependencies>
 
-	<repositories>
-		<repository>
-			<id>central</id>
-			<name>Maven 2 repository 2</name>
-			<url>http://repo2.maven.org/maven2/</url>
-		</repository>
-		<repository>
-			<id>ecomp-releases</id>
-			<name>ECOMP Release Repository</name>
-			<url>${nexusproxy}/content/repositories/releases/</url>
-		</repository>
-		<repository>
-			<id>ecomp-snapshots</id>
-			<name>ECOMP Snapshot Repository</name>
-			<url>${nexusproxy}/content/repositories/snapshots/</url>
-		</repository>
-		<repository>
-			<id>ecomp-staging</id>
-			<name>ECOMP Staging Repository</name>
-			<url>${nexusproxy}/content/repositories/staging/</url>
-		</repository>
-	</repositories>
-
-	<build>
-		<finalName>search-data-service-package</finalName>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>Maven 2 repository 2</name>
+            <url>http://repo2.maven.org/maven2/</url>
+        </repository>
+        <repository>
+            <id>ecomp-releases</id>
+            <name>ECOMP Release Repository</name>
+            <url>${nexusproxy}/content/repositories/releases/</url>
+        </repository>
+        <repository>
+            <id>ecomp-snapshots</id>
+            <name>ECOMP Snapshot Repository</name>
+            <url>${nexusproxy}/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
+            <id>ecomp-staging</id>
+            <name>ECOMP Staging Repository</name>
+            <url>${nexusproxy}/content/repositories/staging/</url>
+        </repository>
+    </repositories>
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/main/assembly/descriptor.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.groovy.maven</groupId>
+                <artifactId>gmaven-plugin</artifactId>
+                <version>1.0</version>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <source>
+                                def userAaiBaseImage = session.userProperties['aai.base.image']
+                                def userAaiCommonVersion = session.userProperties['aai.base.image.version']
+                                if (userAaiCommonVersion != null) {
+                                    project.properties['aai.base.image.version'] = userAaiCommonVersion
+                                }
+                                if (userAaiBaseImage != null) {
+                                    project.properties['aai.base.image'] = userAaiBaseImage
+                                }
+                                log.info 'Base image flavour: ' + project.properties['aai.base.image']
+                                log.info 'Base image version: ' + project.properties['aai.base.image.version']
+                            </source>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>${docker.fabric.version}</version>
+                <configuration>
+                    <verbose>true</verbose>
+                    <apiVersion>1.23</apiVersion>
+                    <images>
+                        <image>
+                            <name>${docker.push.registry}/${aai.docker.namespace}/${docker.image.name.suffix}:%l
+                            </name>
+                            <build>
+                                <filter>@</filter>
+                                <tags>
+                                    <tag>latest</tag>
+                                </tags>
+                                <cleanup>try</cleanup>
+                                <dockerFileDir>${project.basedir}/src/main/docker</dockerFileDir>
+                                <assembly>
+                                    <inline>
+                                        <fileSets>
+                                            <fileSet>
+                                                <directory>${aai.build.directory}</directory>
+                                                <outputDirectory>/${project.artifactId}</outputDirectory>
+                                            </fileSet>
+                                        </fileSets>
+                                    </inline>
+                                </assembly>
+                            </build>
+                        </image>
+                    </images>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>clean-images</id>
+                        <phase>pre-clean</phase>
+                        <goals>
+                            <goal>remove</goal>
+                        </goals>
+                        <configuration>
+                            <removeAll>true</removeAll>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-images</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>push-images</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>push</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <!-- Checkstyle plugin - used to report on compliance with -->
             <!-- the Google style guide. -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-site-plugin</artifactId>
-				<configuration>
-					<reportPlugins>
-						<plugin>
-							<groupId>org.apache.maven.plugins</groupId>
-							<artifactId>maven-checkstyle-plugin</artifactId>
-							<version>2.17</version>
-							<reportSets>
-								<reportSet>
-									<reports>
-										<report>checkstyle</report>
-									</reports>
-								</reportSet>
-							</reportSets>
-						</plugin>
-					</reportPlugins>
-				</configuration>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <configuration>
+                    <reportPlugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-checkstyle-plugin</artifactId>
+                            <version>2.17</version>
+                            <reportSets>
+                                <reportSet>
+                                    <reports>
+                                        <report>checkstyle</report>
+                                    </reports>
+                                </reportSet>
+                            </reportSets>
+                        </plugin>
+                    </reportPlugins>
+                </configuration>
+            </plugin>
             <!-- This plugin overrides the compiler settings to use java 1.8 -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<compilerId>groovy-eclipse-compiler</compilerId>
-					<verbose>true</verbose>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
-				<dependencies>
-					<dependency>
-						<groupId>org.codehaus.groovy</groupId>
-						<artifactId>groovy-eclipse-compiler</artifactId>
-						<version>2.9.0-01</version>
-					</dependency>
-					<dependency>
-						<groupId>org.codehaus.groovy</groupId>
-						<artifactId>groovy-eclipse-batch</artifactId>
-						<version>2.3.4-01</version>
-					</dependency>
-				</dependencies>
-			</plugin>
-			<plugin>
-				<groupId>com.spotify</groupId>
-				<artifactId>docker-maven-plugin</artifactId>
-				<version>0.4.11</version>
-				<configuration>
-					<verbose>true</verbose>
-					<serverId>docker-hub</serverId>
-					<imageName>${docker.push.registry}/onap/${docker.image.name.suffix}</imageName>
-					<dockerDirectory>${docker.location}</dockerDirectory>
-					<imageTags>
-						<imageTag>latest</imageTag>
-					</imageTags>
-					<forceTags>true</forceTags>
-				</configuration>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerId>groovy-eclipse-compiler</compilerId>
+                    <verbose>true</verbose>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.codehaus.groovy</groupId>
+                        <artifactId>groovy-eclipse-compiler</artifactId>
+                        <version>2.9.0-01</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.codehaus.groovy</groupId>
+                        <artifactId>groovy-eclipse-batch</artifactId>
+                        <version>2.3.4-01</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
             <!-- This plugin is used to generate Java POJO's from json format schema
                 file. -->
-			<plugin>
-				<groupId>org.jsonschema2pojo</groupId>
-				<artifactId>jsonschema2pojo-maven-plugin</artifactId>
-				<version>0.4.26</version>
-				<configuration>
-					<addCompileSourceRoot>true</addCompileSourceRoot>
-					<sourceDirectory>${basedir}/src/main/resources/json/schema</sourceDirectory>
-					<outputDirectory>${generatedSourceDir}</outputDirectory>
-					<targetPackage>org.onap.aai.sa.rest</targetPackage>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+            <plugin>
+                <groupId>org.jsonschema2pojo</groupId>
+                <artifactId>jsonschema2pojo-maven-plugin</artifactId>
+                <version>0.4.26</version>
+                <configuration>
+                    <addCompileSourceRoot>true</addCompileSourceRoot>
+                    <sourceDirectory>${basedir}/src/main/resources/json/schema</sourceDirectory>
+                    <outputDirectory>${generatedSourceDir}</outputDirectory>
+                    <targetPackage>org.onap.aai.sa.rest</targetPackage>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy-docker-file</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>target</outputDirectory>
-							<overwrite>true</overwrite>
-							<resources>
-								<resource>
-									<directory>${basedir}/src/main/docker</directory>
-									<filtering>true</filtering>
-									<includes>
-										<include>**/*</include>
-									</includes>
-								</resource>
-								<resource>
-									<directory>${basedir}</directory>
-									<filtering>true</filtering>
-									<includes>
-										<include>bundleconfig-local/**</include>
-									</includes>
-								</resource>
-								<resource>
-									<directory>${basedir}/src/main/bin/</directory>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
             <!-- license plugin -->
 			<plugin>
 				<groupId>com.mycila</groupId>
@@ -495,32 +551,32 @@
 			</plugin>
             <!-- This plugin adds the generated sources directory to the clean lifecycle
                 so that automatically generated code will get cleaned up properly. -->
-			<plugin>
-				<artifactId>maven-clean-plugin</artifactId>
-				<configuration>
-					<filesets>
-						<fileset>
-							<directory>${generatedSourceDir}</directory>
-						</fileset>
-					</filesets>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-	<distributionManagement>
-		<repository>
-			<id>ecomp-releases</id>
-			<name>ECOMP Release Repository</name>
-			<url>${nexusproxy}/content/repositories/releases/</url>
-		</repository>
-		<snapshotRepository>
-			<id>ecomp-snapshots</id>
-			<name>ECOMP Snapshot Repository</name>
-			<url>${nexusproxy}/content/repositories/snapshots/</url>
-		</snapshotRepository>
-		<site>
-			<id>ecomp-javadoc</id>
-			<url>dav:https://ecomp-nexus:8443/repository/aai/search-data-service-javadoc/${project.version}</url>
-		</site>
-	</distributionManagement>
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>${generatedSourceDir}</directory>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <distributionManagement>
+        <repository>
+            <id>ecomp-releases</id>
+            <name>ECOMP Release Repository</name>
+            <url>${nexusproxy}/content/repositories/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>ecomp-snapshots</id>
+            <name>ECOMP Snapshot Repository</name>
+            <url>${nexusproxy}/content/repositories/snapshots/</url>
+        </snapshotRepository>
+        <site>
+            <id>ecomp-javadoc</id>
+            <url>dav:https://ecomp-nexus:8443/repository/aai/search-data-service-javadoc/${project.version}</url>
+        </site>
+    </distributionManagement>
 </project>
