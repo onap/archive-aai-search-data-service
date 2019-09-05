@@ -21,88 +21,129 @@
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<artifactId>search-data-service</artifactId>
-		<groupId>org.onap.aai</groupId>
-		<version>1.5.1-SNAPSHOT</version>
-	</parent>
+    <parent>
+        <artifactId>search-data-service</artifactId>
+        <groupId>org.onap.aai</groupId>
+        <version>1.6.0-SNAPSHOT</version>
+    </parent>
 
 
-	<groupId>org.onap.aai.search-data-service</groupId>
-	<artifactId>elasticsearch-sg</artifactId>
-	<name>ElasticSearch with SearchGuard</name>
-	<version>1.5.1-SNAPSHOT</version>
-	<packaging>pom</packaging>
+    <groupId>org.onap.aai.search-data-service</groupId>
+    <artifactId>elasticsearch-sg</artifactId>
+    <name>ElasticSearch with SearchGuard</name>
+    <version>1.6.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
-	<properties>
-		<nexusproxy>https://nexus.onap.org</nexusproxy>
-	</properties>
+    <profiles>
+        <profile>
+            <id>docker</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <version>3.0.0</version>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>2.7</version>
+                        <executions>
+                            <execution>
+                                <id>copy-docker-file</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${aai.build.directory}</outputDirectory>
+                                    <overwrite>true</overwrite>
+                                    <resources>
+                                        <resource>
+                                            <directory>${basedir}/src/main/docker</directory>
+                                            <includes>
+                                                <include>**/*</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.7</version>
-				<executions>
-					<execution>
-						<id>copy-docker-file</id>
-						<phase>process-resources</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>target</outputDirectory>
-							<overwrite>true</overwrite>
-							<resources>
-								<resource>
-									<directory>${basedir}/src/main/docker</directory>
-									<includes>
-										<include>**/*</include>
-									</includes>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
-			<plugin>
-				<groupId>com.spotify</groupId>
-				<artifactId>docker-maven-plugin</artifactId>
-				<version>0.4.11</version>
-				<configuration>
-					<verbose>true</verbose>
-					<serverId>docker-hub</serverId>
-					<imageName>${docker.push.registry}/onap/${project.artifactId}</imageName>
-					<dockerDirectory>${basedir}/target</dockerDirectory>
-					<imageTags>
-						<imageTag>latest</imageTag>
-					</imageTags>
-					<forceTags>true</forceTags>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-deploy-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
-
-	<distributionManagement>
-		<repository>
-			<id>ecomp-releases</id>
-			<name>ECOMP Release Repository</name>
-			<url>${nexusproxy}/content/repositories/releases/</url>
-		</repository>
-		<snapshotRepository>
-			<id>ecomp-snapshots</id>
-			<name>ECOMP Snapshot Repository</name>
-			<url>${nexusproxy}/content/repositories/snapshots/</url>
-		</snapshotRepository>
-	</distributionManagement>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>${docker.fabric.version}</version>
+                        <configuration>
+                            <verbose>true</verbose>
+                            <apiVersion>1.23</apiVersion>
+                            <images>
+                                <image>
+                                    <name>${docker.push.registry}/${aai.docker.namespace}/${project.artifactId}:%l
+                                    </name>
+                                    <build>
+                                        <filter>@</filter>
+                                        <tags>
+                                            <tag>latest</tag>
+                                            <tag>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}-STAGING-latest</tag>
+                                            <tag>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}-STAGING-${maven.build.timestamp}</tag>
+                                        </tags>
+                                        <cleanup>try</cleanup>
+                                        <dockerFileDir>${aai.build.directory}</dockerFileDir>
+                                    </build>
+                                </image>
+                            </images>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>clean-images</id>
+                                <phase>clean</phase>
+                                <goals>
+                                    <goal>remove</goal>
+                                </goals>
+                                <configuration>
+                                    <removeAll>true</removeAll>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>generate-images</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>push-images</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>push</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-deploy-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+    <distributionManagement>
+        <repository>
+            <id>ecomp-releases</id>
+            <name>ECOMP Release Repository</name>
+            <url>${nexusproxy}/content/repositories/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>ecomp-snapshots</id>
+            <name>ECOMP Snapshot Repository</name>
+            <url>${nexusproxy}/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
 </project>

@@ -31,7 +31,7 @@
 	<groupId>org.onap.aai</groupId>
 	<artifactId>search-data-service</artifactId>
 	<name>aai-search-data-service aggregate pom</name>
-	<version>1.5.1-SNAPSHOT</version>
+	<version>1.6.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<modules>
@@ -41,18 +41,45 @@
 
 	<properties>
 		<nexusproxy>https://nexus.onap.org</nexusproxy>
+		<!-- docker related properties -->
+		<docker.fabric.version>0.31.0</docker.fabric.version>
+		<aai.docker.version>1.0.0</aai.docker.version>
+		<aai.docker.namespace>onap</aai.docker.namespace>
+		<aai.base.image>alpine</aai.base.image>
+		<aai.base.image.version>1.6.0</aai.base.image.version>
+		<aai.build.directory>${project.build.directory}/${project.artifactId}-build/</aai.build.directory>
+		<!-- This will be used for the docker images as the default format of maven build has issues -->
+		<maven.build.timestamp.format>yyyyMMdd'T'HHmmss'Z'</maven.build.timestamp.format>
 	</properties>
+
+	<profiles>
+		<profile>
+			<id>docker</id>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.codehaus.mojo</groupId>
+							<artifactId>build-helper-maven-plugin</artifactId>
+							<version>3.0.0</version>
+							<executions>
+								<execution>
+									<phase>pre-clean</phase>
+									<id>parse-version</id>
+									<goals>
+										<goal>parse-version</goal>
+									</goals>
+								</execution>
+							</executions>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
+	</profiles>
 
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>com.spotify</groupId>
-				<artifactId>docker-maven-plugin</artifactId>
-				<version>0.4.11</version>
-				<configuration>
-					<skipDockerBuild>true</skipDockerBuild>
-				</configuration>
-			</plugin>
 			<plugin>
 			  <groupId>org.apache.maven.plugins</groupId>
 			  <artifactId>maven-deploy-plugin</artifactId>
