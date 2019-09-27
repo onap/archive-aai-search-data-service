@@ -36,7 +36,6 @@
 
 	<modules>
 		<module>search-data-service-app</module>
-		<module>elasticsearch-sg</module>
 	</modules>
 
 	<properties>
