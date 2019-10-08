@@ -1,0 +1,8 @@
+distribution_type: 'container'
+container_release_tag: '1.5.1'
+project: 'aai-search-data-service'
+log_dir: 'aai-search-data-service-maven-docker-stage-elalto/89/'
+ref: 878bd0e79b5a96a0c16c5f78cf9b74db9e32937e
+containers:
+    - name: 'search-data-service'
+      version: '1.5-STAGING-20191008T170151Z'
