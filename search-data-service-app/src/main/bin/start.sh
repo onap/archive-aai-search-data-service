@@ -14,6 +14,7 @@ if [ -z "$KEY_STORE_PASSWORD" ]; then
 	exit 1
 fi
 
+
 # Changes related to:AAI-2179
 # Change aai search-data  container processes to run as non-root on the host
 USER_ID=${LOCAL_USER_ID:-9001}
@@ -32,13 +33,14 @@ if [ $(cat /etc/passwd | grep aaiadmin | wc -l) -eq 0 ]; then
         }
 fi;
 
+chmod -R 0755 ${MICRO_HOME} 
 chown -R aaiadmin:aaiadmin ${MICRO_HOME}
 chown -R aaiadmin:aaiadmin ${AJSC_HOME}
 chown -R aaiadmin:aaiadmin ${SD_LOGS}
 
 find ${MICRO_HOME}  -name "*.sh" -exec chmod +x {} +
 
-gosu aaiadmin ln -s /logs $MICRO_HOME/logs
+gosu aaiadmin ln -snf /logs $MICRO_HOME/logs
 JAVA_CMD="exec gosu aaiadmin java";
 ###
 PROPS="-DAJSC_HOME=$AJSC_HOME"
@@ -56,5 +58,6 @@ if [ ! -z "$TRUST_STORE_LOCATION" ]; then
 fi
 
 JVM_MAX_HEAP=${MAX_HEAP:-1024}
+JVM_MIN_HEAP=${JVM_MAX_HEAP}
 
-${JAVA_CMD}   $PROPS -jar $BASEDIR/search-data-service-package.jar
+${JAVA_CMD} -Xms${JVM_MIN_HEAP}m -Xmx${JVM_MAX_HEAP}m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/var/log/onap $PROPS -jar $BASEDIR/search-data-service-app.jar
