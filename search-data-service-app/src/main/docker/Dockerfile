@@ -33,9 +33,14 @@ fi
 # Build up the deployment folder structure
 RUN mkdir -p $MICRO_HOME $USERS_HOME /logs
 WORKDIR $MICRO_HOME
-COPY /maven/@project.artifactId@/ .
-RUN chmod 755 $BIN_HOME/* \
-    && ln -snf /logs $MICRO_HOME/logs
+RUN mkdir -p $MICRO_HOME/bundleconfig/etc
+ADD search-data-service* $MICRO_HOME/
+RUN mkdir -p $BIN_HOME
+COPY *.sh $BIN_HOME
+COPY bundleconfig-local $MICRO_HOME/bundleconfig
+COPY bundleconfig-local/etc/logback.xml $MICRO_HOME/bundleconfig/etc
+RUN chmod -R 755 $BIN_HOME/* $MICRO_HOME/*
+RUN ln -snf /logs $MICRO_HOME/logs
 
 EXPOSE 9509 9509
 
