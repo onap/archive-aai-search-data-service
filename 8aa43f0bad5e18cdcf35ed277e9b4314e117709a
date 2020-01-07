@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "08568343_cb89b494",
+        "filename": "search-data-service-app/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 453
+      },
+      "writtenOn": "2020-01-07T18:55:08Z",
+      "side": 1,
+      "message": "Why are we adding this?  This service doesn\u0027t use the schema.",
+      "revId": "8aa43f0bad5e18cdcf35ed277e9b4314e117709a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a1d64301_c8a8a75d",
+        "filename": "search-data-service-app/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 451,
+      "author": {
+        "id": 453
+      },
+      "writtenOn": "2020-01-07T18:55:08Z",
+      "side": 1,
+      "message": "Why are these being added?",
+      "revId": "8aa43f0bad5e18cdcf35ed277e9b4314e117709a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
