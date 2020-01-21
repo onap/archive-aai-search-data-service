@@ -34,11 +34,9 @@ fi
 RUN mkdir -p $MICRO_HOME $USERS_HOME /logs
 WORKDIR $MICRO_HOME
 RUN mkdir -p $MICRO_HOME/bundleconfig/etc
-ADD search-data-service* $MICRO_HOME/
 RUN mkdir -p $BIN_HOME
-COPY *.sh $BIN_HOME
-COPY bundleconfig-local $MICRO_HOME/bundleconfig
-COPY bundleconfig-local/etc/logback.xml $MICRO_HOME/bundleconfig/etc
+# copy everything from search-data-service-app/target/docker/nexus3.onap.org/10003/onap/search-data-service/latest/build/maven/search-data-service-app
+COPY /maven/search-data-service-app/ .
 RUN chmod -R 755 $BIN_HOME/* $MICRO_HOME/*
 RUN ln -snf /logs $MICRO_HOME/logs
 
