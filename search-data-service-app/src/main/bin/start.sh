@@ -60,4 +60,4 @@ fi
 JVM_MAX_HEAP=${MAX_HEAP:-1024}
 JVM_MIN_HEAP=${JVM_MAX_HEAP}
 
-${JAVA_CMD} -Xms${JVM_MIN_HEAP}m -Xmx${JVM_MAX_HEAP}m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/var/log/onap $PROPS -jar $BASEDIR/search-data-service-app.jar
+${JAVA_CMD} -Xms${JVM_MIN_HEAP}m -Xmx${JVM_MAX_HEAP}m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/var/log/onap $PROPS -jar $BASEDIR/search-data-service-package.jar
