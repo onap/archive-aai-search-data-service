@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "eab2177c_2aea06cc",
+        "filename": "search-data-service-app/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 651
+      },
+      "writtenOn": "2020-03-04T13:01:58Z",
+      "side": 1,
+      "message": "You may as well remove the line instead of commenting it out",
+      "revId": "5f6e9a3e5ccf97928e500a88de601c5b1e76b9db",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
