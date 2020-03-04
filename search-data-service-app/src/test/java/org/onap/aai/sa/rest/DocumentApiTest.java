@@ -43,7 +43,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 public class DocumentApiTest {
 
     private static final String INDEXES_URI = "/test/indexes/";

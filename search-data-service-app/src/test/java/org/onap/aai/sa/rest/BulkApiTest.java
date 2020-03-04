@@ -40,7 +40,7 @@ import org.springframework.test.web.servlet.MockMvc;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = org.onap.aai.sa.Application.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 public class BulkApiTest {
 
     private final String TOP_URI = "/test/bulk";

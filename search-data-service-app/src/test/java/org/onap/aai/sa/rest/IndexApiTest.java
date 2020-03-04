@@ -55,7 +55,7 @@ import org.springframework.test.web.servlet.MvcResult;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 public class IndexApiTest {
 
     private final String TOP_URI = "/test/indexes/";
