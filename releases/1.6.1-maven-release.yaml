@@ -1,0 +1,4 @@
+distribution_type: maven
+log_dir: aai-search-data-service-maven-stage-master/283
+project: search-data-service
+version: 1.6.1
