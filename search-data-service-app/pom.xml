@@ -27,12 +27,12 @@
     <parent>
         <artifactId>search-data-service</artifactId>
         <groupId>org.onap.aai</groupId>
-        <version>1.6.1-SNAPSHOT</version>
+        <version>1.6.2-SNAPSHOT</version>
     </parent>
 
     <groupId>org.onap.aai.search-data-service</groupId>
     <artifactId>search-data-service-app</artifactId>
-    <version>1.6.1-SNAPSHOT</version>
+    <version>1.6.2-SNAPSHOT</version>
     <name>AAI Search Data Service Application</name>
 
     <properties>
