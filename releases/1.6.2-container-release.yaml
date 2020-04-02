@@ -1,0 +1,7 @@
+distribution_type: container
+container_release_tag: 1.6.2
+project: search-data-service
+ref: 707cbaec2a5147b60732d7ea6ff0f557202b3fc0
+containers:
+    - name: search-data-service
+      version: 1.6-STAGING-20200402T171128Z
