@@ -14,34 +14,9 @@ if [ -z "$KEY_STORE_PASSWORD" ]; then
 	exit 1
 fi
 
-
-# Changes related to:AAI-2179
-# Change aai search-data  container processes to run as non-root on the host
-USER_ID=${LOCAL_USER_ID:-9001}
-GROUP_ID=${LOCAL_GROUP_ID:-9001}
-SD_LOGS=/var/log/onap/AAI-SDB
-
-if [ $(cat /etc/passwd | grep aaiadmin | wc -l) -eq 0 ]; then
-
-        groupadd aaiadmin -g ${GROUP_ID} || {
-                echo "Unable to create the group id for ${GROUP_ID}";
-                exit 1;
-        }
-        useradd --shell=/bin/bash -u ${USER_ID} -g ${GROUP_ID} -o -c "" -m aaiadmin || {
-                echo "Unable to create the user id for ${USER_ID}";
-                exit 1;
-        }
-fi;
-
-chmod -R 0755 ${MICRO_HOME} 
-chown -R aaiadmin:aaiadmin ${MICRO_HOME}
-chown -R aaiadmin:aaiadmin ${AJSC_HOME}
-chown -R aaiadmin:aaiadmin ${SD_LOGS}
-
 find ${MICRO_HOME}  -name "*.sh" -exec chmod +x {} +
 
-gosu aaiadmin ln -snf /logs $MICRO_HOME/logs
-JAVA_CMD="exec gosu aaiadmin java";
+JAVA_CMD="exec java";
 ###
 PROPS="-DAJSC_HOME=$AJSC_HOME"
 PROPS="$PROPS -DAJSC_CONF_HOME=$AJSC_CONF_HOME"
